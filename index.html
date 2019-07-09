@@ -24,5 +24,34 @@
 <span class="macro">@End(<span class="name">file: ll.cpp</span>)</span><br/>
 </code></div>
 </div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">needed by main</span>)</span><br/>
+<span class="in1"></span><span class="keyword">#include</span> &lt;<span class="var">cassert</span>&gt;<br/>
+<span class="macro">@end(<span class="name">needed by main</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by main</span>)</span><br/>
+<span class="in1"></span><span class="type">bool</span> <span class="fn">do_riscv</span>(<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">char</span> *<span class="var">src</span>,<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">char</span> *<span class="var">obj</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="num">false</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by main</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="fn">do_riscv</span>(<br/>
+<span class="in2"></span><span class="str">"%r4 &lt;- %r2 + %r3"</span>, <br/>
+<span class="in2"></span><span class="str">"\x01\x02\x03\x04"</span><br/>
+<span class="in1"></span>));<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
 </body>
 </html>
