@@ -1,8 +1,12 @@
 CXXFLAGS += -Wall
 
-.PHONY: all clean
+.PHONY: all clean tests
 
-all: ll
+all: tests
+
+tests: ll
+	@echo run unit-tests
+	@./ll
 
 SOURCEs := $(wildcard *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))
