@@ -12,12 +12,13 @@
 			jump block_other_harts \
 		}
 
-	uart = %a5
+	uart = %a4
 	uart <- $1013000
+
 	tmp <- [uart + $08]
 	tmp <- tmp | $01
-
 	[uart + $08] <- tmp
+
 	tmp <- [uart + $0c]
 	tmp <- tmp | $01
 	[uart + $0c] <- tmp

@@ -84,10 +84,20 @@ so only hart is talking over the UART
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
-<span class="in1"></span><span class="var">uart</span> = <span class="keyword">%a5</span><br/>
+<span class="in1"></span><span class="var">uart</span> = <span class="keyword">%a4</span><br/>
 <span class="in1"></span><span class="var">uart</span> &lt;- <span class="num">$1013000</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+store basis to IO block
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
 <span class="in1"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span> + <span class="num">$08</span>]<br/>
 <span class="in1"></span><span class="var">tmp</span> &lt;- <span class="var">tmp</span> | <span class="num">$01</span><br/>
+<span class="in1"></span>[<span class="var">uart</span> + <span class="num">$08</span>] &lt;- <span class="var">tmp</span><br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -97,7 +107,6 @@ enable writing to UART
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
-<span class="in1"></span>[<span class="var">uart</span> + <span class="num">$08</span>] &lt;- <span class="var">tmp</span><br/>
 <span class="in1"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span> + <span class="num">$0c</span>]<br/>
 <span class="in1"></span><span class="var">tmp</span> &lt;- <span class="var">tmp</span> | <span class="num">$01</span><br/>
 <span class="in1"></span>[<span class="var">uart</span> + <span class="num">$0c</span>] &lt;- <span class="var">tmp</span><br/>
