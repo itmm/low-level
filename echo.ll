@@ -3,7 +3,8 @@
 	* <- $20010000
 
 	tmp = %t0
-	tmp <- %pc + (early_trap - *)
+	tmp <- %pc
+	tmp <- tmp + (early_trap - * + 4)
 	%mtvec <- tmp
 
 		tmp <- %mhartid
@@ -13,7 +14,7 @@
 				(block_other_harts - *) \
 		}
 
-	uart = %a4
+	uart = %a2
 	uart <- $1013000
 
 	tmp <- [uart + $08]
@@ -46,14 +47,17 @@
 
 	normal = *
 		tmp <- [uart]
-		if (tmp < 0) { jump normal }
+		if (tmp < 0) {
+			%pc <- %pc + (normal - *)
+		}
 		[uart] <- chr
 		%pc <- %pc + (loop - *)
 
 	do_new_line = *
 		tmp <- [uart]
 		if (tmp < 0) { \
-			jump do_new_line \
+			%pc <- \
+				%pc + (do_new_line - *) \
 		}
 		[uart] <- carriage_return
 		%pc <- %pc + (normal - *)

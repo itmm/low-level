@@ -26,7 +26,8 @@ interrupted with some comments.
 ```
 @add(src)
 	tmp = @k(%t0)
-	tmp <- @k(%pc) + (@t(early_trap) - @n(*))
+	tmp <- @k(%pc)
+	tmp <- tmp + (@t(early_trap) - @n(*) + 4)
 	@k(%mtvec) <- tmp
 @end(src)
 ```
@@ -51,7 +52,7 @@ interrupted with some comments.
 
 ```
 @add(src)
-	uart = @k(%a4)
+	uart = @k(%a2)
 	uart <- @n($1013000)
 @end(src)
 ```
@@ -117,7 +118,9 @@ interrupted with some comments.
 @add(src)
 	@t(normal) = @n(*)
 		tmp <- [uart]
-		if (tmp < 0) { @k(jump) @t(normal) }
+		if (tmp < 0) {
+			@k(%pc) <- @k(%pc) + (@t(normal) - *)
+		}
 		[uart] <- chr
 		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 @end(src)
@@ -131,7 +134,8 @@ interrupted with some comments.
 	@t(do_new_line) = @n(*)
 		tmp <- [uart]
 		if (tmp < 0) { \
-			@k(jump) @t(do_new_line) \
+			@k(%pc) <- \
+				@k(%pc) + (@t(do_new_line) - *) \
 		}
 		[uart] <- carriage_return
 		@k(%pc) <- @k(%pc) + (@t(normal) - @n(*))
