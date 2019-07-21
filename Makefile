@@ -10,15 +10,16 @@ tests: ll
 
 SOURCEs := $(wildcard *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))
+CPPs := $(filter %.cpp, $(GENs))
 
 $(GENs) .hx-run: $(SOURCEs)
 	@echo HX
 	@hx
 	@touch .hx-run
 
-ll: .hx-run
+ll: $(CPPs)
 	@echo C++ ll
-	@$(CXX) $(CXXFLAGS) $(GENs) -o ll
+	@$(CXX) $(CXXFLAGS) $(CPPs) -o ll
 
 clean:
 	@echo RM

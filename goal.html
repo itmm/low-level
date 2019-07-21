@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Echo-Client in low-level</title>
+<link rel="stylesheet" type="text/css" href="slides/slides.css"></head>
+<body>
+<h1>Echo-Client in low-level</h1>
+<div class="slides">
+<div>
+<div>
+<h1>Echo-Client in low-level</h1>
+</div>
+<ul><li>
+complete source code of an echo client in low-level
+</li></ul>
+</div>
+</div>
+<p>This section makes no use of cascaded hex fragments. It presents a small example of an low-level program as a linear listing interrupted with some comments.
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="macro">@Def(<span class="name">file: echo.ll</span>)</span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">src</span>)</span><br/>
+<span class="macro">@End(<span class="name">file: echo.ll</span>)</span><br/>
+</code></div>
+<ul><li>
+the <code><span class="var">src</span></code> fragment contains all the code
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="num">*</span> &lt;- <span class="num">$20010000</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+sets start address
+</li><li>
+the bootloader jumps to this address to start execution of the  program
+</li><li>
+low-levels allow changing <code><span class="num">*</span></code> via an assignment
+</li><li>
+hexadecimal numbers are prefixed with <code><span class="num">$</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="var">tmp</span> = <span class="keyword">%t0</span><br/>
+<span class="in1"></span><span class="var">tmp</span> &lt;- <span class="keyword">%pc</span> + <span class="type">early_trap</span> - <span class="num">*</span><br/>
+<span class="in1"></span><span class="keyword">%mtvec</span> &lt;- <span class="var">tmp</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+sets the interrupt vector to the <code><span class="type">early_trap</span></code> label
+</li><li>
+so any interrupt will end in an infinite loop
+</li><li>
+and will not produce some weird to debug behavior
+</li><li>
+the address is calculated relative to <code><span class="keyword">%pc</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in2"></span><span class="var">tmp</span> &lt;- <span class="keyword">%mhartid</span><br/>
+<span class="in1"></span><span class="type">block_other_harts</span> = <span class="num">*</span><br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> != <span class="num">0</span>) { \<br/>
+<span class="in3"></span><span class="keyword">jump</span> <span class="type">block_other_harts</span> \<br/>
+<span class="in2"></span>}<br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+only continue if running on hart <code><span class="num">0</span></code>
+</li><li>
+other harts will stuck in an infinite loop
+</li><li>
+so only hart is talking over the UART
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="var">uart</span> = <span class="keyword">%a5</span><br/>
+<span class="in1"></span><span class="var">uart</span> &lt;- <span class="num">$1013000</span><br/>
+<span class="in1"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span> + <span class="num">$08</span>]<br/>
+<span class="in1"></span><span class="var">tmp</span> &lt;- <span class="var">tmp</span> | <span class="num">$01</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+enable writing to UART
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span>[<span class="var">uart</span> + <span class="num">$08</span>] &lt;- <span class="var">tmp</span><br/>
+<span class="in1"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span> + <span class="num">$0c</span>]<br/>
+<span class="in1"></span><span class="var">tmp</span> &lt;- <span class="var">tmp</span> | <span class="num">$01</span><br/>
+<span class="in1"></span>[<span class="var">uart</span> + <span class="num">$0c</span>] &lt;- <span class="var">tmp</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+enable reading from UART
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="var">new_line</span> = <span class="keyword">%a0</span><br/>
+<span class="in1"></span><span class="var">new_line</span> &lt;- <span class="num">$0a</span><br/>
+<span class="in1"></span><span class="var">carriage_return</span> = <span class="keyword">%a1</span><br/>
+<span class="in1"></span><span class="keyword">%a2</span> &lt;- <span class="num">$0c</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+store ASCII new-line and carriage-return codes in registers for fast  access
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in2"></span><span class="var">chr</span> = <span class="keyword">%a2</span><br/>
+<span class="in1"></span><span class="type">loop</span> = <span class="num">*</span><br/>
+<span class="in2"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span> + <span class="num">$04</span>]<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> &lt; <span class="num">0</span> { <span class="keyword">jump</span> <span class="type">loop</span> }<br/>
+<span class="in2"></span><span class="var">chr</span> &lt;- <span class="var">tmp</span> &amp; <span class="num">$ff</span><br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">chr</span> = <span class="num">0</span>) { <span class="keyword">jump</span> <span class="type">loop</span> }<br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+wait until char is available and read char
+</li><li>
+only continue if the char is not <code><span class="num">0</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span>(<span class="var">chr</span> = <span class="var">new_line</span>) { \<br/>
+<span class="in2"></span><span class="keyword">jump</span> <span class="type">do_new_line</span> \<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+</div>
+</div>
+<p>* special processing for new-line characters * an carriage return is echoed first
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="type">normal</span> = <span class="num">*</span><br/>
+<span class="in2"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span>]<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> &lt; <span class="num">0</span>) { <span class="keyword">jump</span> <span class="type">normal</span> }<br/>
+<span class="in2"></span>[<span class="var">uart</span>] &lt;- <span class="var">chr</span><br/>
+<span class="in2"></span><span class="keyword">jump</span> <span class="type">loop</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+wait until UART is read for write
+</li><li>
+and write char
+</li><li>
+then wait for next char
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="type">do_new_line</span> = <span class="num">*</span><br/>
+<span class="in2"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span>]<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> &lt; <span class="num">0</span>) { \<br/>
+<span class="in3"></span><span class="keyword">jump</span> <span class="type">do_new_line</span> \<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span>[<span class="var">uart</span>] &lt;- <span class="var">carriage_return</span><br/>
+<span class="in2"></span><span class="keyword">jump</span> <span class="type">normal</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+when new-line char is read first write a carriage return
+</li><li>
+then write the char read
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">src</span>)</span><br/>
+<span class="in1"></span><span class="type">early_trap</span> = <span class="num">*</span><br/>
+<span class="in2"></span><span class="keyword">jump</span> <span class="type">early_trap</span><br/>
+<span class="macro">@end(<span class="name">src</span>)</span><br/>
+</code></div>
+<ul><li>
+infinite loop to catch interrupts
+</li></ul>
+</div>
+</body>
+</html>

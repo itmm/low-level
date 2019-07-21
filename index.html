@@ -11,6 +11,210 @@
 <div>
 <h1>The Low-Level Programming Language</h1>
 </div>
+<ul><li>
+defines a language to generate RISC-V machine code
+</li><li>
+uses a high-level syntax
+</li><li>
+but keeps the ability to generate direct machine code instructions
+</li></ul>
+</div>
+</div>
+<h2>Overview</h2>
+<div class="slides">
+<div>
+<div>
+<h2>Overview</h2>
+</div>
+<ul><li>
+a small motivation for this project
+</li></ul>
+</div>
+</div>
+<p>This project is an answer to the different syntax versions of assembly languages that are around in the wild. Most are build around a simple syntactic structure for each instruction:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="keyword">mnemonic</span> [<span class="var">arg1</span> [, <span class="var">arg2</span> [, <span class="var">arg3</span>]]]<br/>
+</code></div>
+<ul><li>
+the <code><span class="keyword">mnemonic</span></code> describes the kind of the operation
+</li><li>
+depending on the operation <code><span class="num">0</span></code> to <code><span class="num">3</span></code> arguments are present
+</li></ul>
+</div>
+</div>
+<p>An example from the basic RISC-V instruction set is:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="keyword">add</span> <span class="keyword">x8</span>, <span class="keyword">x9</span>, <span class="keyword">x10</span><br/>
+</code></div>
+<ul><li>
+adds the contents of the general purpose registers <code><span class="keyword">x9</span></code> and  <code><span class="keyword">x10</span></code>
+</li><li>
+and store the result in <code><span class="keyword">x8</span></code>
+</li></ul>
+</div>
+</div>
+<p>Sounds easy enough, right? Wrong!
+</p>
+<p>Even this statement is not as clear as possible. It is not clear what are the arguments (<code><span class="keyword">x9</span></code> and <code><span class="keyword">x10</span></code>) and where the result is stored (<code><span class="keyword">x8</span></code>).
+</p>
+<p>In RISC-V assembly language the target is specified most often as the first argument. But sadly not always. One often used instruction is the store to memory.
+</p>
+<p>A load from memory follows the general pattern:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="keyword">lw</span> <span class="keyword">x8</span>, (<span class="keyword">x9</span>)<br/>
+</code></div>
+<ul><li>
+loads one word of memory at the address stored in <code><span class="keyword">x9</span></code> into  register <code><span class="keyword">x8</span></code>
+</li><li>
+the parenthesis indicate an indirect access
+</li></ul>
+</div>
+</div>
+<p>The store operation has the same ordering as the load:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="keyword">sw</span> <span class="keyword">x8</span>, (<span class="keyword">x9</span>)<br/>
+</code></div>
+<ul><li>
+stores the contents of <code><span class="keyword">x8</span></code> in memory at the address stored in  register <code><span class="keyword">x9</span></code>
+</li></ul>
+</div>
+</div>
+<p>And it is not clear that <code><span class="keyword">x8</span></code> to <code><span class="keyword">x10</span></code> are registers instead of some predefined constants, labels or variable names stored in registers or on the stack.
+</p>
+<p>Also it is not clear, what the different mnemonics mean (for example <code><span class="keyword">auipc</span></code>? <code><span class="keyword">shaiw</span></code>? <code><span class="keyword">lui</span></code>?).
+</p>
+<p>In low-level these three instructions are encoded in the following form:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="keyword">%x8</span> &lt;- <span class="keyword">%x9</span> + <span class="keyword">%x10</span><br/>
+<span class="keyword">%x8</span> &lt;- [<span class="keyword">%x9</span>]<br/>
+[<span class="keyword">%x9</span>] &lt;- <span class="keyword">%x8</span><br/>
+</code></div>
+<ul><li>
+addition is performed with an infix operator
+</li><li>
+assignment is also an operator
+</li><li>
+memory lookup is indicated with brackets
+</li><li>
+special names for registers are prefixed with <code><span class="keyword">%</span></code>
+</li></ul>
+</div>
+</div>
+<h3>Jumps</h3>
+<div class="slides">
+<div>
+<div>
+<h3>Jumps</h3>
+</div>
+<ul><li>
+implementation of jumps in low-level
+</li></ul>
+</div>
+</div>
+<p>Even jumps can be encoded this way by updating the program counter <code><span class="keyword">%pc</span></code>:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="type">infinite_loop</span> = *<br/>
+<span class="in1"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + \<br/>
+<span class="in2"></span><span class="type">inifinite_loop</span> - *<br/>
+</code></div>
+<ul><li>
+<code>*</code> is the address of the current instruction
+</li><li>
+in RISC-V jumps are relative to the current position
+</li><li>
+the <code>\</code> signals that the instruction is continued on the next line
+</li></ul>
+</div>
+</div>
+<p>Of course this is a bit cumbersome. But due to the powerful meta-programming functionality of low-level a shortcut exist:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="type">infinite_loop</span> = *<br/>
+<span class="in1"></span><span class="keyword">jump</span> <span class="type">inifinite_loop</span><br/>
+</code></div>
+<ul><li>
+<code><span class="keyword">jump</span></code> is a meta-function that low-level expands to the addition  to the program counter
+</li></ul>
+</div>
+</div>
+<p>This meta-function expands to the same code as the direct assignment of the program counter.
+</p>
+</div>
+<h3>Conditional Jumps</h3>
+<div class="slides">
+<div>
+<div>
+<h3>Conditional Jumps</h3>
+</div>
+<ul><li>
+implementation of conditional jumps in low-level
+</li></ul>
+</div>
+</div>
+<p>The implementation of conditional jumps is a bit more verbose than in normal assembly languages. Inheriting from other high-level languages an <code><span class="keyword">if</span></code> statement can check an expression and perform a jump only if the condition is <code><span class="num">true</span></code>.
+</p>
+<p>Here is an example for computing the sum over the first <code><span class="num">100</span></code> integers:
+</p>
+<div class="slides">
+<div><div>
+<code>
+<span class="in1"></span><span class="var">result</span> = <span class="keyword">%x8</span><br/>
+<span class="in1"></span><span class="var">i</span> = <span class="keyword">%x9</span><br/>
+<span class="in1"></span><span class="var">result</span> &lt;- <span class="num">0</span><br/>
+<span class="in1"></span><span class="var">i</span> &lt;- <span class="num">100</span><br/>
+<span class="type">loop</span> = *<br/>
+<span class="in1"></span><span class="var">result</span> &lt;- <span class="var">result</span> + <span class="var">i</span><br/>
+<span class="in1"></span><span class="var">i</span> &lt;- <span class="var">i</span> - <span class="num">1</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &gt; <span class="num">0</span>) { <span class="keyword">jump</span> <span class="type">loop</span> }<br/>
+</code></div>
+<ul><li>
+variables are defined as synonyms for register names to ease  understanding
+</li><li>
+the <code><span class="keyword">if</span></code> statement do not have the flexibility of high-level languages
+</li><li>
+each <code><span class="keyword">if</span></code>-<code><span class="keyword">jump</span></code>-combination expands to a conditional jump
+</li></ul>
+</div>
+</div>
+<h3>Expected output</h3>
+<div class="slides">
+<div>
+<div>
+<h3>Expected output</h3>
+</div>
+<ul><li>
+low-level directly generates hex-files to upload to the SiFive HiFive1  Rev. B experimental board
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@inc(<span class="name"><a href="goal.html">goal.x</a></span>)</span><br/>
+</code></div>
+<ul><li>
+complete low-level program to implement a simple echo-client over the  UART serial interface
+</li><li>
+this is the reference to guide the development of low-level
+</li></ul>
 </div>
 <div><div>
 <code>
