@@ -40,7 +40,8 @@ interrupted with some comments.
 		tmp <- @k(%mhartid)
 	@t(block_other_harts) = @n(*)
 		if (tmp != 0) { \
-			@k(jump) @t(block_other_harts) \
+			@k(%pc) <- @k(%pc) + \
+				(@t(block_other_harts) - @n(*)) \
 		}
 @end(src)
 ```
@@ -90,9 +91,13 @@ interrupted with some comments.
 		chr = @k(%a2)
 	@t(loop) = @n(*)
 		tmp <- [uart + @n($04)]
-		if (tmp < 0 { @k(jump) @t(loop) }
+		if (tmp < 0 { \
+			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
+		}
 		chr <- tmp & @n($ff)
-		if (chr = 0) { @k(jump) @t(loop) }
+		if (chr = 0) { \
+			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
+		}
 @end(src)
 ```
 * wait until char is available and read char
@@ -100,12 +105,11 @@ interrupted with some comments.
 
 ```
 @add(src)
-	if(chr = new_line) { \
-		@k(jump) @t(do_new_line) \
+	if (chr = new_line) { \
+		@k(%pc) <- @k(%pc) + (@t(do_new_line) - @n(*)) \
 	}
 @end(src)
 ```
-
 * special processing for new-line characters
 * an carriage return is echoed first
 
@@ -115,7 +119,7 @@ interrupted with some comments.
 		tmp <- [uart]
 		if (tmp < 0) { @k(jump) @t(normal) }
 		[uart] <- chr
-		@k(jump) @t(loop)
+		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 @end(src)
 ```
 * wait until UART is read for write
@@ -130,7 +134,7 @@ interrupted with some comments.
 			@k(jump) @t(do_new_line) \
 		}
 		[uart] <- carriage_return
-		@k(jump) @t(normal)
+		@k(%pc) <- @k(%pc) + (@t(normal) - @n(*))
 @end(src)
 ```
 * when new-line char is read first write a carriage return
@@ -139,7 +143,7 @@ interrupted with some comments.
 ```
 @add(src)
 	@t(early_trap) = @n(*)
-		@k(jump) @t(early_trap)
+		@k(%pc) <- @k(%pc) + (@t(early_trap) - @n(*))
 @end(src)
 ```
 * infinite loop to catch interrupts

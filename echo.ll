@@ -9,7 +9,8 @@
 		tmp <- %mhartid
 	block_other_harts = *
 		if (tmp != 0) { \
-			jump block_other_harts \
+			%pc <- %pc + \
+				(block_other_harts - *) \
 		}
 
 	uart = %a4
@@ -31,19 +32,23 @@
 		chr = %a2
 	loop = *
 		tmp <- [uart + $04]
-		if (tmp < 0 { jump loop }
+		if (tmp < 0 { \
+			%pc <- %pc + (loop - *) \
+		}
 		chr <- tmp & $ff
-		if (chr = 0) { jump loop }
+		if (chr = 0) { \
+			%pc <- %pc + (loop - *) \
+		}
 
-	if(chr = new_line) { \
-		jump do_new_line \
+	if (chr = new_line) { \
+		%pc <- %pc + (do_new_line - *) \
 	}
 
 	normal = *
 		tmp <- [uart]
 		if (tmp < 0) { jump normal }
 		[uart] <- chr
-		jump loop
+		%pc <- %pc + (loop - *)
 
 	do_new_line = *
 		tmp <- [uart]
@@ -51,8 +56,8 @@
 			jump do_new_line \
 		}
 		[uart] <- carriage_return
-		jump normal
+		%pc <- %pc + (normal - *)
 
 	early_trap = *
-		jump early_trap
+		%pc <- %pc + (early_trap - *)
 

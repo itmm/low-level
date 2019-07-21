@@ -1,19 +1,59 @@
+# First Code fragments
+* start low-level with the first unit-test
 
-#line 5 "start.x"
+```
+@Def(file: ll.cpp)
+	@put(needed by main);
+	int main(
+		int argc, const char *argv[]
+	) {
+		@put(main)
+	}
+@End(file: ll.cpp)
+```
+* the start is easy in C++
+* a naked `@f(main)` function with arguments array
+* it will call some other things that must be declared before the
+  `@f(main)` function
+* so there is a fragment for prerequisites and the content
 
-	
-#line 28 "start.x"
+```
+@def(main)
+	@put(unit-tests)
+@end(main)
+```
+* first some unit-tests are performed at every start of low-level
 
+```
+@def(needed by main)
 	#include <cassert>
+@end(needed by main)
+```
+* the unit-tests need the `@f(assert)`-macro
 
-#line 35 "start.x"
+```
+@add(needed by main)
+	@put(needed by do riscv)
+	int do_riscv(
+		const char *src
+	) {
+		int got = 0x00000000;
+		@put(do riscv);
+		return got;
+	}
+@end(needed by main)
+```
 
-	
-#line 70 "start.x"
+```
+@def(unit-tests)
+	assert(do_riscv(
+		"%x4 <- %x2 + %x3"
+	) == 0x00310233);
+@end(unit-tests)
+```
 
-	
-#line 56 "start.x"
-
+```
+@def(needed by build add)
 	int build_r_cmd(
 		int funct7, char src2, char src1,
 		int funct3, char dst, int opcode
@@ -23,9 +63,12 @@
 			(funct3 << 12) | (dst << 7) |
 			opcode;
 	}
+@end(needed by build add)
+```
 
-#line 71 "start.x"
-;
+```
+@def(needed by do riscv)
+	@put(needed by build add);
 	int build_add(
 		char dst, char src1, char src2
 	) {
@@ -34,22 +77,19 @@
 			0x0, dst, 0x33
 		);
 	}
+@end(needed by do riscv)
+```
 
-#line 36 "start.x"
-
-	int do_riscv(
-		const char *src
-	) {
-		int got = 0x00000000;
-		
-#line 84 "start.x"
-
+```
+@def(do riscv)
 	char dst { 0 };
 	char src1 { 0 };
 	char src2 { 0 };
+@end(do riscv)
+```
 
-#line 92 "start.x"
-
+```
+@add(do riscv)
 	while (*src && *src <= ' ') { ++src; }
 	if (*src++ != '%') {
 		assert(false); return false;
@@ -61,9 +101,11 @@
 	if ((unsigned) dst >= 32) {
 		assert(false); return false;
 	}
+@end(do riscv)
+```
 
-#line 108 "start.x"
-
+```
+@add(do riscv)
 	while (*src && *src <= ' ') { ++src; }
 	if (*src++ != '<') {
 		assert(false); return false;
@@ -71,9 +113,11 @@
 	if (*src++ != '-') {
 		assert(false); return false;
 	}
+@end(do riscv)
+```
 
-#line 120 "start.x"
-
+```
+@add(do riscv)
 	while (*src && *src <= ' ') { ++src; }
 	if (*src++ != '%') {
 		assert(false); return false;
@@ -85,16 +129,20 @@
 	if ((unsigned) src1 >= 32) {
 		assert(false); return false;
 	}
+@end(do riscv)
+```
 
-#line 136 "start.x"
-
+```
+@add(do riscv)
 	while (*src && *src <= ' ') { ++src; }
 	if (*src++ != '+') {
 		assert(false); return false;
 	}
+@end(do riscv)
+```
 
-#line 145 "start.x"
-
+```
+@add(do riscv)
 	while (*src && *src <= ' ') { ++src; }
 	if (*src++ != '%') {
 		assert(false); return false;
@@ -106,34 +154,11 @@
 	if ((unsigned) src2 >= 32) {
 		assert(false); return false;
 	}
+@end(do riscv)
+```
 
-#line 161 "start.x"
-
+```
+@add(do riscv)
 	got = build_add(dst, src1, src2);
-
-#line 41 "start.x"
-;
-		return got;
-	}
-
-#line 6 "start.x"
-;
-	int main(
-		int argc, const char *argv[]
-	) {
-		
-#line 21 "start.x"
-
-	
-#line 48 "start.x"
-
-	assert(do_riscv(
-		"%x4 <- %x2 + %x3"
-	) == 0x00310233);
-
-#line 22 "start.x"
-
-
-#line 10 "start.x"
-
-	}
+@end(do riscv)
+```
