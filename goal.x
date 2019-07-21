@@ -26,7 +26,7 @@ interrupted with some comments.
 ```
 @add(src)
 	tmp = @k(%t0)
-	tmp <- @k(%pc) + @t(early_trap) - @n(*)
+	tmp <- @k(%pc) + (@t(early_trap) - @n(*))
 	@k(%mtvec) <- tmp
 @end(src)
 ```
@@ -50,17 +50,23 @@ interrupted with some comments.
 
 ```
 @add(src)
-	uart = @k(%a5)
+	uart = @k(%a4)
 	uart <- @n($1013000)
+@end(src)
+```
+* store basis to IO block
+
+```
+@add(src)
 	tmp <- [uart + @n($08)]
 	tmp <- tmp | @n($01)
+	[uart + @n($08)] <- tmp
 @end(src)
 ```
 * enable writing to UART
 
 ```
 @add(src)
-	[uart + @n($08)] <- tmp
 	tmp <- [uart + @n($0c)]
 	tmp <- tmp | @n($01)
 	[uart + @n($0c)] <- tmp
@@ -73,7 +79,7 @@ interrupted with some comments.
 	new_line = @k(%a0)
 	new_line <- @n($0a)
 	carriage_return = @k(%a1)
-	@k(%a2) <- @n($0c)
+	carriage_return <- @n($0c)
 @end(src)
 ```
 * store ASCII new-line and carriage-return codes in registers for fast

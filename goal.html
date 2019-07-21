@@ -49,7 +49,7 @@ hexadecimal numbers are prefixed with <code><span class="num">$</span></code>
 <code>
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
 <span class="in1"></span><span class="var">tmp</span> = <span class="keyword">%t0</span><br/>
-<span class="in1"></span><span class="var">tmp</span> &lt;- <span class="keyword">%pc</span> + <span class="type">early_trap</span> - <span class="num">*</span><br/>
+<span class="in1"></span><span class="var">tmp</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">early_trap</span> - <span class="num">*</span>)<br/>
 <span class="in1"></span><span class="keyword">%mtvec</span> &lt;- <span class="var">tmp</span><br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
@@ -113,7 +113,7 @@ enable reading from UART
 <span class="in1"></span><span class="var">new_line</span> = <span class="keyword">%a0</span><br/>
 <span class="in1"></span><span class="var">new_line</span> &lt;- <span class="num">$0a</span><br/>
 <span class="in1"></span><span class="var">carriage_return</span> = <span class="keyword">%a1</span><br/>
-<span class="in1"></span><span class="keyword">%a2</span> &lt;- <span class="num">$0c</span><br/>
+<span class="in1"></span><span class="var">carriage_return</span> &lt;- <span class="num">$0c</span><br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
 <ul><li>

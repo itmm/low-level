@@ -3,7 +3,7 @@
 	* <- $20010000
 
 	tmp = %t0
-	tmp <- %pc + early_trap - *
+	tmp <- %pc + (early_trap - *)
 	%mtvec <- tmp
 
 		tmp <- %mhartid
@@ -25,7 +25,7 @@
 	new_line = %a0
 	new_line <- $0a
 	carriage_return = %a1
-	%a2 <- $0c
+	carriage_return <- $0c
 
 		chr = %a2
 	loop = *
