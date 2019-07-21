@@ -21,26 +21,29 @@
 
 	enum class Token_Type {
 		unknown,
+		number,
 		becomes,
 		plus,
 		reg,
 		end
 	};
 
-#line 206 "start.x"
+#line 207 "start.x"
 
 	#include <cctype>
 	class Tokenizer {
 			std::string::const_iterator _cur;
 			std::string::const_iterator _end;
 			Token_Type _type = Token_Type::unknown;
-			std::string _value = {};
+			std::string _name = {};
+			int _value = 0;
 		public:
 			Tokenizer(const std::string &s): _cur { s.begin() }, _end { s.end() } {
 				next();
 			}
 			Token_Type type() const { return _type; }
-			const std::string &value() const { return _value; }
+			const std::string &name() const { return _name; }
+			int value() const { return _value; }
 			void next() {
 				while (_cur != _end && *_cur <= ' ') { ++_cur; }
 				if (_cur == _end) {
@@ -60,25 +63,37 @@
 					++_cur;
 				} else if (*_cur == '%') {
 					++_cur;
-					_value = {};
+					_name = {};
 					while (_cur != _end && isalnum(*_cur)) {
-						_value += *_cur++;
+						_name += *_cur++;
 					}
-					if (! _value.empty()) {
+					if (! _name.empty()) {
 						_type = Token_Type::reg;
 					}
+				} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
+					bool neg = *_cur == '-';
+					if (neg) { ++_cur; }
+					bool hex = *_cur == '$';
+					if (hex) { ++_cur; }
+					_value = 0;
+					while (*_cur >= '0' && *_cur <= '9') {
+						_value = _value * 10 + (*_cur - '0');
+						++_cur;
+					}
+					if (neg) { _value = -_value; }
+					_type = Token_Type::number;
 				}
 			}
 	};
 
-#line 252 "start.x"
+#line 267 "start.x"
 
 	class Expression {
 		public:
 			virtual ~Expression() {}
 	};
 
-#line 261 "start.x"
+#line 276 "start.x"
 
 	class Register: public Expression {
 			const std::string _name;
@@ -109,11 +124,22 @@
 			bool is_general() const { return _nr >= 0; }
 	};
 
-#line 294 "start.x"
+#line 309 "start.x"
+
+	class Number: public Expression {
+			const int _value;
+
+		public:
+			Number(int value): _value { value } { }
+
+			int value() const { return _value; }
+	};
+
+#line 322 "start.x"
 
 	#include <memory>
 
-#line 300 "start.x"
+#line 328 "start.x"
 
 	class BinaryExpression: public Expression {
 			std::unique_ptr<Expression> _frst;
@@ -130,7 +156,7 @@
 			const std::unique_ptr<Expression> &second() const { return _scnd; }
 	};
 
-#line 319 "start.x"
+#line 347 "start.x"
 
 	class Assignment: public BinaryExpression {
 		public:
@@ -141,7 +167,7 @@
 			{}
 	};
 
-#line 332 "start.x"
+#line 360 "start.x"
 
 	class Addition: public BinaryExpression {
 		public:
@@ -153,23 +179,23 @@
 		
 	};
 
-#line 346 "start.x"
+#line 374 "start.x"
 
 	#include <iostream>
 
-#line 352 "start.x"
+#line 380 "start.x"
 
 	std::unique_ptr<Expression> parse(Tokenizer &t) {
 		std::unique_ptr<Expression> result;
+		if (t.type() == Token_Type::number) {
+			result = std::make_unique<Number>(t.value());
+			return result;
+		}
 		if (t.type() != Token_Type::reg) {
 			std::cerr << "expected state\n";
 			return result;
 		}
-		auto dst = std::make_unique<Register>(t.value());
-		if (! dst->is_general()) {
-			std::cerr << "general purpose register expected\n";
-			return result;
-		}
+		auto dst = std::make_unique<Register>(t.name());
 		t.next();
 		if (t.type() == Token_Type::becomes) {
 			t.next();
@@ -193,7 +219,7 @@
 		return result;
 	}
 
-#line 390 "start.x"
+#line 418 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -205,7 +231,7 @@
 			opcode;
 	}
 
-#line 404 "start.x"
+#line 432 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -271,7 +297,7 @@
 		const std::string &line
 	) {
 		
-#line 417 "start.x"
+#line 445 "start.x"
 
 	Tokenizer t { line };
 	auto e = parse(t);
@@ -289,34 +315,61 @@
 		std::cerr << "no assignment to register\n";
 		return;
 	}
-	if (! dst->is_general()) {
-		std::cerr << "assigned register is not general\n";
-		return;
+
+	if (dst->is_general()) {
+		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
+		if (! o) {
+			std::cerr << "only addition supported now\n";
+			return;
+		}
+		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		if (! src1) {
+			std::cerr << "first op of addition no register\n";
+			return;
+		}
+		if (! src1->is_general()) {
+			std::cerr << "first of of addition no general register\n";
+		}
+		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+		if (! src2) {
+			std::cerr << "second op of addition no register\n";
+			return;
+		}
+		if (! src2->is_general()) {
+			std::cerr << "second of of addition no general register\n";
+		}
+		add_machine(build_add(
+			(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+		));
+	} else if (dst->name() == "pc") {
+		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
+		if (! o) {
+			std::cerr << "only addition supported now\n";
+			return;
+		}
+		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		if (! src1) {
+			std::cerr << "first op of addition no register\n";
+			return;
+		}
+		if (src1->name() != "pc") {
+			std::cerr << "first op of jump is not %pc, but " << dst->name() << '\n';
+		}
+		const Number *num = dynamic_cast<const Number *>(&*o->second());
+		if (num) {
+			int val = num->value();
+			int word = 0x0000006f;
+			word |= ((val >> 12) & 0xff) << 12;
+			word |= ((val >> 11) & 0x01) << 20;
+			word |= ((val >> 1) & 0x3ff) << 21;
+			word |= ((val >> 20) & 0x01) << 31;
+			add_machine(word);
+		} else {
+			std::cerr << "expected number as second argument of jump\n";
+		}
+	} else {
+		std::cerr << "unknown register " << dst->name() << '\n';
 	}
-	const Addition *o = dynamic_cast<const Addition *>(&*a->second());
-	if (! o) {
-		std::cerr << "only addition supported now\n";
-		return;
-	}
-	const Register *src1 = dynamic_cast<const Register *>(&*o->first());
-	if (! src1) {
-		std::cerr << "first op of addition no register\n";
-		return;
-	}
-	if (! src1->is_general()) {
-		std::cerr << "first of of addition no general register\n";
-	}
-	const Register *src2 = dynamic_cast<const Register *>(&*o->second());
-	if (! src2) {
-		std::cerr << "second op of addition no register\n";
-		return;
-	}
-	if (! src2->is_general()) {
-		std::cerr << "second of of addition no general register\n";
-	}
-	add_machine(build_add(
-		(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
-	));
 
 #line 78 "start.x"
 ;
@@ -369,6 +422,27 @@
 	assert_line(
 		"%x4 <- %x2 + %x3",
 		0x00310233
+	);
+
+#line 521 "start.x"
+
+	assert_line(
+		"%pc <- %pc + 0",
+		0x0000006f
+	);
+
+#line 532 "start.x"
+
+	assert_line(
+		"%pc <- %pc + -28",
+		0xfe5ff06f
+	);
+
+#line 542 "start.x"
+
+	assert_line(
+		"%pc <- %pc + -32",
+		0xfe1ff06f
 	);
 
 #line 22 "start.x"
