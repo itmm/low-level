@@ -17,83 +17,143 @@
 
 	#include <vector>
 
-#line 194 "start.x"
+#line 201 "start.x"
+
+	
+#line 214 "start.x"
 
 	enum class Token_Type {
 		unknown,
-		number,
-		becomes,
-		plus,
-		reg,
+		
+#line 271 "start.x"
+
+	becomes,
+	plus,
+	reg,
+	number,
+
+#line 217 "start.x"
+
 		end
 	};
 
-#line 207 "start.x"
+#line 280 "start.x"
 
 	#include <cctype>
-	class Tokenizer {
-			std::string::const_iterator _cur;
-			std::string::const_iterator _end;
-			Token_Type _type = Token_Type::unknown;
-			std::string _name = {};
-			int _value = 0;
-		public:
-			Tokenizer(const std::string &s): _cur { s.begin() }, _end { s.end() } {
-				next();
-			}
-			Token_Type type() const { return _type; }
-			const std::string &name() const { return _name; }
-			int value() const { return _value; }
-			void next() {
-				while (_cur != _end && *_cur <= ' ') { ++_cur; }
-				if (_cur == _end) {
-					_type = Token_Type::end;
-					return;
-				}
-				_type = Token_Type::unknown;
-				if (*_cur == '<') {
-					if (++_cur != _end) {
-						if (*_cur == '-') {
-							_type = Token_Type::becomes;
-							++_cur;
-						}
-					}
-				} else if (*_cur == '+') {
-					_type = Token_Type::plus;
-					++_cur;
-				} else if (*_cur == '%') {
-					++_cur;
-					_name = {};
-					while (_cur != _end && isalnum(*_cur)) {
-						_name += *_cur++;
-					}
-					if (! _name.empty()) {
-						_type = Token_Type::reg;
-					}
-				} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
-					bool neg = *_cur == '-';
-					if (neg) { ++_cur; }
-					bool hex = *_cur == '$';
-					if (hex) { ++_cur; }
-					_value = 0;
-					while (*_cur >= '0' && *_cur <= '9') {
-						_value = _value * 10 + (*_cur - '0');
-						++_cur;
-					}
-					if (neg) { _value = -_value; }
-					_type = Token_Type::number;
-				}
-			}
-	};
 
-#line 267 "start.x"
+#line 458 "start.x"
+
+	#include <iostream>
+
+#line 202 "start.x"
+
+	class Tokenizer {
+			
+#line 225 "start.x"
+
+	Token_Type _type =
+		Token_Type::unknown;
+
+#line 242 "start.x"
+
+	std::string::const_iterator _cur;
+	std::string::const_iterator _end;
+
+#line 286 "start.x"
+
+	std::string _name = {};
+	int _value = 0;
+
+#line 204 "start.x"
+;
+		public:
+			
+#line 233 "start.x"
+
+	Token_Type type() const {
+		return _type;
+	}
+
+#line 250 "start.x"
+
+	void next();
+
+#line 257 "start.x"
+
+	Tokenizer(const std::string &s):
+		_cur { s.begin() },
+		_end { s.end() } 
+	{
+		next();
+	}
+
+#line 293 "start.x"
+
+	const std::string &name() const { return _name; }
+	int value() const { return _value; }
+
+#line 206 "start.x"
+;
+	};
+	
+#line 300 "start.x"
+
+	void Tokenizer::next() {
+		while (_cur != _end && *_cur <= ' ') { ++_cur; }
+		if (_cur == _end) {
+			_type = Token_Type::end;
+			return;
+		}
+		_type = Token_Type::unknown;
+		if (*_cur == '<') {
+			if (++_cur != _end) {
+				if (*_cur == '-') {
+					_type = Token_Type::becomes;
+					++_cur;
+				}
+			}
+		} else if (*_cur == '+') {
+			_type = Token_Type::plus;
+			++_cur;
+		} else if (*_cur == '%') {
+			++_cur;
+			_name = {};
+			while (_cur != _end && isalnum(*_cur)) {
+				_name += *_cur++;
+			}
+			if (! _name.empty()) {
+				_type = Token_Type::reg;
+			}
+		} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
+			bool neg = *_cur == '-';
+			if (neg) { ++_cur; }
+			bool hex = *_cur == '$';
+			if (hex) { ++_cur; }
+			_value = 0;
+			while (*_cur >= '0' && *_cur <= '9') {
+				_value = _value * 10 + (*_cur - '0');
+				++_cur;
+			}
+			if (neg) { _value = -_value; }
+			_type = Token_Type::number;
+		}
+
+		if (_type == Token_Type::unknown) {
+			std::cerr << "unrecognized char [" << *_cur++ << "] \n" ;
+		}
+	}
+
+#line 208 "start.x"
+;
+
+#line 351 "start.x"
 
 	class Expression {
 		public:
 			virtual ~Expression() {}
 	};
 
-#line 276 "start.x"
+#line 360 "start.x"
 
 	class Register: public Expression {
 			const std::string _name;
@@ -124,7 +184,7 @@
 			bool is_general() const { return _nr >= 0; }
 	};
 
-#line 309 "start.x"
+#line 393 "start.x"
 
 	class Number: public Expression {
 			const int _value;
@@ -135,11 +195,11 @@
 			int value() const { return _value; }
 	};
 
-#line 322 "start.x"
+#line 406 "start.x"
 
 	#include <memory>
 
-#line 328 "start.x"
+#line 412 "start.x"
 
 	class BinaryExpression: public Expression {
 			std::unique_ptr<Expression> _frst;
@@ -156,7 +216,7 @@
 			const std::unique_ptr<Expression> &second() const { return _scnd; }
 	};
 
-#line 347 "start.x"
+#line 431 "start.x"
 
 	class Assignment: public BinaryExpression {
 		public:
@@ -167,7 +227,7 @@
 			{}
 	};
 
-#line 360 "start.x"
+#line 444 "start.x"
 
 	class Addition: public BinaryExpression {
 		public:
@@ -179,11 +239,7 @@
 		
 	};
 
-#line 374 "start.x"
-
-	#include <iostream>
-
-#line 380 "start.x"
+#line 464 "start.x"
 
 	std::unique_ptr<Expression> parse(Tokenizer &t) {
 		std::unique_ptr<Expression> result;
@@ -219,7 +275,7 @@
 		return result;
 	}
 
-#line 418 "start.x"
+#line 502 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -231,7 +287,7 @@
 			opcode;
 	}
 
-#line 432 "start.x"
+#line 516 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -297,7 +353,7 @@
 		const std::string &line
 	) {
 		
-#line 445 "start.x"
+#line 529 "start.x"
 
 	Tokenizer t { line };
 	auto e = parse(t);
@@ -397,7 +453,7 @@
 		int expected
 	) {
 		
-#line 181 "start.x"
+#line 180 "start.x"
 
 	State s;
 	s.add_line(line);
@@ -417,28 +473,28 @@
 #line 21 "start.x"
 
 	
-#line 171 "start.x"
+#line 170 "start.x"
 
 	assert_line(
 		"%x4 <- %x2 + %x3",
 		0x00310233
 	);
 
-#line 521 "start.x"
+#line 605 "start.x"
 
 	assert_line(
 		"%pc <- %pc + 0",
 		0x0000006f
 	);
 
-#line 532 "start.x"
+#line 616 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -28",
 		0xfe5ff06f
 	);
 
-#line 542 "start.x"
+#line 626 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -32",

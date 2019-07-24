@@ -166,7 +166,6 @@ the machine code.
 * simple helper function to check that some source code generates the
   expected instruction
 
-
 ```
 @def(unit-tests)
 	assert_line(
@@ -186,82 +185,167 @@ the machine code.
 @end(assert line)
 ```
 * instantiate a state and let it parse the line
+* sadly this test fails right now
+
+Before this test can pass the state must have the ability to parse the
+source line.
+
+For the parsing a first step is to split the input line into tokens.
+From these tokens a syntax tree will be derived.
+These syntax trees are then transformed into machine code.
 
 ## Tokenizing
 * split the input line into token
 
 ```
 @add(needed by state)
+	@put(needed by tokenizer)
+	class Tokenizer {
+			@put(tokenizer attributes);
+		public:
+			@put(tokenizer methods);
+	};
+	@put(tokenizer impl);
+@end(needed by state)
+```
+* defines class for tokenizer
+
+```
+@def(needed by tokenizer)
 	enum class Token_Type {
 		unknown,
-		number,
-		becomes,
-		plus,
-		reg,
+		@put(token types)
 		end
 	};
-@end(needed by state)
+@end(needed by tokenizer)
+```
+* type of parsed token
+
+```
+@def(tokenizer attributes)
+	Token_Type _type =
+		Token_Type::unknown;
+@end(tokenizer attributes)
+```
+* stores type of parsed token
+
+```
+@def(tokenizer methods)
+	Token_Type type() const {
+		return _type;
+	}
+@end(tokenizer methods)
+```
+* get type of parsed token
+
+```
+@add(tokenizer attributes)
+	std::string::const_iterator _cur;
+	std::string::const_iterator _end;
+@end(tokenizer attributes)
+```
+* chars not yet parsed
+
+```
+@add(tokenizer methods)
+	void next();
+@end(tokenizer methods)
+```
+* advances to next token
+
+```
+@add(tokenizer methods)
+	Tokenizer(const std::string &s):
+		_cur { s.begin() },
+		_end { s.end() } 
+	{
+		next();
+	}
+@end(tokenizer methods)
+```
+* initialize chars and read first token
+
+
+
+```
+@def(token types)
+	becomes,
+	plus,
+	reg,
+	number,
+@end(token types)
 ```
 
 ```
-@add(needed by state)
+@add(needed by tokenizer)
 	#include <cctype>
-	class Tokenizer {
-			std::string::const_iterator _cur;
-			std::string::const_iterator _end;
-			Token_Type _type = Token_Type::unknown;
-			std::string _name = {};
-			int _value = 0;
-		public:
-			Tokenizer(const std::string &s): _cur { s.begin() }, _end { s.end() } {
-				next();
-			}
-			Token_Type type() const { return _type; }
-			const std::string &name() const { return _name; }
-			int value() const { return _value; }
-			void next() {
-				while (_cur != _end && *_cur <= ' ') { ++_cur; }
-				if (_cur == _end) {
-					_type = Token_Type::end;
-					return;
-				}
-				_type = Token_Type::unknown;
-				if (*_cur == '<') {
-					if (++_cur != _end) {
-						if (*_cur == '-') {
-							_type = Token_Type::becomes;
-							++_cur;
-						}
-					}
-				} else if (*_cur == '+') {
-					_type = Token_Type::plus;
-					++_cur;
-				} else if (*_cur == '%') {
-					++_cur;
-					_name = {};
-					while (_cur != _end && isalnum(*_cur)) {
-						_name += *_cur++;
-					}
-					if (! _name.empty()) {
-						_type = Token_Type::reg;
-					}
-				} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
-					bool neg = *_cur == '-';
-					if (neg) { ++_cur; }
-					bool hex = *_cur == '$';
-					if (hex) { ++_cur; }
-					_value = 0;
-					while (*_cur >= '0' && *_cur <= '9') {
-						_value = _value * 10 + (*_cur - '0');
-						++_cur;
-					}
-					if (neg) { _value = -_value; }
-					_type = Token_Type::number;
-				}
-			}
-	};
-@end(needed by state)
+@end(needed by tokenizer)
 ```
+
+```
+@add(tokenizer attributes)
+	std::string _name = {};
+	int _value = 0;
+@end(tokenizer attributes)
+```
+
+```
+@add(tokenizer methods)
+	const std::string &name() const { return _name; }
+	int value() const { return _value; }
+@end(tokenizer methods)
+```
+
+```
+@def(tokenizer impl)
+	void Tokenizer::next() {
+		while (_cur != _end && *_cur <= ' ') { ++_cur; }
+		if (_cur == _end) {
+			_type = Token_Type::end;
+			return;
+		}
+		_type = Token_Type::unknown;
+		if (*_cur == '<') {
+			if (++_cur != _end) {
+				if (*_cur == '-') {
+					_type = Token_Type::becomes;
+					++_cur;
+				}
+			}
+		} else if (*_cur == '+') {
+			_type = Token_Type::plus;
+			++_cur;
+		} else if (*_cur == '%') {
+			++_cur;
+			_name = {};
+			while (_cur != _end && isalnum(*_cur)) {
+				_name += *_cur++;
+			}
+			if (! _name.empty()) {
+				_type = Token_Type::reg;
+			}
+		} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
+			bool neg = *_cur == '-';
+			if (neg) { ++_cur; }
+			bool hex = *_cur == '$';
+			if (hex) { ++_cur; }
+			_value = 0;
+			while (*_cur >= '0' && *_cur <= '9') {
+				_value = _value * 10 + (*_cur - '0');
+				++_cur;
+			}
+			if (neg) { _value = -_value; }
+			_type = Token_Type::number;
+		}
+
+		if (_type == Token_Type::unknown) {
+			std::cerr << "unrecognized char [" << *_cur++ << "] \n" ;
+		}
+	}
+@end(tokenizer impl)
+```
+
+## Parsing
 
 ```
 @add(needed by state)
@@ -371,9 +455,9 @@ the machine code.
 ```
 
 ```
-@add(needed by state)
+@add(needed by tokenizer)
 	#include <iostream>
-@end(needed by state)
+@end(needed by tokenizer)
 ```
 
 ```

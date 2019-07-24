@@ -261,8 +261,15 @@ the first test checks that a simple register add can be parsed
 </code></div>
 <ul><li>
 instantiate a state and let it parse the line
+</li><li>
+sadly this test fails right now
 </li></ul>
 </div>
+</div>
+<p>Before this test can pass the state must have the ability to parse the source line.
+</p>
+<p>For the parsing a first step is to split the input line into tokens. From these tokens a syntax tree will be derived. These syntax trees are then transformed into machine code.
+</p>
 </div>
 <h2>Tokenizing</h2>
 <div class="slides">
@@ -277,77 +284,182 @@ split the input line into token
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">needed by tokenizer</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Tokenizer</span> {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">tokenizer attributes</span>)</span>;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">tokenizer methods</span>)</span>;<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">tokenizer impl</span>)</span>;<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+<ul><li>
+defines class for tokenizer
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">needed by tokenizer</span>)</span><br/>
 <span class="in1"></span><span class="type">enum</span> <span class="keyword">class</span> <span class="type">Token_Type</span> {<br/>
 <span class="in2"></span><span class="var">unknown</span>,<br/>
-<span class="in2"></span><span class="var">number</span>,<br/>
-<span class="in2"></span><span class="var">becomes</span>,<br/>
-<span class="in2"></span><span class="var">plus</span>,<br/>
-<span class="in2"></span><span class="var">reg</span>,<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">token types</span>)</span><br/>
 <span class="in2"></span><span class="var">end</span><br/>
 <span class="in1"></span>};<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+<span class="macro">@end(<span class="name">needed by tokenizer</span>)</span><br/>
+</code></div>
+<ul><li>
+type of parsed token
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">tokenizer attributes</span>)</span><br/>
+<span class="in1"></span><span class="type">Token_Type</span> <span class="var">_type</span> =<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">unknown</span>;<br/>
+<span class="macro">@end(<span class="name">tokenizer attributes</span>)</span><br/>
+</code></div>
+<ul><li>
+stores type of parsed token
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">tokenizer methods</span>)</span><br/>
+<span class="in1"></span><span class="type">Token_Type</span> <span class="fn">type</span>() <span class="type">const</span> {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="var">_type</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
+</code></div>
+<ul><li>
+get type of parsed token
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">tokenizer attributes</span>)</span><br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">string</span>::<span class="var">const_iterator</span> <span class="var">_cur</span>;<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">string</span>::<span class="var">const_iterator</span> <span class="var">_end</span>;<br/>
+<span class="macro">@end(<span class="name">tokenizer attributes</span>)</span><br/>
+</code></div>
+<ul><li>
+chars not yet parsed
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">tokenizer methods</span>)</span><br/>
+<span class="in1"></span><span class="type">void</span> <span class="fn">next</span>();<br/>
+<span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
+</code></div>
+<ul><li>
+advances to next token
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">tokenizer methods</span>)</span><br/>
+<span class="in1"></span><span class="fn">Tokenizer</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">s</span>):<br/>
+<span class="in2"></span><span class="var">_cur</span> { <span class="var">s</span>.<span class="fn">begin</span>() },<br/>
+<span class="in2"></span><span class="var">_end</span> { <span class="var">s</span>.<span class="fn">end</span>() } <br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="fn">next</span>();<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
+</code></div>
+<ul><li>
+initialize chars and read first token
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">token types</span>)</span><br/>
+<span class="in1"></span><span class="var">becomes</span>,<br/>
+<span class="in1"></span><span class="var">plus</span>,<br/>
+<span class="in1"></span><span class="var">reg</span>,<br/>
+<span class="in1"></span><span class="var">number</span>,<br/>
+<span class="macro">@end(<span class="name">token types</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="macro">@add(<span class="name">needed by tokenizer</span>)</span><br/>
 <span class="in1"></span><span class="keyword">#include</span> &lt;<span class="var">cctype</span>&gt;<br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Tokenizer</span> {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span>::<span class="var">const_iterator</span> <span class="var">_cur</span>;<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span>::<span class="var">const_iterator</span> <span class="var">_end</span>;<br/>
-<span class="in3"></span><span class="type">Token_Type</span> <span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">unknown</span>;<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_name</span> = {};<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">_value</span> = <span class="num">0</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Tokenizer</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">s</span>): <span class="var">_cur</span> { <span class="var">s</span>.<span class="fn">begin</span>() }, <span class="var">_end</span> { <span class="var">s</span>.<span class="fn">end</span>() } {<br/>
-<span class="in4"></span><span class="fn">next</span>();<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">Token_Type</span> <span class="fn">type</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_type</span>; }<br/>
-<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">name</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_name</span>; }<br/>
-<span class="in3"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">next</span>() {<br/>
-<span class="in4"></span><span class="keyword">while</span> (<span class="var">_cur</span> != <span class="var">_end</span> &amp;&amp; *<span class="var">_cur</span> &lt;= <span class="str">' '</span>) { ++<span class="var">_cur</span>; }<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">_cur</span> == <span class="var">_end</span>) {<br/>
-<span class="in5"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">end</span>;<br/>
-<span class="in5"></span><span class="keyword">return</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in4"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">unknown</span>;<br/>
-<span class="in4"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'&lt;'</span>) {<br/>
-<span class="in5"></span><span class="keyword">if</span> (++<span class="var">_cur</span> != <span class="var">_end</span>) {<br/>
-<span class="in6"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'-'</span>) {<br/>
-<span class="in7"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">becomes</span>;<br/>
-<span class="in7"></span>++<span class="var">_cur</span>;<br/>
-<span class="in6"></span>}<br/>
-<span class="in5"></span>}<br/>
-<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'+'</span>) {<br/>
-<span class="in5"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">plus</span>;<br/>
-<span class="in5"></span>++<span class="var">_cur</span>;<br/>
-<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'%'</span>) {<br/>
-<span class="in5"></span>++<span class="var">_cur</span>;<br/>
-<span class="in5"></span><span class="var">_name</span> = {};<br/>
-<span class="in5"></span><span class="keyword">while</span> (<span class="var">_cur</span> != <span class="var">_end</span> &amp;&amp; <span class="fn">isalnum</span>(*<span class="var">_cur</span>)) {<br/>
-<span class="in6"></span><span class="var">_name</span> += *<span class="var">_cur</span>++;<br/>
-<span class="in5"></span>}<br/>
-<span class="in5"></span><span class="keyword">if</span> (! <span class="var">_name</span>.<span class="fn">empty</span>()) {<br/>
-<span class="in6"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">reg</span>;<br/>
-<span class="in5"></span>}<br/>
-<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'-'</span> || (*<span class="var">_cur</span> &gt;= <span class="str">'0'</span> &amp;&amp; *<span class="var">_cur</span> &lt;= <span class="str">'9'</span>)) {<br/>
-<span class="in5"></span><span class="type">bool</span> <span class="var">neg</span> = *<span class="var">_cur</span> == <span class="str">'-'</span>;<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">neg</span>) { ++<span class="var">_cur</span>; }<br/>
-<span class="in5"></span><span class="type">bool</span> <span class="var">hex</span> = *<span class="var">_cur</span> == <span class="str">'$'</span>;<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">hex</span>) { ++<span class="var">_cur</span>; }<br/>
-<span class="in5"></span><span class="var">_value</span> = <span class="num">0</span>;<br/>
-<span class="in5"></span><span class="keyword">while</span> (*<span class="var">_cur</span> &gt;= <span class="str">'0'</span> &amp;&amp; *<span class="var">_cur</span> &lt;= <span class="str">'9'</span>) {<br/>
-<span class="in6"></span><span class="var">_value</span> = <span class="var">_value</span> * <span class="num">10</span> + (*<span class="var">_cur</span> - <span class="str">'0'</span>);<br/>
-<span class="in6"></span>++<span class="var">_cur</span>;<br/>
-<span class="in5"></span>}<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">neg</span>) { <span class="var">_value</span> = -<span class="var">_value</span>; }<br/>
-<span class="in5"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">number</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in3"></span>}<br/>
-<span class="in1"></span>};<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+<span class="macro">@end(<span class="name">needed by tokenizer</span>)</span><br/>
 </code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">tokenizer attributes</span>)</span><br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_name</span> = {};<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">_value</span> = <span class="num">0</span>;<br/>
+<span class="macro">@end(<span class="name">tokenizer attributes</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">tokenizer methods</span>)</span><br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">name</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_name</span>; }<br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
+<span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">tokenizer impl</span>)</span><br/>
+<span class="in1"></span><span class="type">void</span> <span class="type">Tokenizer</span>::<span class="fn">next</span>() {<br/>
+<span class="in2"></span><span class="keyword">while</span> (<span class="var">_cur</span> != <span class="var">_end</span> &amp;&amp; *<span class="var">_cur</span> &lt;= <span class="str">' '</span>) { ++<span class="var">_cur</span>; }<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">_cur</span> == <span class="var">_end</span>) {<br/>
+<span class="in3"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">end</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">unknown</span>;<br/>
+<span class="in2"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'&lt;'</span>) {<br/>
+<span class="in3"></span><span class="keyword">if</span> (++<span class="var">_cur</span> != <span class="var">_end</span>) {<br/>
+<span class="in4"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'-'</span>) {<br/>
+<span class="in5"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">becomes</span>;<br/>
+<span class="in5"></span>++<span class="var">_cur</span>;<br/>
+<span class="in4"></span>}<br/>
+<span class="in3"></span>}<br/>
+<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'+'</span>) {<br/>
+<span class="in3"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">plus</span>;<br/>
+<span class="in3"></span>++<span class="var">_cur</span>;<br/>
+<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'%'</span>) {<br/>
+<span class="in3"></span>++<span class="var">_cur</span>;<br/>
+<span class="in3"></span><span class="var">_name</span> = {};<br/>
+<span class="in3"></span><span class="keyword">while</span> (<span class="var">_cur</span> != <span class="var">_end</span> &amp;&amp; <span class="fn">isalnum</span>(*<span class="var">_cur</span>)) {<br/>
+<span class="in4"></span><span class="var">_name</span> += *<span class="var">_cur</span>++;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="keyword">if</span> (! <span class="var">_name</span>.<span class="fn">empty</span>()) {<br/>
+<span class="in4"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">reg</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'-'</span> || (*<span class="var">_cur</span> &gt;= <span class="str">'0'</span> &amp;&amp; *<span class="var">_cur</span> &lt;= <span class="str">'9'</span>)) {<br/>
+<span class="in3"></span><span class="type">bool</span> <span class="var">neg</span> = *<span class="var">_cur</span> == <span class="str">'-'</span>;<br/>
+<span class="in3"></span><span class="keyword">if</span> (<span class="var">neg</span>) { ++<span class="var">_cur</span>; }<br/>
+<span class="in3"></span><span class="type">bool</span> <span class="var">hex</span> = *<span class="var">_cur</span> == <span class="str">'$'</span>;<br/>
+<span class="in3"></span><span class="keyword">if</span> (<span class="var">hex</span>) { ++<span class="var">_cur</span>; }<br/>
+<span class="in3"></span><span class="var">_value</span> = <span class="num">0</span>;<br/>
+<span class="in3"></span><span class="keyword">while</span> (*<span class="var">_cur</span> &gt;= <span class="str">'0'</span> &amp;&amp; *<span class="var">_cur</span> &lt;= <span class="str">'9'</span>) {<br/>
+<span class="in4"></span><span class="var">_value</span> = <span class="var">_value</span> * <span class="num">10</span> + (*<span class="var">_cur</span> - <span class="str">'0'</span>);<br/>
+<span class="in4"></span>++<span class="var">_cur</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="keyword">if</span> (<span class="var">neg</span>) { <span class="var">_value</span> = -<span class="var">_value</span>; }<br/>
+<span class="in3"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">number</span>;<br/>
+<span class="in2"></span>}<br/>
+<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">_type</span> == <span class="type">Token_Type</span>::<span class="var">unknown</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"unrecognized char ["</span> &lt;&lt; *<span class="var">_cur</span>++ &lt;&lt; <span class="str">"] \n"</span> ;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">tokenizer impl</span>)</span><br/>
+</code></div>
+</div>
+</div>
+<h2>Parsing</h2>
+<div class="slides">
+<div>
+<div>
+<h2>Parsing</h2>
+</div>
 </div>
 <div><div>
 <code>
@@ -465,9 +577,9 @@ split the input line into token
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="macro">@add(<span class="name">needed by tokenizer</span>)</span><br/>
 <span class="in1"></span><span class="keyword">#include</span> &lt;<span class="var">iostream</span>&gt;<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+<span class="macro">@end(<span class="name">needed by tokenizer</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
