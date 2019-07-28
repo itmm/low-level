@@ -25,11 +25,20 @@
 	enum class Token_Type {
 		unknown,
 		
-#line 271 "start.x"
+#line 320 "start.x"
 
 	becomes,
+
+#line 375 "start.x"
+
 	plus,
+
+#line 400 "start.x"
+
 	reg,
+
+#line 759 "start.x"
+
 	number,
 
 #line 217 "start.x"
@@ -37,13 +46,13 @@
 		end
 	};
 
-#line 280 "start.x"
-
-	#include <cctype>
-
-#line 458 "start.x"
+#line 299 "start.x"
 
 	#include <iostream>
+
+#line 454 "start.x"
+
+	#include <cctype>
 
 #line 202 "start.x"
 
@@ -59,9 +68,12 @@
 	std::string::const_iterator _cur;
 	std::string::const_iterator _end;
 
-#line 286 "start.x"
+#line 407 "start.x"
 
 	std::string _name = {};
+
+#line 765 "start.x"
+
 	int _value = 0;
 
 #line 204 "start.x"
@@ -87,195 +99,339 @@
 		next();
 	}
 
-#line 293 "start.x"
+#line 414 "start.x"
 
-	const std::string &name() const { return _name; }
+	const std::string &name() const {
+		return _name;
+	}
+
+#line 789 "start.x"
+
 	int value() const { return _value; }
 
 #line 206 "start.x"
 ;
 	};
 	
-#line 300 "start.x"
+#line 269 "start.x"
 
 	void Tokenizer::next() {
-		while (_cur != _end && *_cur <= ' ') { ++_cur; }
-		if (_cur == _end) {
-			_type = Token_Type::end;
-			return;
-		}
-		_type = Token_Type::unknown;
-		if (*_cur == '<') {
-			if (++_cur != _end) {
-				if (*_cur == '-') {
-					_type = Token_Type::becomes;
-					++_cur;
-				}
-			}
-		} else if (*_cur == '+') {
-			_type = Token_Type::plus;
-			++_cur;
-		} else if (*_cur == '%') {
-			++_cur;
-			_name = {};
-			while (_cur != _end && isalnum(*_cur)) {
-				_name += *_cur++;
-			}
-			if (! _name.empty()) {
-				_type = Token_Type::reg;
-			}
-		} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
-			bool neg = *_cur == '-';
-			if (neg) { ++_cur; }
-			bool hex = *_cur == '$';
-			if (hex) { ++_cur; }
-			_value = 0;
-			while (*_cur >= '0' && *_cur <= '9') {
-				_value = _value * 10 + (*_cur - '0');
-				++_cur;
-			}
-			if (neg) { _value = -_value; }
-			_type = Token_Type::number;
-		}
+		
+#line 278 "start.x"
 
-		if (_type == Token_Type::unknown) {
-			std::cerr << "unrecognized char [" << *_cur++ << "] \n" ;
+	while (
+		_cur != _end && *_cur <= ' '
+	) {
+		++_cur;
+	}
+
+#line 289 "start.x"
+
+	if (_cur == _end) {
+		_type = Token_Type::end;
+		return;
+	}
+
+#line 306 "start.x"
+
+	do {
+		
+#line 359 "start.x"
+
+	if (*_cur == '<') {
+		if (
+			_cur  + 1 != _end &&
+				_cur[1] == '-'
+		) {
+			_type = Token_Type::becomes;
+			_cur += 2;
+			break;
 		}
+	}
+
+#line 389 "start.x"
+
+	if (*_cur == '+') {
+		_type = Token_Type::plus;
+		++_cur;
+		break;
+	}
+
+#line 461 "start.x"
+
+	if (*_cur == '%') {
+		auto c = _cur + 1;
+		_name = {};
+		while (c != _end && isalnum(*c)) {
+			_name += *c++;
+		}
+		if (! _name.empty()) {
+			_type = Token_Type::reg;
+			_cur = c;
+			break;
+		}
+	}
+
+#line 771 "start.x"
+
+	if (*_cur == '-' || isdigit(*_cur)) {
+		bool neg = *_cur == '-';
+		if (neg) { ++_cur; }
+		_value = 0;
+		while (isdigit(*_cur)) {
+			_value = _value * 10 +
+				(*_cur - '0');
+			++_cur;
+		}
+		if (neg) { _value = -_value; }
+		_type = Token_Type::number;
+		break;
+	}
+
+#line 308 "start.x"
+;
+		_type = Token_Type::unknown;
+		std::cerr <<
+			"unrecognized char [" <<
+			*_cur++ << "] \n" ;
+	} while (false);
+
+#line 271 "start.x"
+;
 	}
 
 #line 208 "start.x"
 ;
 
-#line 351 "start.x"
+#line 483 "start.x"
 
 	class Expression {
 		public:
 			virtual ~Expression() {}
 	};
 
-#line 360 "start.x"
+#line 493 "start.x"
 
-	class Register: public Expression {
-			const std::string _name;
-			const int _nr;
-			
-			static int nr_from_name(const std::string &name) {
-				if (name.empty()) { return -1; }
-				if (name == "x") { return -1; }
-				if (name[0] != 'x') { return -1; }
-				int nr = 0;
-				for (int i = 1; i < (int) name.size(); ++i) {
-					char ch = name[i];
-					if (ch < '0' || ch > '9') { return -1; }
-					nr = nr * 10 + (ch - '0');
-				}
-				if (nr < 0 || nr > 31) { return -1; }
-				return nr;
-			}
+	#include <memory>
 
+#line 500 "start.x"
+
+	using Expression_Ptr =
+		std::unique_ptr<Expression>;
+
+#line 507 "start.x"
+
+	class BinaryExpression:
+		public Expression
+	{
+			Expression_Ptr _first;
+			Expression_Ptr _second;
 		public:
-			Register(const std::string &name):
-				_name { name },
-				_nr { nr_from_name(name) }
-			{ }
+			
+#line 520 "start.x"
 
-			const std::string &name() const { return _name; }
-			int nr() const { return _nr; }
-			bool is_general() const { return _nr >= 0; }
+	BinaryExpression(
+		Expression_Ptr first,
+		Expression_Ptr second
+	):
+		_first { std::move(first) },
+		_second { std::move(second) }
+	{ }
+
+#line 532 "start.x"
+
+	const Expression_Ptr &first() const {
+		return _first;
+	}
+	const Expression_Ptr &second() const {
+		return _second;
+	}
+
+#line 514 "start.x"
+;
 	};
 
-#line 393 "start.x"
+#line 543 "start.x"
+
+	class Assignment:
+		public BinaryExpression
+	{
+		public:
+			Assignment(
+				Expression_Ptr dst,
+				Expression_Ptr src
+			): BinaryExpression(
+				std::move(dst),
+				std::move(src)
+			) { }
+	};
+
+#line 560 "start.x"
+
+	class Addition:
+		public BinaryExpression
+	{
+		public:
+			Addition(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+
+#line 577 "start.x"
+
+	class Register: public Expression {
+			
+#line 587 "start.x"
+
+	const std::string _name;
+	const int _nr;
+
+#line 594 "start.x"
+
+	static int nr_from_name(
+		const std::string &name
+	) {
+		int nr { 0 };
+		
+#line 606 "start.x"
+
+	if (name.empty()) { return -1; }
+	if (name == "x") { return -1; }
+	if (name[0] != 'x') { return -1; }
+
+#line 614 "start.x"
+
+	for (
+		int i { 1 };
+		i < (int) name.size();
+		++i
+	) {
+		char ch = name[i];
+		if (! isdigit(ch)) {
+			return -1;
+		}
+		nr = nr * 10 + (ch - '0');
+	}
+
+#line 630 "start.x"
+
+	if (nr < 0 || nr > 31) {
+		return -1;
+	}
+
+#line 599 "start.x"
+;
+		return nr;
+	}
+
+#line 579 "start.x"
+;
+		public:
+			
+#line 638 "start.x"
+
+	Register(const std::string &name):
+		_name { name },
+		_nr { nr_from_name(name) }
+	{ }
+
+#line 647 "start.x"
+
+	const std::string &name() const {
+		return _name;
+	}
+	int nr() const { return _nr; }
+	bool is_general() const {
+		return _nr >= 0;
+	}
+
+#line 581 "start.x"
+;
+	};
+
+#line 659 "start.x"
 
 	class Number: public Expression {
 			const int _value;
 
 		public:
-			Number(int value): _value { value } { }
-
-			int value() const { return _value; }
-	};
-
-#line 406 "start.x"
-
-	#include <memory>
-
-#line 412 "start.x"
-
-	class BinaryExpression: public Expression {
-			std::unique_ptr<Expression> _frst;
-			std::unique_ptr<Expression> _scnd;
-
-		public:
-			BinaryExpression(
-				std::unique_ptr<Expression> frst,
-				std::unique_ptr<Expression> scnd
-			): _frst { std::move(frst) }, _scnd { std::move(scnd) }
+			Number(int value):
+				_value { value }
 			{ }
 
-			const std::unique_ptr<Expression> &first() const { return _frst; }
-			const std::unique_ptr<Expression> &second() const { return _scnd; }
+			int value() const {
+				return _value;
+			}
 	};
 
-#line 431 "start.x"
+#line 676 "start.x"
 
-	class Assignment: public BinaryExpression {
-		public:
-			Assignment(
-				std::unique_ptr<Expression> dst,
-				std::unique_ptr<Expression> src
-			): BinaryExpression(std::move(dst), std::move(src))
-			{}
-	};
-
-#line 444 "start.x"
-
-	class Addition: public BinaryExpression {
-		public:
-			Addition(
-				std::unique_ptr<Expression> frst,
-				std::unique_ptr<Expression> scnd
-			): BinaryExpression(std::move(frst), std::move(scnd))
-			{}
+	Expression_Ptr parse_factor(
+		Tokenizer &t
+	) {
 		
-	};
+#line 688 "start.x"
 
-#line 464 "start.x"
-
-	std::unique_ptr<Expression> parse(Tokenizer &t) {
-		std::unique_ptr<Expression> result;
-		if (t.type() == Token_Type::number) {
-			result = std::make_unique<Number>(t.value());
-			return result;
-		}
-		if (t.type() != Token_Type::reg) {
-			std::cerr << "expected state\n";
-			return result;
-		}
-		auto dst = std::make_unique<Register>(t.name());
+	if (t.type() == Token_Type::reg) {
+		auto res =
+			std::make_unique<Register>(
+				t.name()
+			);
 		t.next();
+		return res;
+	}
+
+#line 795 "start.x"
+
+	if (t.type() == Token_Type::number) {
+		auto res =
+			std::make_unique<Number>(
+				t.value()
+			);
+		t.next();
+		return res;
+	}
+
+#line 680 "start.x"
+;
+		std::cerr << "no factor\n";
+		return Expression_Ptr {};
+	}
+
+#line 701 "start.x"
+
+	Expression_Ptr parse(Tokenizer &t) {
+		auto dst = parse_factor(t);
+		bool is_reg = !! dynamic_cast<Register *>(&*dst);
 		if (t.type() == Token_Type::becomes) {
+			if (! is_reg) {
+				std::cerr << "assigment to no-reg\n";
+			}
 			t.next();
 			auto src = parse(t);
 			if (! src) {
 				std::cerr << "no expression after <-\n";
-				return result;
+				return Expression_Ptr { };
 			}
-			result = std::make_unique<Assignment>(std::move(dst), std::move(src));
+			return std::make_unique<Assignment>(std::move(dst), std::move(src));
 		} else if (t.type() == Token_Type::plus) {
 			t.next();
 			auto src = parse(t);
 			if (! src) {
 				std::cerr << "no expression after +\n";
-				return result;
+				return Expression_Ptr { };
 			}
-			result = std::make_unique<Addition>(std::move(dst), std::move(src));
+			return std::make_unique<Addition>(std::move(dst), std::move(src));
 		} else {
-			result = std::move(dst);
+			return dst;
 		}
-		return result;
 	}
 
-#line 502 "start.x"
+#line 732 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -287,7 +443,7 @@
 			opcode;
 	}
 
-#line 516 "start.x"
+#line 746 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -353,7 +509,7 @@
 		const std::string &line
 	) {
 		
-#line 529 "start.x"
+#line 808 "start.x"
 
 	Tokenizer t { line };
 	auto e = parse(t);
@@ -464,6 +620,43 @@
 ;
 	}
 
+#line 327 "start.x"
+
+	void assert_token(
+		const char *line,
+		Token_Type token
+	) {
+		
+#line 348 "start.x"
+
+	Tokenizer t(line);
+	assert(t.type() == token);
+	t.next();
+	assert(t.type() == Token_Type::end);
+
+#line 332 "start.x"
+;
+	}
+
+#line 423 "start.x"
+
+	void assert_register(
+		const char *line,
+		const char *name
+	) {
+		
+#line 435 "start.x"
+
+	Tokenizer t(line);
+	assert(t.type() == Token_Type::reg);
+	assert(t.name() == name);
+	t.next();
+	assert(t.type() == Token_Type::end);
+
+#line 428 "start.x"
+;
+	}
+
 #line 6 "start.x"
 ;
 	int main(
@@ -480,21 +673,36 @@
 		0x00310233
 	);
 
-#line 605 "start.x"
+#line 339 "start.x"
+
+	assert_token(
+		"<-", Token_Type::becomes
+	);
+
+#line 382 "start.x"
+
+	assert_token("+", Token_Type::plus);
+
+#line 446 "start.x"
+
+	assert_register("%x10", "x10");
+	assert_register("%pc", "pc");
+
+#line 884 "start.x"
 
 	assert_line(
 		"%pc <- %pc + 0",
 		0x0000006f
 	);
 
-#line 616 "start.x"
+#line 895 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -28",
 		0xfe5ff06f
 	);
 
-#line 626 "start.x"
+#line 905 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -32",

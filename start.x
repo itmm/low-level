@@ -265,87 +265,219 @@ These syntax trees are then transformed into machine code.
 ```
 * initialize chars and read first token
 
+```
+@def(tokenizer impl)
+	void Tokenizer::next() {
+		@put(next);
+	}
+@end(tokenizer impl)
+```
+* implementation of `@f(next)`
 
+```
+@def(next)
+	while (
+		_cur != _end && *_cur <= ' '
+	) {
+		++_cur;
+	}
+@end(next)
+```
+* skip spaces
+
+```
+@add(next)
+	if (_cur == _end) {
+		_type = Token_Type::end;
+		return;
+	}
+@end(next)
+```
+* end is reached
+
+```
+@add(needed by tokenizer)
+	#include <iostream>
+@end(needed by tokenizer)
+```
+* needs `cerr`
+
+```
+@add(next)
+	do {
+		@put(recognize);
+		_type = Token_Type::unknown;
+		std::cerr <<
+			"unrecognized char [" <<
+			*_cur++ << "] \n" ;
+	} while (false);
+@end(next)
+```
+* recognize individual tokens
+* write warning when not recognizing token
 
 ```
 @def(token types)
 	becomes,
-	plus,
-	reg,
-	number,
 @end(token types)
 ```
+* add token for assignment
+
+```
+@add(needed by main)
+	void assert_token(
+		const char *line,
+		Token_Type token
+	) {
+		@put(assert token);
+	}
+@end(needed by main)
+```
+* check for a single token
+
+```
+@add(unit-tests)
+	assert_token(
+		"<-", Token_Type::becomes
+	);
+@end(unit-tests)
+```
+* try to recognize assignment
+
+```
+@def(assert token)
+	Tokenizer t(line);
+	assert(t.type() == token);
+	t.next();
+	assert(t.type() == Token_Type::end);
+@end(assert token)
+```
+* initialize tokenizer and verify that it only contains the one expected
+  token
+
+```
+@def(recognize)
+	if (*_cur == '<') {
+		if (
+			_cur  + 1 != _end &&
+				_cur[1] == '-'
+		) {
+			_type = Token_Type::becomes;
+			_cur += 2;
+			break;
+		}
+	}
+@end(recognize)
+```
+* recognize assignment
+
+```
+@add(token types)
+	plus,
+@end(token types)
+```
+* add token for addition
+
+```
+@add(unit-tests)
+	assert_token("+", Token_Type::plus);
+@end(unit-tests)
+```
+* try to recognize addition
+
+```
+@add(recognize)
+	if (*_cur == '+') {
+		_type = Token_Type::plus;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+* recognize addition
+
+```
+@add(token types)
+	reg,
+@end(token types)
+```
+* add token for register
+
+```
+@add(tokenizer attributes)
+	std::string _name = {};
+@end(tokenizer attributes)
+```
+* store name of register
+
+```
+@add(tokenizer methods)
+	const std::string &name() const {
+		return _name;
+	}
+@end(tokenizer methods)
+```
+* return register name
+
+```
+@add(needed by main)
+	void assert_register(
+		const char *line,
+		const char *name
+	) {
+		@put(assert register);
+	}
+@end(needed by main)
+```
+* check for a register token
+
+```
+@def(assert register)
+	Tokenizer t(line);
+	assert(t.type() == Token_Type::reg);
+	assert(t.name() == name);
+	t.next();
+	assert(t.type() == Token_Type::end);
+@end(assert register)
+```
+* check for a register token with specific name
+
+```
+@add(unit-tests)
+	assert_register("%x10", "x10");
+	assert_register("%pc", "pc");
+@end(unit-tests)
+```
+* verify some register names
 
 ```
 @add(needed by tokenizer)
 	#include <cctype>
 @end(needed by tokenizer)
 ```
+* needs `@f(isalnum)` and `@f(isdigit)`
 
 ```
-@add(tokenizer attributes)
-	std::string _name = {};
-	int _value = 0;
-@end(tokenizer attributes)
-```
-
-```
-@add(tokenizer methods)
-	const std::string &name() const { return _name; }
-	int value() const { return _value; }
-@end(tokenizer methods)
-```
-
-```
-@def(tokenizer impl)
-	void Tokenizer::next() {
-		while (_cur != _end && *_cur <= ' ') { ++_cur; }
-		if (_cur == _end) {
-			_type = Token_Type::end;
-			return;
+@add(recognize)
+	if (*_cur == '%') {
+		auto c = _cur + 1;
+		_name = {};
+		while (c != _end && isalnum(*c)) {
+			_name += *c++;
 		}
-		_type = Token_Type::unknown;
-		if (*_cur == '<') {
-			if (++_cur != _end) {
-				if (*_cur == '-') {
-					_type = Token_Type::becomes;
-					++_cur;
-				}
-			}
-		} else if (*_cur == '+') {
-			_type = Token_Type::plus;
-			++_cur;
-		} else if (*_cur == '%') {
-			++_cur;
-			_name = {};
-			while (_cur != _end && isalnum(*_cur)) {
-				_name += *_cur++;
-			}
-			if (! _name.empty()) {
-				_type = Token_Type::reg;
-			}
-		} else if (*_cur == '-' || (*_cur >= '0' && *_cur <= '9')) {
-			bool neg = *_cur == '-';
-			if (neg) { ++_cur; }
-			bool hex = *_cur == '$';
-			if (hex) { ++_cur; }
-			_value = 0;
-			while (*_cur >= '0' && *_cur <= '9') {
-				_value = _value * 10 + (*_cur - '0');
-				++_cur;
-			}
-			if (neg) { _value = -_value; }
-			_type = Token_Type::number;
-		}
-
-		if (_type == Token_Type::unknown) {
-			std::cerr << "unrecognized char [" << *_cur++ << "] \n" ;
+		if (! _name.empty()) {
+			_type = Token_Type::reg;
+			_cur = c;
+			break;
 		}
 	}
-@end(tokenizer impl)
+@end(recognize)
 ```
+* recognize register
+
 
 ## Parsing
+* parses simple additions
 
 ```
 @add(needed by state)
@@ -355,38 +487,172 @@ These syntax trees are then transformed into machine code.
 	};
 @end(needed by state)
 ```
+* a lot of structure is encoded in an expression
+
+```
+@add(needed by state)
+	#include <memory>
+@end(needed by state)
+```
+* needs `unique_ptr`
+
+```
+@add(needed by state)
+	using Expression_Ptr =
+		std::unique_ptr<Expression>;
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	class BinaryExpression:
+		public Expression
+	{
+			Expression_Ptr _first;
+			Expression_Ptr _second;
+		public:
+			@put(bin expr methods);
+	};
+@end(needed by state)
+```
+
+```
+@def(bin expr methods)
+	BinaryExpression(
+		Expression_Ptr first,
+		Expression_Ptr second
+	):
+		_first { std::move(first) },
+		_second { std::move(second) }
+	{ }
+@end(bin expr methods)
+```
+
+```
+@add(bin expr methods)
+	const Expression_Ptr &first() const {
+		return _first;
+	}
+	const Expression_Ptr &second() const {
+		return _second;
+	}
+@end(bin expr methods)
+```
+
+```
+@add(needed by state)
+	class Assignment:
+		public BinaryExpression
+	{
+		public:
+			Assignment(
+				Expression_Ptr dst,
+				Expression_Ptr src
+			): BinaryExpression(
+				std::move(dst),
+				std::move(src)
+			) { }
+	};
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	class Addition:
+		public BinaryExpression
+	{
+		public:
+			Addition(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by state)
+```
 
 ```
 @add(needed by state)
 	class Register: public Expression {
-			const std::string _name;
-			const int _nr;
-			
-			static int nr_from_name(const std::string &name) {
-				if (name.empty()) { return -1; }
-				if (name == "x") { return -1; }
-				if (name[0] != 'x') { return -1; }
-				int nr = 0;
-				for (int i = 1; i < (int) name.size(); ++i) {
-					char ch = name[i];
-					if (ch < '0' || ch > '9') { return -1; }
-					nr = nr * 10 + (ch - '0');
-				}
-				if (nr < 0 || nr > 31) { return -1; }
-				return nr;
-			}
-
+			@put(register privates);
 		public:
-			Register(const std::string &name):
-				_name { name },
-				_nr { nr_from_name(name) }
-			{ }
-
-			const std::string &name() const { return _name; }
-			int nr() const { return _nr; }
-			bool is_general() const { return _nr >= 0; }
+			@put(register methods);
 	};
 @end(needed by state)
+```
+
+```
+@def(register privates)
+	const std::string _name;
+	const int _nr;
+@end(register privates)
+```
+
+```
+@add(register privates)
+	static int nr_from_name(
+		const std::string &name
+	) {
+		int nr { 0 };
+		@put(nr from name);
+		return nr;
+	}
+@end(register privates)
+```
+
+```
+@def(nr from name)
+	if (name.empty()) { return -1; }
+	if (name == "x") { return -1; }
+	if (name[0] != 'x') { return -1; }
+@end(nr from name)
+```
+
+```
+@add(nr from name)
+	for (
+		int i { 1 };
+		i < (int) name.size();
+		++i
+	) {
+		char ch = name[i];
+		if (! isdigit(ch)) {
+			return -1;
+		}
+		nr = nr * 10 + (ch - '0');
+	}
+@end(nr from name)
+```
+
+```
+@add(nr from name)
+	if (nr < 0 || nr > 31) {
+		return -1;
+	}
+@end(nr from name)
+```
+
+```
+@def(register methods)
+	Register(const std::string &name):
+		_name { name },
+		_nr { nr_from_name(name) }
+	{ }
+@end(register methods)
+```
+
+```
+@add(register methods)
+	const std::string &name() const {
+		return _name;
+	}
+	int nr() const { return _nr; }
+	bool is_general() const {
+		return _nr >= 0;
+	}
+@end(register methods)
 ```
 
 ```
@@ -395,105 +661,69 @@ These syntax trees are then transformed into machine code.
 			const int _value;
 
 		public:
-			Number(int value): _value { value } { }
-
-			int value() const { return _value; }
-	};
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	#include <memory>
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	class BinaryExpression: public Expression {
-			std::unique_ptr<Expression> _frst;
-			std::unique_ptr<Expression> _scnd;
-
-		public:
-			BinaryExpression(
-				std::unique_ptr<Expression> frst,
-				std::unique_ptr<Expression> scnd
-			): _frst { std::move(frst) }, _scnd { std::move(scnd) }
+			Number(int value):
+				_value { value }
 			{ }
 
-			const std::unique_ptr<Expression> &first() const { return _frst; }
-			const std::unique_ptr<Expression> &second() const { return _scnd; }
+			int value() const {
+				return _value;
+			}
 	};
 @end(needed by state)
 ```
 
 ```
 @add(needed by state)
-	class Assignment: public BinaryExpression {
-		public:
-			Assignment(
-				std::unique_ptr<Expression> dst,
-				std::unique_ptr<Expression> src
-			): BinaryExpression(std::move(dst), std::move(src))
-			{}
-	};
+	Expression_Ptr parse_factor(
+		Tokenizer &t
+	) {
+		@put(parse factor);
+		std::cerr << "no factor\n";
+		return Expression_Ptr {};
+	}
 @end(needed by state)
 ```
 
 ```
-@add(needed by state)
-	class Addition: public BinaryExpression {
-		public:
-			Addition(
-				std::unique_ptr<Expression> frst,
-				std::unique_ptr<Expression> scnd
-			): BinaryExpression(std::move(frst), std::move(scnd))
-			{}
-		
-	};
-@end(needed by state)
-```
-
-```
-@add(needed by tokenizer)
-	#include <iostream>
-@end(needed by tokenizer)
-```
-
-```
-@add(needed by state)
-	std::unique_ptr<Expression> parse(Tokenizer &t) {
-		std::unique_ptr<Expression> result;
-		if (t.type() == Token_Type::number) {
-			result = std::make_unique<Number>(t.value());
-			return result;
-		}
-		if (t.type() != Token_Type::reg) {
-			std::cerr << "expected state\n";
-			return result;
-		}
-		auto dst = std::make_unique<Register>(t.name());
+@def(parse factor)
+	if (t.type() == Token_Type::reg) {
+		auto res =
+			std::make_unique<Register>(
+				t.name()
+			);
 		t.next();
+		return res;
+	}
+@end(parse factor)
+```
+
+```
+@add(needed by state)
+	Expression_Ptr parse(Tokenizer &t) {
+		auto dst = parse_factor(t);
+		bool is_reg = !! dynamic_cast<Register *>(&*dst);
 		if (t.type() == Token_Type::becomes) {
+			if (! is_reg) {
+				std::cerr << "assigment to no-reg\n";
+			}
 			t.next();
 			auto src = parse(t);
 			if (! src) {
 				std::cerr << "no expression after <-\n";
-				return result;
+				return Expression_Ptr { };
 			}
-			result = std::make_unique<Assignment>(std::move(dst), std::move(src));
+			return std::make_unique<Assignment>(std::move(dst), std::move(src));
 		} else if (t.type() == Token_Type::plus) {
 			t.next();
 			auto src = parse(t);
 			if (! src) {
 				std::cerr << "no expression after +\n";
-				return result;
+				return Expression_Ptr { };
 			}
-			result = std::make_unique<Addition>(std::move(dst), std::move(src));
+			return std::make_unique<Addition>(std::move(dst), std::move(src));
 		} else {
-			result = std::move(dst);
+			return dst;
 		}
-		return result;
 	}
 @end(needed by state)
 ```
@@ -523,6 +753,55 @@ These syntax trees are then transformed into machine code.
 		);
 	}
 @end(needed by state)
+```
+
+```
+@add(token types)
+	number,
+@end(token types)
+```
+
+```
+@add(tokenizer attributes)
+	int _value = 0;
+@end(tokenizer attributes)
+```
+
+```
+@add(recognize)
+	if (*_cur == '-' || isdigit(*_cur)) {
+		bool neg = *_cur == '-';
+		if (neg) { ++_cur; }
+		_value = 0;
+		while (isdigit(*_cur)) {
+			_value = _value * 10 +
+				(*_cur - '0');
+			++_cur;
+		}
+		if (neg) { _value = -_value; }
+		_type = Token_Type::number;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(tokenizer methods)
+	int value() const { return _value; }
+@end(tokenizer methods)
+```
+
+```
+@add(parse factor)
+	if (t.type() == Token_Type::number) {
+		auto res =
+			std::make_unique<Number>(
+				t.value()
+			);
+		t.next();
+		return res;
+	}
+@end(parse factor)
 ```
 
 ```
