@@ -752,12 +752,34 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(needed by state)
+	int build_i_cmd(
+		int imm, char src1, int funct3, char dst, int opcode
+	) {
+		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
 	int build_add(
 		char dst, char src1, char src2
 	) {
 		return build_r_cmd(
 			0x00, src2, src1,
 			0x0, dst, 0x33
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_add(
+		char dst, char src1, int imm
+	) {
+		return build_i_cmd(
+			imm, src1, 0x0, dst, 0x13
 		);
 	}
 @end(needed by state)
@@ -820,6 +842,11 @@ These syntax trees are then transformed into machine code.
 		std::cerr << "no statement on line " << line << "\n";
 		return;
 	}
+	Number *n = dynamic_cast<Number *>(&*e);
+	if (n) {
+		add_machine(n->value());
+		return;
+	}
 	Assignment *a = dynamic_cast<Assignment *>(&*e);
 	if (! a) {
 		std::cerr << "assignment expected on line " << line << "\n";
@@ -846,16 +873,23 @@ These syntax trees are then transformed into machine code.
 			std::cerr << "first of of addition no general register\n";
 		}
 		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
-		if (! src2) {
-			std::cerr << "second op of addition no register\n";
+		if (src2) {
+			if (! src2->is_general()) {
+				std::cerr << "second of of addition no general register\n";
+			}
+			add_machine(build_add(
+				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+			));
 			return;
 		}
-		if (! src2->is_general()) {
-			std::cerr << "second of of addition no general register\n";
+		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+		if (n2) {
+			add_machine(build_add(
+				(char) dst->nr(), (char) src1->nr(), n2->value()
+			));
+			return;
 		}
-		add_machine(build_add(
-			(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
-		));
+		std::cerr << "unexpected second operand\n";
 	} else if (dst->name() == "pc") {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 		if (! o) {
@@ -936,3 +970,36 @@ These syntax trees are then transformed into machine code.
 	}
 @end(read stdin)
 ```
+
+```
+@add(recognize)
+	if (*_cur == '$') {
+		_value = 0;
+		++_cur;
+		while (isxdigit(*_cur)) {
+			int digit;
+			if (*_cur <= '9') {
+				digit = *_cur - '0';
+			} else if (*_cur <= 'F') {
+				digit = *_cur - 'A' + 10;
+			} else {
+				digit = *_cur - 'a' + 10;
+			}
+			_value = (_value << 4) + digit;
+			++_cur;
+		}
+		_type = Token_Type::number;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(recognize)
+	if (*_cur == '#') {
+		_type = Token_Type::end;
+		break;
+	}
+@end(recognize)
+```
+

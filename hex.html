@@ -73,8 +73,7 @@
 <span class="in1"></span><span class="var">sum</span> += (<span class="var">base</span> &gt;&gt; <span class="num">24</span>) + (<span class="var">base</span> &gt;&gt; <span class="num">16</span>);<br/>
 <span class="in1"></span><span class="fn">write_word</span>(<span class="var">out</span>, <span class="var">base</span> &gt;&gt; <span class="num">16</span>);<br/>
 <span class="in1"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
-<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
-<span class="in1"></span><br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">"\r\n"</span>;<br/>
 <span class="macro">@end(<span class="name">write startup</span>)</span><br/>
 </code></div>
 </div>
@@ -103,7 +102,7 @@
 <span class="in3"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
-<span class="in2"></span><span class="var">out</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
+<span class="in2"></span><span class="var">out</span> &lt;&lt; <span class="str">"\r\n"</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">write data</span>)</span><br/>
 </code></div>
@@ -118,8 +117,8 @@
 <span class="in1"></span><span class="var">sum</span> += (<span class="var">base</span> &gt;&gt; <span class="num">24</span>) + (<span class="var">base</span> &gt;&gt; <span class="num">16</span>) +<br/>
 <span class="in2"></span>(<span class="var">base</span> &gt;&gt; <span class="num">8</span>) + <span class="var">base</span>;<br/>
 <span class="in1"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
-<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
-<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">":00000001FF\n"</span>;<br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">"\r\n"</span>;<br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">":00000001FF\r\n"</span>;<br/>
 <span class="macro">@end(<span class="name">write finish</span>)</span><br/>
 </code></div>
 </div>

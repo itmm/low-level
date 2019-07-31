@@ -40,7 +40,7 @@
 
 	reg,
 
-#line 767 "start.x"
+#line 789 "start.x"
 
 	number,
 
@@ -75,7 +75,7 @@
 
 	std::string _name = {};
 
-#line 773 "start.x"
+#line 795 "start.x"
 
 	int _value = 0;
 
@@ -108,7 +108,7 @@
 		return _name;
 	}
 
-#line 797 "start.x"
+#line 819 "start.x"
 
 	int value() const { return _value; }
 
@@ -175,7 +175,7 @@
 		}
 	}
 
-#line 779 "start.x"
+#line 801 "start.x"
 
 	if (*_cur == '-' || isdigit(*_cur)) {
 		bool neg = *_cur == '-';
@@ -188,6 +188,34 @@
 		}
 		if (neg) { _value = -_value; }
 		_type = Token_Type::number;
+		break;
+	}
+
+#line 975 "start.x"
+
+	if (*_cur == '$') {
+		_value = 0;
+		++_cur;
+		while (isxdigit(*_cur)) {
+			int digit;
+			if (*_cur <= '9') {
+				digit = *_cur - '0';
+			} else if (*_cur <= 'F') {
+				digit = *_cur - 'A' + 10;
+			} else {
+				digit = *_cur - 'a' + 10;
+			}
+			_value = (_value << 4) + digit;
+			++_cur;
+		}
+		_type = Token_Type::number;
+		break;
+	}
+
+#line 998 "start.x"
+
+	if (*_cur == '#') {
+		_type = Token_Type::end;
 		break;
 	}
 
@@ -388,7 +416,7 @@
 		return res;
 	}
 
-#line 803 "start.x"
+#line 825 "start.x"
 
 	if (t.type() == Token_Type::number) {
 		auto res =
@@ -448,12 +476,30 @@
 
 #line 754 "start.x"
 
+	int build_i_cmd(
+		int imm, char src1, int funct3, char dst, int opcode
+	) {
+		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
+	}
+
+#line 764 "start.x"
+
 	int build_add(
 		char dst, char src1, char src2
 	) {
 		return build_r_cmd(
 			0x00, src2, src1,
 			0x0, dst, 0x33
+		);
+	}
+
+#line 777 "start.x"
+
+	int build_add(
+		char dst, char src1, int imm
+	) {
+		return build_i_cmd(
+			imm, src1, 0x0, dst, 0x13
 		);
 	}
 
@@ -512,12 +558,17 @@
 		const std::string &line
 	) {
 		
-#line 816 "start.x"
+#line 838 "start.x"
 
 	Tokenizer t { line };
 	auto e = parse(t);
 	if (! e) {
 		std::cerr << "no statement on line " << line << "\n";
+		return;
+	}
+	Number *n = dynamic_cast<Number *>(&*e);
+	if (n) {
+		add_machine(n->value());
 		return;
 	}
 	Assignment *a = dynamic_cast<Assignment *>(&*e);
@@ -546,16 +597,23 @@
 			std::cerr << "first of of addition no general register\n";
 		}
 		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
-		if (! src2) {
-			std::cerr << "second op of addition no register\n";
+		if (src2) {
+			if (! src2->is_general()) {
+				std::cerr << "second of of addition no general register\n";
+			}
+			add_machine(build_add(
+				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+			));
 			return;
 		}
-		if (! src2->is_general()) {
-			std::cerr << "second of of addition no general register\n";
+		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+		if (n2) {
+			add_machine(build_add(
+				(char) dst->nr(), (char) src1->nr(), n2->value()
+			));
+			return;
 		}
-		add_machine(build_add(
-			(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
-		));
+		std::cerr << "unexpected second operand\n";
 	} else if (dst->name() == "pc") {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 		if (! o) {
@@ -672,7 +730,7 @@
 		std::ostream &out, int b
 	) {
 		
-#line 107 "hex.x"
+#line 106 "hex.x"
 
 	static const char map[] {
 		"0123456789ABCDEF"
@@ -710,13 +768,12 @@
 	sum += (base >> 24) + (base >> 16);
 	write_word(out, base >> 16);
 	write_byte(out, -sum);
-	out << '\n';
-	
+	out << "\r\n";
 
 #line 23 "hex.x"
 ;
 	
-#line 64 "hex.x"
+#line 63 "hex.x"
 
 	int len = s.code_size();
 	int c = 0;
@@ -740,13 +797,13 @@
 			write_byte(out, m); sum += m;
 		}
 		write_byte(out, -sum);
-		out << '\n';
+		out << "\r\n";
 	}
 
 #line 24 "hex.x"
 ;
 	
-#line 93 "hex.x"
+#line 92 "hex.x"
 
 	sum =  9;
 	out << ":04000005";
@@ -755,8 +812,8 @@
 	sum += (base >> 24) + (base >> 16) +
 		(base >> 8) + base;
 	write_byte(out, -sum);
-	out << '\n';
-	out << ":00000001FF\n";
+	out << "\r\n";
+	out << ":00000001FF\r\n";
 
 #line 25 "hex.x"
 ;
@@ -797,21 +854,21 @@
 	assert_register("%x10", "x10");
 	assert_register("%pc", "pc");
 
-#line 892 "start.x"
+#line 926 "start.x"
 
 	assert_line(
 		"%pc <- %pc + 0",
 		0x0000006f
 	);
 
-#line 903 "start.x"
+#line 937 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -28",
 		0xfe5ff06f
 	);
 
-#line 913 "start.x"
+#line 947 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -32",
@@ -824,10 +881,10 @@
 #line 10 "start.x"
 
 		
-#line 923 "start.x"
+#line 957 "start.x"
 
 	
-#line 930 "start.x"
+#line 964 "start.x"
 
 	State s;
 	std::string l;
@@ -836,7 +893,7 @@
 		s.add_line(l);
 	}
 
-#line 924 "start.x"
+#line 958 "start.x"
 
 
 #line 16 "hex.x"

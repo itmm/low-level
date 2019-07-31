@@ -55,8 +55,7 @@
 	sum += (base >> 24) + (base >> 16);
 	write_word(out, base >> 16);
 	write_byte(out, -sum);
-	out << '\n';
-	
+	out << "\r\n";
 @end(write startup)
 ```
 
@@ -84,7 +83,7 @@
 			write_byte(out, m); sum += m;
 		}
 		write_byte(out, -sum);
-		out << '\n';
+		out << "\r\n";
 	}
 @end(write data)
 ```
@@ -98,8 +97,8 @@
 	sum += (base >> 24) + (base >> 16) +
 		(base >> 8) + base;
 	write_byte(out, -sum);
-	out << '\n';
-	out << ":00000001FF\n";
+	out << "\r\n";
+	out << ":00000001FF\r\n";
 @end(write finish)
 ```
 
