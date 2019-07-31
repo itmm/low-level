@@ -18,11 +18,12 @@ start low-level with the first unit-test
 <div><div>
 <code>
 <span class="macro">@Def(<span class="name">file: ll.cpp</span>)</span><br/>
-<span class="in1"></span><span class="macro">@put(<span class="name">needed by main</span>)</span>;<br/>
+<span class="in1"></span><span class="macro">@Put(<span class="name">needed by main</span>)</span>;<br/>
 <span class="in1"></span><span class="type">int</span> <span class="fn">main</span>(<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">argc</span>, <span class="type">const</span> <span class="type">char</span> *<span class="var">argv</span>[]<br/>
 <span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">main</span>)</span><br/>
+<span class="in2"></span><span class="macro">@Put(<span class="name">unit-tests</span>)</span><br/>
+<span class="in2"></span><span class="macro">@Put(<span class="name">main</span>)</span><br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">file: ll.cpp</span>)</span><br/>
 </code></div>
@@ -38,12 +39,12 @@ so there is a fragment for prerequisites and the content
 </div>
 <div><div>
 <code>
-<span class="macro">@def(<span class="name">main</span>)</span><br/>
-<span class="in1"></span><span class="macro">@put(<span class="name">unit-tests</span>)</span><br/>
-<span class="macro">@end(<span class="name">main</span>)</span><br/>
+<span class="macro">@Def(<span class="name">needed by main</span>)</span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">needed by main</span>)</span><br/>
+<span class="macro">@End(<span class="name">needed by main</span>)</span><br/>
 </code></div>
 <ul><li>
-first some unit-tests are performed at every start of low-level
+group local additions into a fragment
 </li></ul>
 </div>
 <div><div>
@@ -235,6 +236,16 @@ simple implementation just saves the data
 </code></div>
 <ul><li>
 simple helper function to check that some source code generates the  expected instruction
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@Def(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">unit-tests</span>)</span><br/>
+<span class="macro">@End(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+<ul><li>
+group local tests in a fragment
 </li></ul>
 </div>
 <div><div>
@@ -1125,6 +1136,28 @@ check for simple endless loop
 <ul><li>
 check for simple endless loop
 </li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@Def(<span class="name">main</span>)</span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">read stdin</span>)</span><br/>
+<span class="macro">@End(<span class="name">main</span>)</span><br/>
+</code></div>
+<ul><li>
+read <code><span class="type">State</span></code> form standard input
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">read stdin</span>)</span><br/>
+<span class="in1"></span><span class="type">State</span> <span class="var">s</span>;<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">l</span>;<br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="type">std</span>::<span class="fn">getline</span>(<span class="type">std</span>::<span class="var">cin</span>, <span class="var">l</span>)) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">l</span>.<span class="fn">empty</span>()) { <span class="keyword">continue</span>; }<br/>
+<span class="in2"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">l</span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">read stdin</span>)</span><br/>
+</code></div>
 </div>
 </body>
 </html>

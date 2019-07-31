@@ -6,7 +6,7 @@ all: tests
 
 tests: ll
 	@echo run unit-tests
-	@./ll
+	@echo | ./ll
 
 SOURCEs := $(wildcard *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))

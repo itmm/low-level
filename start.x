@@ -3,11 +3,12 @@
 
 ```
 @Def(file: ll.cpp)
-	@put(needed by main);
+	@Put(needed by main);
 	int main(
 		int argc, const char *argv[]
 	) {
-		@put(main)
+		@Put(unit-tests)
+		@Put(main)
 	}
 @End(file: ll.cpp)
 ```
@@ -18,11 +19,11 @@
 * so there is a fragment for prerequisites and the content
 
 ```
-@def(main)
-	@put(unit-tests)
-@end(main)
+@Def(needed by main)
+	@put(needed by main)
+@End(needed by main)
 ```
-* first some unit-tests are performed at every start of low-level
+* group local additions into a fragment
 
 ```
 @def(needed by main)
@@ -165,6 +166,13 @@ the machine code.
 ```
 * simple helper function to check that some source code generates the
   expected instruction
+
+```
+@Def(unit-tests)
+	@put(unit-tests)
+@End(unit-tests)
+```
+* group local tests in a fragment
 
 ```
 @def(unit-tests)
@@ -911,4 +919,20 @@ These syntax trees are then transformed into machine code.
 ```
 * check for simple endless loop
 
+```
+@Def(main)
+	@put(read stdin)
+@End(main)
+```
+* read `State` form standard input
 
+```
+@def(read stdin)
+	State s;
+	std::string l;
+	while (std::getline(std::cin, l)) {
+		if (l.empty()) { continue; }
+		s.add_line(l);
+	}
+@end(read stdin)
+```

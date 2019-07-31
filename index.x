@@ -143,3 +143,8 @@ Here is an example for computing the sum over the first `100` integers:
 ```
 * start with the low-level assembler source code layout
 
+```
+@inc(hex.x)
+```
+* write binary in Intel HEX format
+
