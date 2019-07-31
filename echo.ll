@@ -14,7 +14,7 @@
 				(block_other_harts - *) \
 		}
 
-	uart = %a2
+	uart = %a0
 	uart <- $1013000
 
 	tmp <- [uart + $08]
@@ -25,33 +25,32 @@
 	tmp <- tmp | $01
 	[uart + $0c] <- tmp
 
-	new_line = %a0
-	new_line <- $0a
 	carriage_return = %a1
-	carriage_return <- $0c
+	carriage_return <- $0d
+	new_line = %a2
+	new_line <- $0a
 
-		chr = %a2
 	loop = *
 		tmp <- [uart + $04]
 		if (tmp < 0 { \
 			%pc <- %pc + (loop - *) \
 		}
-		chr <- tmp & $ff
-		if (chr = 0) { \
+		tmp <- tmp & $ff
+		if (tmp = 0) { \
 			%pc <- %pc + (loop - *) \
 		}
 
-	if (chr = new_line) { \
-		%pc <- %pc + (do_new_line - *) \
-	}
-
+	tmp2 = %t1
 	normal = *
-		tmp <- [uart]
-		if (tmp < 0) {
+		tmp2 <- [uart]
+		if (tmp2 < 0) {
 			%pc <- %pc + (normal - *)
 		}
-		[uart] <- chr
-		%pc <- %pc + (loop - *)
+		[uart] <- tmp
+
+	if (tmp <> carriage_return) { \
+		%pc <- %pc + (loop - *) \
+	}
 
 	do_new_line = *
 		tmp <- [uart]
@@ -59,8 +58,8 @@
 			%pc <- \
 				%pc + (do_new_line - *) \
 		}
-		[uart] <- carriage_return
-		%pc <- %pc + (normal - *)
+		[uart] <- new_line
+		%pc <- %pc + (loop - *)
 
 	early_trap = *
 		%pc <- %pc + (early_trap - *)

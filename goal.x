@@ -52,7 +52,7 @@ interrupted with some comments.
 
 ```
 @add(src)
-	uart = @k(%a2)
+	uart = @k(%a0)
 	uart <- @n($1013000)
 @end(src)
 ```
@@ -78,10 +78,10 @@ interrupted with some comments.
 
 ```
 @add(src)
-	new_line = @k(%a0)
-	new_line <- @n($0a)
 	carriage_return = @k(%a1)
-	carriage_return <- @n($0c)
+	carriage_return <- @n($0d)
+	new_line = @k(%a2)
+	new_line <- @n($0a)
 @end(src)
 ```
 * store ASCII new-line and carriage-return codes in registers for fast
@@ -89,14 +89,13 @@ interrupted with some comments.
 
 ```
 @add(src)
-		chr = @k(%a2)
 	@t(loop) = @n(*)
 		tmp <- [uart + @n($04)]
 		if (tmp < 0 { \
 			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
 		}
-		chr <- tmp & @n($ff)
-		if (chr = 0) { \
+		tmp <- tmp & @n($ff)
+		if (tmp = 0) { \
 			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
 		}
 @end(src)
@@ -106,28 +105,28 @@ interrupted with some comments.
 
 ```
 @add(src)
-	if (chr = new_line) { \
-		@k(%pc) <- @k(%pc) + (@t(do_new_line) - @n(*)) \
-	}
-@end(src)
-```
-* special processing for new-line characters
-* an carriage return is echoed first
-
-```
-@add(src)
+	tmp2 = @k(%t1)
 	@t(normal) = @n(*)
-		tmp <- [uart]
-		if (tmp < 0) {
+		tmp2 <- [uart]
+		if (tmp2 < 0) {
 			@k(%pc) <- @k(%pc) + (@t(normal) - *)
 		}
-		[uart] <- chr
-		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
+		[uart] <- tmp
 @end(src)
 ```
 * wait until UART is read for write
 * and write char
 * then wait for next char
+
+```
+@add(src)
+	if (tmp <> carriage_return) { \
+		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
+	}
+@end(src)
+```
+* special processing for new-line characters
+* an carriage return is echoed first
 
 ```
 @add(src)
@@ -137,8 +136,8 @@ interrupted with some comments.
 			@k(%pc) <- \
 				@k(%pc) + (@t(do_new_line) - *) \
 		}
-		[uart] <- carriage_return
-		@k(%pc) <- @k(%pc) + (@t(normal) - @n(*))
+		[uart] <- new_line
+		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 @end(src)
 ```
 * when new-line char is read first write a carriage return
