@@ -87,7 +87,7 @@
 <span class="in2"></span><span class="var">out</span> &lt;&lt; <span class="str">':'</span>;<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">l</span> = ((<span class="var">c</span> + <span class="num">4</span> &gt; <span class="var">len</span>) ? (<span class="var">len</span> - <span class="var">c</span>) : <span class="num">4</span>);<br/>
 <span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">l</span> * <span class="num">4</span>);<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">sum</span> = <span class="var">l</span> * <span class="num">4</span>;<br/>
+<span class="in2"></span><span class="var">sum</span> = <span class="var">l</span> * <span class="num">4</span>;<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">base</span> + <span class="var">c</span> * <span class="num">4</span>;<br/>
 <span class="in2"></span><span class="var">sum</span> += (<span class="var">addr</span> &gt;&gt; <span class="num">8</span>) + <span class="var">addr</span>;<br/>
 <span class="in2"></span><span class="fn">write_word</span>(<span class="var">out</span>, <span class="var">addr</span>);<br/>
@@ -111,6 +111,14 @@
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">write finish</span>)</span><br/>
+<span class="in1"></span><span class="var">sum</span> =  <span class="num">9</span>;<br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">":04000005"</span>;<br/>
+<span class="in1"></span><span class="fn">write_word</span>(<span class="var">out</span>, <span class="var">base</span> &gt;&gt; <span class="num">16</span>);<br/>
+<span class="in1"></span><span class="fn">write_word</span>(<span class="var">out</span>, <span class="var">base</span>);<br/>
+<span class="in1"></span><span class="var">sum</span> += (<span class="var">base</span> &gt;&gt; <span class="num">24</span>) + (<span class="var">base</span> &gt;&gt; <span class="num">16</span>) +<br/>
+<span class="in2"></span>(<span class="var">base</span> &gt;&gt; <span class="num">8</span>) + <span class="var">base</span>;<br/>
+<span class="in1"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">":00000001FF\n"</span>;<br/>
 <span class="macro">@end(<span class="name">write finish</span>)</span><br/>
 </code></div>

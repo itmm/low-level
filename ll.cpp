@@ -672,7 +672,7 @@
 		std::ostream &out, int b
 	) {
 		
-#line 99 "hex.x"
+#line 107 "hex.x"
 
 	static const char map[] {
 		"0123456789ABCDEF"
@@ -724,7 +724,7 @@
 		out << ':';
 		int l = ((c + 4 > len) ? (len - c) : 4);
 		write_byte(out, l * 4);
-		int sum = l * 4;
+		sum = l * 4;
 		int addr = base + c * 4;
 		sum += (addr >> 8) + addr;
 		write_word(out, addr);
@@ -748,6 +748,14 @@
 	
 #line 93 "hex.x"
 
+	sum =  9;
+	out << ":04000005";
+	write_word(out, base >> 16);
+	write_word(out, base);
+	sum += (base >> 24) + (base >> 16) +
+		(base >> 8) + base;
+	write_byte(out, -sum);
+	out << '\n';
 	out << ":00000001FF\n";
 
 #line 25 "hex.x"
