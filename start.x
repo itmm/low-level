@@ -318,7 +318,8 @@ These syntax trees are then transformed into machine code.
 		_type = Token_Type::unknown;
 		std::cerr <<
 			"unrecognized char [" <<
-			*_cur++ << "] \n" ;
+			*_cur << "] == " << (int) *_cur << '\n';
+		++_cur;
 	} while (false);
 @end(next)
 ```
@@ -328,6 +329,7 @@ These syntax trees are then transformed into machine code.
 ```
 @def(token types)
 	becomes,
+	t_less,
 @end(token types)
 ```
 * add token for assignment
@@ -373,6 +375,10 @@ These syntax trees are then transformed into machine code.
 		) {
 			_type = Token_Type::becomes;
 			_cur += 2;
+			break;
+		} else {
+			_type = Token_Type::t_less;
+			++_cur;
 			break;
 		}
 	}
@@ -748,6 +754,7 @@ These syntax trees are then transformed into machine code.
 @add(needed by state)
 	@put(needed by parse);
 	Expression_Ptr parse(Tokenizer &t) {
+		@put(parse special);
 		auto dst = parse_factor(t);
 		do {
 			@put(parse binary);
@@ -1525,6 +1532,225 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%x5 <- %mhartid",
 		0xf14022f3
+	);
+@end(unit-tests)
+```
+
+```
+@add(token types)
+	t_if,
+	t_colon,
+@end(token types)
+```
+
+```
+@add(recognize)
+	if (*_cur == 'i' && _cur[1] == 'f' && _cur[2] <= ' ') {
+		_type = Token_Type::t_if;
+		_cur += 2;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(recognize)
+	if (*_cur == ':') {
+		_type = Token_Type::t_colon;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(needed by parse)
+	class If:
+		public BinaryExpression
+	{
+		public:
+			If(
+				Expression_Ptr cond,
+				Expression_Ptr body
+			): BinaryExpression(
+				std::move(cond),
+				std::move(body)
+			) { }
+	};
+@end(needed by parse)
+```
+* if is a special binary expression
+
+```
+@def(parse special)
+	if (t.type() == Token_Type::t_if) {
+		t.next();
+		auto cond = parse(t);
+		if (! cond) {
+			std::cerr << "no expression after if\n";
+			return Expression_Ptr { };
+		}
+		if (t.type() != Token_Type::t_colon) {
+			std::cerr << "expecting : after if expr\n";
+			return Expression_Ptr { };
+		}
+		t.next();
+		auto body = parse(t);
+		if (! body) {
+			std::cerr << "no if body\n";
+			return Expression_Ptr { };
+		}
+		return std::make_unique<If>(std::move(cond), std::move(body));
+	}
+@end(parse special);
+```
+
+```
+@add(needed by parse)
+	class Less:
+		public BinaryExpression
+	{
+		public:
+			Less(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by parse)
+```
+* if is a special binary expression
+
+```
+@add(parse binary)
+	if (t.type() == Token_Type::t_less) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after <\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<Less>(std::move(dst), std::move(src));
+		continue;
+	}
+@end(parse binary);
+```
+
+```
+@add(parse expression)
+	If *i = dynamic_cast<If *>(&*e);
+	if (i) {
+		int reg1 { -1 };
+		int reg2 { -1 };
+		int cond { -1 };
+		int offset { 0x7fffffff };
+		t.next();
+		@put(parse if);
+	}
+@end(parse expression)
+```
+
+```
+@add(needed by state)
+	int build_b_cmd(
+		int offset, int reg2, int reg1, int cond, int opcode
+	) {
+		return ((offset & 0x1000) << (31 - 12)) |
+			(offset & 0x07e0) << (25 - 5) |
+			(reg2 << 20) | (reg1 << 15) | (cond << 12) |
+			(offset & 0x1e) << (8 - 1) |
+			(offset & 0x0800) >> (11 - 7) |
+			opcode;
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_branch(
+		int cond, char reg1, char reg2, int offset
+	) {
+		return build_b_cmd(
+			offset, reg2, reg1, cond, 0x63
+		);
+	}
+@end(needed by state)
+```
+
+```
+@def(parse if)
+	const Assignment *a = dynamic_cast<const Assignment *>(&*i->second());
+	if (! a) {
+		std::cerr << "no assignment in if\n";
+		return;
+	}
+	{
+		const Register *r = dynamic_cast<const Register *>(&*a->first());
+		if (! r || r->name() != "pc") {
+			std::cerr << "expect %pc in if assignment\n";
+			return;
+		}
+	}
+	{
+		const Addition *d = dynamic_cast<const Addition *>(&*a->second());
+		if (d) {
+			const Register *r = dynamic_cast<const Register *>(&*d->first());
+			if (! r || r->name() != "pc") {
+				std::cerr << "expect %pc in addition\n";
+				return;
+			}
+			const Number *n = dynamic_cast<const Number *>(&*d->second());
+			if (! n) {
+				std::cerr << "expected number in addition\n";
+				return;
+			}
+			offset = n->value();
+		}
+	}
+	{
+		const Less *l = dynamic_cast<const Less *>(&*i->first());
+		if (l) {
+			cond = 0x4;
+			{
+				const Number *n = dynamic_cast<const Number *>(&*l->first());
+				if (n && n->value() == 0) {
+					reg1 = 0;
+				}
+			}
+			{
+				const Register *r = dynamic_cast<const Register *>(&*l->first());
+				if (r) {
+					reg1 = r->nr();
+				}
+			}
+			{
+				const Number *n = dynamic_cast<const Number *>(&*l->second());
+				if (n && n->value() == 0) {
+					reg2 = 0;
+				}
+			}
+			{
+				const Register *r = dynamic_cast<const Register *>(&*l->second());
+				if (r) {
+					reg2 = r->nr();
+				}
+			}
+		}
+	}
+	if (reg1 >= 0 && reg2 >=0 && offset != 0x7fffffff && cond >= 0) {
+		add_machine(build_branch(cond, reg1, reg2, offset));
+		return;
+	}
+@end(parse if)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"if %x5 < 0: %pc <- %pc + -4",
+		0xfe02cee3
 	);
 @end(unit-tests)
 ```
