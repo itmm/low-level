@@ -1755,5 +1755,43 @@ and is a special binary expression
 <span class="macro">@end(<span class="name">add to pc</span>)</span><br/>
 </code></div>
 </div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_csrrw</span>(<br/>
+<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">csr</span>, <span class="type">char</span> <span class="var">src</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
+<span class="in3"></span><span class="var">csr</span>, <span class="var">src</span>, <span class="num">0x1</span>, <span class="var">dst</span>, <span class="num">0x73</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse assignment</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">name</span>() == <span class="str">"mtvec"</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span> || ! <span class="var">src</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"only assign general register\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_csrrw</span>(<span class="str">'\0'</span>, <span class="num">0x305</span>, <span class="var">src</span>-&gt;<span class="fn">nr</span>()));<br/>
+<span class="in2"></span><span class="keyword">return</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse assignment</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%mtvec &lt;- %x5"</span>,<br/>
+<span class="in2"></span><span class="num">0x30529073</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
 </body>
 </html>

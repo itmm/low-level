@@ -663,6 +663,16 @@
 		return build_u_cmd(imm, dst, 0x17);
 	}
 
+#line 1460 "start.x"
+
+	int build_csrrw(
+		char dst, int csr, char src
+	) {
+		return build_i_cmd(
+			csr, src, 0x1, dst, 0x73
+		);
+	}
+
 #line 45 "start.x"
 ;
 	class State {
@@ -941,6 +951,18 @@
 		} else {
 			std::cerr << "expected number as second argument of jump\n";
 		}
+	}
+
+#line 1472 "start.x"
+
+	if (dst->name() == "mtvec") {
+		const Register *src = dynamic_cast<const Register *>(&*a->second());
+		if (! src || ! src->is_general()) {
+			std::cerr << "only assign general register\n";
+			return;
+		}
+		add_machine(build_csrrw('\0', 0x305, src->nr()));
+		return;
 	}
 
 #line 921 "start.x"
@@ -1230,6 +1252,13 @@
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
+	);
+
+#line 1486 "start.x"
+
+	assert_line(
+		"%mtvec <- %x5",
+		0x30529073
 	);
 
 #line 172 "start.x"

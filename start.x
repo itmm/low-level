@@ -1456,3 +1456,38 @@ These syntax trees are then transformed into machine code.
 @end(add to pc)
 ```
 
+```
+@add(needed by state)
+	int build_csrrw(
+		char dst, int csr, char src
+	) {
+		return build_i_cmd(
+			csr, src, 0x1, dst, 0x73
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(parse assignment)
+	if (dst->name() == "mtvec") {
+		const Register *src = dynamic_cast<const Register *>(&*a->second());
+		if (! src || ! src->is_general()) {
+			std::cerr << "only assign general register\n";
+			return;
+		}
+		add_machine(build_csrrw('\0', 0x305, src->nr()));
+		return;
+	}
+@end(parse assignment)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%mtvec <- %x5",
+		0x30529073
+	);
+@end(unit-tests)
+```
+
