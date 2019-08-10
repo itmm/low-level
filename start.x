@@ -1,4 +1,4 @@
-# First Code fragments
+
 * start low-level with the first unit-test
 
 ```
@@ -891,58 +891,44 @@ These syntax trees are then transformed into machine code.
 	Tokenizer t { line };
 	auto e = parse(t);
 	if (! e) {
-		std::cerr << "no statement on line " << line << "\n";
+		std::cerr << "no statement on line " << line << '\n';
 		return;
 	}
+	@put(parse expression);
+	std::cerr << "can't parse " << line << '\n';
+@end(add line)
+```
+
+```
+@def(parse expression)
 	Number *n = dynamic_cast<Number *>(&*e);
 	if (n) {
 		add_machine(n->value());
 		return;
 	}
-	Assignment *a = dynamic_cast<Assignment *>(&*e);
-	if (! a) {
-		std::cerr << "assignment expected on line " << line << "\n";
-		return;
-	}
-	const Register *dst = dynamic_cast<const Register *>(&*a->first());
-	if (! dst) {
-		std::cerr << "no assignment to register\n";
-		return;
-	}
+@end(parse expression)
+```
 
+```
+@add(parse expression)
+	Assignment *a = dynamic_cast<Assignment *>(&*e);
+	if (a) {
+		const Register *dst = dynamic_cast<const Register *>(&*a->first());
+		if (! dst) {
+			std::cerr << "no assignment to register\n";
+			return;
+		}
+		@put(parse assignment);
+	}
+@end(parse expression)
+```
+
+```
+@def(parse assignment)
 	if (dst->is_general()) {
 		@put(assign to general);
-		std::cerr << "unexpected second operand\n";
-	} else if (dst->name() == "pc") {
-		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
-		if (! o) {
-			std::cerr << "only addition supported now\n";
-			return;
-		}
-		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
-		if (! src1) {
-			std::cerr << "first op of addition no register\n";
-			return;
-		}
-		if (src1->name() != "pc") {
-			std::cerr << "first op of jump is not %pc, but " << dst->name() << '\n';
-		}
-		const Number *num = dynamic_cast<const Number *>(&*o->second());
-		if (num) {
-			int val = num->value();
-			int word = 0x0000006f;
-			word |= ((val >> 12) & 0xff) << 12;
-			word |= ((val >> 11) & 0x01) << 20;
-			word |= ((val >> 1) & 0x3ff) << 21;
-			word |= ((val >> 20) & 0x01) << 31;
-			add_machine(word);
-		} else {
-			std::cerr << "expected number as second argument of jump\n";
-		}
-	} else {
-		std::cerr << "unknown register " << dst->name() << '\n';
 	}
-@end(add line)
+@end(parse assignment)
 ```
 
 ```
@@ -976,6 +962,39 @@ These syntax trees are then transformed into machine code.
 		}
 	}
 } @end(assign to general)
+```
+
+```
+@add(parse assignment)
+	if (dst->name() == "pc") {
+		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
+		if (! o) {
+			std::cerr << "only addition supported now\n";
+			return;
+		}
+		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		if (! src1) {
+			std::cerr << "first op of addition no register\n";
+			return;
+		}
+		if (src1->name() != "pc") {
+			std::cerr << "first op of jump is not %pc, but " << dst->name() << '\n';
+		}
+		const Number *num = dynamic_cast<const Number *>(&*o->second());
+		if (num) {
+			int val = num->value();
+			int word = 0x0000006f;
+			word |= ((val >> 12) & 0xff) << 12;
+			word |= ((val >> 11) & 0x01) << 20;
+			word |= ((val >> 1) & 0x3ff) << 21;
+			word |= ((val >> 20) & 0x01) << 31;
+			add_machine(word);
+			return;
+		} else {
+			std::cerr << "expected number as second argument of jump\n";
+		}
+	}
+@end(parse assignment)
 ```
 
 ```
@@ -1295,3 +1314,76 @@ These syntax trees are then transformed into machine code.
 @end(unit-tests)
 ```
 
+```
+@add(assign to general) {
+	const Number *o = dynamic_cast<const Number *>(&*a->second());
+	if (o) {
+		@put(load number);
+	}
+} @end(assign to general)
+```
+
+```
+@add(needed by state)
+	int build_u_cmd(
+		int imm, char dst, int opcode
+	) {
+		return (imm & 0xfffff800) | (dst << 7) | opcode;
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_lui(
+		char dst, int imm
+	) {
+		return build_u_cmd(imm, dst, 0x37);
+	}
+@end(needed by state)
+```
+
+```
+@def(load number)
+	int upper { o->value() & ~ 0x7ff };
+	if (upper && upper != ~ 0x7ff) {
+		add_machine(build_lui(dst->nr(), o->value()));
+	}
+@end(load number)
+```
+
+```
+@add(load number)
+	if (o->value() == 0 || (o->value() & 0x7ff)) {
+		add_machine(build_add((char) dst->nr(), (char) 0, o->value()));
+	}
+	return;
+@end(load number)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x11 <- $0d",
+		0x00d00593
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x12 <- $0a",
+		0x00a00613
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x10 <- $1013000",
+		0x1013537
+	);
+@end(unit-tests)
+```

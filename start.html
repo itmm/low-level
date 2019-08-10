@@ -1,20 +1,6 @@
-<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<title>First Code fragments</title>
-<link rel="stylesheet" type="text/css" href="slides/slides.css"></head>
-<body>
-<h1>First Code fragments</h1>
+<p>* start low-level with the first unit-test
+</p>
 <div class="slides">
-<div>
-<div>
-<h1>First Code fragments</h1>
-</div>
-<ul><li>
-start low-level with the first unit-test
-</li></ul>
-</div>
 <div><div>
 <code>
 <span class="macro">@Def(<span class="name">file: ll.cpp</span>)</span><br/>
@@ -1149,58 +1135,47 @@ otherwise returns the factor
 <span class="in1"></span><span class="type">Tokenizer</span> <span class="var">t</span> { <span class="var">line</span> };<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">e</span> = <span class="fn">parse</span>(<span class="var">t</span>);<br/>
 <span class="in1"></span><span class="keyword">if</span> (! <span class="var">e</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no statement on line "</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no statement on line "</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">parse expression</span>)</span>;<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"can't parse "</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
+<span class="macro">@end(<span class="name">add line</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">parse expression</span>)</span><br/>
 <span class="in1"></span><span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">Number</span> *&gt;(&amp;*<span class="var">e</span>);<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">n</span>) {<br/>
 <span class="in2"></span><span class="fn">add_machine</span>(<span class="var">n</span>-&gt;<span class="fn">value</span>());<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse expression</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse expression</span>)</span><br/>
 <span class="in1"></span><span class="type">Assignment</span> *<span class="var">a</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">Assignment</span> *&gt;(&amp;*<span class="var">e</span>);<br/>
-<span class="in1"></span><span class="keyword">if</span> (! <span class="var">a</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"assignment expected on line "</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
-<span class="in2"></span><span class="keyword">return</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">a</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">dst</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">dst</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no assignment to register\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">parse assignment</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">dst</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
-<span class="in1"></span><span class="keyword">if</span> (! <span class="var">dst</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no assignment to register\n"</span>;<br/>
-<span class="in2"></span><span class="keyword">return</span>;<br/>
-<span class="in1"></span>}<br/>
-<br/>
+<span class="macro">@end(<span class="name">parse expression</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">parse assignment</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">is_general</span>()) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">assign to general</span>)</span>;<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"unexpected second operand\n"</span>;<br/>
-<span class="in1"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">name</span>() == <span class="str">"pc"</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">o</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"only addition supported now\n"</span>;<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition no register\n"</span>;<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">src1</span>-&gt;<span class="fn">name</span>() != <span class="str">"pc"</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of jump is not %pc, but "</span> &lt;&lt; <span class="var">dst</span>-&gt;<span class="fn">name</span>() &lt;&lt; <span class="str">'\n'</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">num</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">num</span>) {<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">val</span> = <span class="var">num</span>-&gt;<span class="fn">value</span>();<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">word</span> = <span class="num">0x0000006f</span>;<br/>
-<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">12</span>) &amp; <span class="num">0xff</span>) &lt;&lt; <span class="num">12</span>;<br/>
-<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">11</span>) &amp; <span class="num">0x01</span>) &lt;&lt; <span class="num">20</span>;<br/>
-<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">1</span>) &amp; <span class="num">0x3ff</span>) &lt;&lt; <span class="num">21</span>;<br/>
-<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">20</span>) &amp; <span class="num">0x01</span>) &lt;&lt; <span class="num">31</span>;<br/>
-<span class="in3"></span><span class="fn">add_machine</span>(<span class="var">word</span>);<br/>
-<span class="in2"></span>} <span class="keyword">else</span> {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expected number as second argument of jump\n"</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} <span class="keyword">else</span> {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"unknown register "</span> &lt;&lt; <span class="var">dst</span>-&gt;<span class="fn">name</span>() &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">add line</span>)</span><br/>
+<span class="macro">@end(<span class="name">parse assignment</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1235,6 +1210,40 @@ otherwise returns the factor
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse assignment</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">name</span>() == <span class="str">"pc"</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">o</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"only addition supported now\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition no register\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">src1</span>-&gt;<span class="fn">name</span>() != <span class="str">"pc"</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of jump is not %pc, but "</span> &lt;&lt; <span class="var">dst</span>-&gt;<span class="fn">name</span>() &lt;&lt; <span class="str">'\n'</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">num</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">num</span>) {<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">val</span> = <span class="var">num</span>-&gt;<span class="fn">value</span>();<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">word</span> = <span class="num">0x0000006f</span>;<br/>
+<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">12</span>) &amp; <span class="num">0xff</span>) &lt;&lt; <span class="num">12</span>;<br/>
+<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">11</span>) &amp; <span class="num">0x01</span>) &lt;&lt; <span class="num">20</span>;<br/>
+<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">1</span>) &amp; <span class="num">0x3ff</span>) &lt;&lt; <span class="num">21</span>;<br/>
+<span class="in3"></span><span class="var">word</span> |= ((<span class="var">val</span> &gt;&gt; <span class="num">20</span>) &amp; <span class="num">0x01</span>) &lt;&lt; <span class="num">31</span>;<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="var">word</span>);<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>} <span class="keyword">else</span> {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expected number as second argument of jump\n"</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse assignment</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1584,6 +1593,88 @@ and is a special binary expression
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x6 &lt;- %x6 | $1"</span>,<br/>
 <span class="in2"></span><span class="num">0x00136313</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">load number</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_u_cmd</span>(<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">imm</span>, <span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">opcode</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> (<span class="var">imm</span> &amp; <span class="num">0xfffff800</span>) | (<span class="var">dst</span> &lt;&lt; <span class="num">7</span>) | <span class="var">opcode</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_lui</span>(<br/>
+<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">imm</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_u_cmd</span>(<span class="var">imm</span>, <span class="var">dst</span>, <span class="num">0x37</span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">load number</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">upper</span> { <span class="var">o</span>-&gt;<span class="fn">value</span>() &amp; ~ <span class="num">0x7ff</span> };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">upper</span> &amp;&amp; <span class="var">upper</span> != ~ <span class="num">0x7ff</span>) {<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_lui</span>(<span class="var">dst</span>-&gt;<span class="fn">nr</span>(), <span class="var">o</span>-&gt;<span class="fn">value</span>()));<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">load number</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">load number</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>-&gt;<span class="fn">value</span>() == <span class="num">0</span> || (<span class="var">o</span>-&gt;<span class="fn">value</span>() &amp; <span class="num">0x7ff</span>)) {<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_add</span>((<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="num">0</span>, <span class="var">o</span>-&gt;<span class="fn">value</span>()));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="keyword">return</span>;<br/>
+<span class="macro">@end(<span class="name">load number</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x11 &lt;- $0d"</span>,<br/>
+<span class="in2"></span><span class="num">0x00d00593</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x12 &lt;- $0a"</span>,<br/>
+<span class="in2"></span><span class="num">0x00a00613</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x10 &lt;- $1013000"</span>,<br/>
+<span class="in2"></span><span class="num">0x1013537</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>

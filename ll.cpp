@@ -44,7 +44,7 @@
 
 	number,
 
-#line 1063 "start.x"
+#line 1082 "start.x"
 
 	t_and,
 	t_or,
@@ -196,7 +196,7 @@
 		break;
 	}
 
-#line 1031 "start.x"
+#line 1050 "start.x"
 
 	if (*_cur == '$') {
 		_value = 0;
@@ -217,14 +217,14 @@
 		break;
 	}
 
-#line 1054 "start.x"
+#line 1073 "start.x"
 
 	if (*_cur == '#') {
 		_type = Token_Type::end;
 		break;
 	}
 
-#line 1070 "start.x"
+#line 1089 "start.x"
 
 	if (*_cur == '&') {
 		_type = Token_Type::t_and;
@@ -232,7 +232,7 @@
 		break;
 	}
 
-#line 1080 "start.x"
+#line 1099 "start.x"
 
 	if (*_cur == '|') {
 		_type = Token_Type::t_or;
@@ -463,7 +463,7 @@
 #line 748 "start.x"
 
 	
-#line 1090 "start.x"
+#line 1109 "start.x"
 
 	class BinaryAnd:
 		public BinaryExpression
@@ -478,7 +478,7 @@
 			) { }
 	};
 
-#line 1108 "start.x"
+#line 1127 "start.x"
 
 	class BinaryOr:
 		public BinaryExpression
@@ -524,7 +524,7 @@
 		continue;
 	}
 
-#line 1126 "start.x"
+#line 1145 "start.x"
 
 	if (t.type() == Token_Type::t_and) {
 		t.next();
@@ -537,7 +537,7 @@
 		continue;
 	}
 
-#line 1141 "start.x"
+#line 1160 "start.x"
 
 	if (t.type() == Token_Type::t_or) {
 		t.next();
@@ -597,7 +597,7 @@
 		);
 	}
 
-#line 1222 "start.x"
+#line 1241 "start.x"
 
 	int build_and(
 		char dst, char src1, char src2
@@ -608,7 +608,7 @@
 		);
 	}
 
-#line 1235 "start.x"
+#line 1254 "start.x"
 
 	int build_and(
 		char dst, char src1, int imm
@@ -618,7 +618,7 @@
 		);
 	}
 
-#line 1247 "start.x"
+#line 1266 "start.x"
 
 	int build_or(
 		char dst, char src1, char src2
@@ -629,7 +629,7 @@
 		);
 	}
 
-#line 1260 "start.x"
+#line 1279 "start.x"
 
 	int build_or(
 		char dst, char src1, int imm
@@ -637,6 +637,22 @@
 		return build_i_cmd(
 			imm, src1, 0x6, dst, 0x13
 		);
+	}
+
+#line 1327 "start.x"
+
+	int build_u_cmd(
+		int imm, char dst, int opcode
+	) {
+		return (imm & 0xfffff800) | (dst << 7) | opcode;
+	}
+
+#line 1337 "start.x"
+
+	int build_lui(
+		char dst, int imm
+	) {
+		return build_u_cmd(imm, dst, 0x37);
 	}
 
 #line 45 "start.x"
@@ -699,28 +715,33 @@
 	Tokenizer t { line };
 	auto e = parse(t);
 	if (! e) {
-		std::cerr << "no statement on line " << line << "\n";
+		std::cerr << "no statement on line " << line << '\n';
 		return;
 	}
+	
+#line 903 "start.x"
+
 	Number *n = dynamic_cast<Number *>(&*e);
 	if (n) {
 		add_machine(n->value());
 		return;
 	}
+
+#line 913 "start.x"
+
 	Assignment *a = dynamic_cast<Assignment *>(&*e);
-	if (! a) {
-		std::cerr << "assignment expected on line " << line << "\n";
-		return;
-	}
-	const Register *dst = dynamic_cast<const Register *>(&*a->first());
-	if (! dst) {
-		std::cerr << "no assignment to register\n";
-		return;
-	}
+	if (a) {
+		const Register *dst = dynamic_cast<const Register *>(&*a->first());
+		if (! dst) {
+			std::cerr << "no assignment to register\n";
+			return;
+		}
+		
+#line 927 "start.x"
 
 	if (dst->is_general()) {
 		
-#line 949 "start.x"
+#line 935 "start.x"
  {
 	const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 	if (o) {
@@ -751,7 +772,7 @@
 		}
 	}
 } 
-#line 1156 "start.x"
+#line 1175 "start.x"
  {
 	const BinaryAnd *o = dynamic_cast<const BinaryAnd *>(&*a->second());
 	if (o) {
@@ -782,7 +803,7 @@
 		}
 	}
 } 
-#line 1189 "start.x"
+#line 1208 "start.x"
  {
 	const BinaryOr *o = dynamic_cast<const BinaryOr *>(&*a->second());
 	if (o) {
@@ -813,10 +834,36 @@
 		}
 	}
 } 
-#line 914 "start.x"
+#line 1318 "start.x"
+ {
+	const Number *o = dynamic_cast<const Number *>(&*a->second());
+	if (o) {
+		
+#line 1347 "start.x"
+
+	int upper { o->value() & ~ 0x7ff };
+	if (upper && upper != ~ 0x7ff) {
+		add_machine(build_lui(dst->nr(), o->value()));
+	}
+
+#line 1356 "start.x"
+
+	if (o->value() == 0 || (o->value() & 0x7ff)) {
+		add_machine(build_add((char) dst->nr(), (char) 0, o->value()));
+	}
+	return;
+
+#line 1321 "start.x"
 ;
-		std::cerr << "unexpected second operand\n";
-	} else if (dst->name() == "pc") {
+	}
+} 
+#line 929 "start.x"
+;
+	}
+
+#line 968 "start.x"
+
+	if (dst->name() == "pc") {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 		if (! o) {
 			std::cerr << "only addition supported now\n";
@@ -839,12 +886,19 @@
 			word |= ((val >> 1) & 0x3ff) << 21;
 			word |= ((val >> 20) & 0x01) << 31;
 			add_machine(word);
+			return;
 		} else {
 			std::cerr << "expected number as second argument of jump\n";
 		}
-	} else {
-		std::cerr << "unknown register " << dst->name() << '\n';
 	}
+
+#line 921 "start.x"
+;
+	}
+
+#line 897 "start.x"
+;
+	std::cerr << "can't parse " << line << '\n';
 
 #line 79 "start.x"
 ;
@@ -1057,46 +1111,67 @@
 	assert_register("%x10", "x10");
 	assert_register("%pc", "pc");
 
-#line 982 "start.x"
+#line 1001 "start.x"
 
 	assert_line(
 		"%pc <- %pc + 0",
 		0x0000006f
 	);
 
-#line 993 "start.x"
+#line 1012 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -28",
 		0xfe5ff06f
 	);
 
-#line 1003 "start.x"
+#line 1022 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -32",
 		0xfe1ff06f
 	);
 
-#line 1272 "start.x"
+#line 1291 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 & $ff",
 		0x0ff2f293
 	);
 
-#line 1281 "start.x"
+#line 1300 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 | $1",
 		0x0012e293
 	);
 
-#line 1290 "start.x"
+#line 1309 "start.x"
 
 	assert_line(
 		"%x6 <- %x6 | $1",
 		0x00136313
+	);
+
+#line 1365 "start.x"
+
+	assert_line(
+		"%x11 <- $0d",
+		0x00d00593
+	);
+
+#line 1374 "start.x"
+
+	assert_line(
+		"%x12 <- $0a",
+		0x00a00613
+	);
+
+#line 1383 "start.x"
+
+	assert_line(
+		"%x10 <- $1013000",
+		0x1013537
 	);
 
 #line 172 "start.x"
@@ -1105,10 +1180,10 @@
 #line 10 "start.x"
 
 		
-#line 1013 "start.x"
+#line 1032 "start.x"
 
 	
-#line 1020 "start.x"
+#line 1039 "start.x"
 
 	State s;
 	std::string l;
@@ -1117,7 +1192,7 @@
 		s.add_line(l);
 	}
 
-#line 1014 "start.x"
+#line 1033 "start.x"
 
 
 #line 16 "hex.x"
