@@ -69,10 +69,9 @@ the address is calculated relative to <code><span class="keyword">%pc</span></co
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
 <span class="in2"></span><span class="var">tmp</span> &lt;- <span class="keyword">%mhartid</span><br/>
 <span class="in1"></span><span class="type">block_other_harts</span> = <span class="num">*</span><br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> != <span class="num">0</span>) { \<br/>
+<span class="in2"></span><span class="keyword">if</span> <span class="var">tmp</span> != <span class="num">0</span>: \<br/>
 <span class="in3"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + \<br/>
-<span class="in4"></span>(<span class="type">block_other_harts</span> - <span class="num">*</span>) \<br/>
-<span class="in2"></span>}<br/>
+<span class="in4"></span>(<span class="type">block_other_harts</span> - <span class="num">*</span>)<br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -136,13 +135,11 @@ store ASCII new-line and carriage-return codes in registers for fast  access
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
 <span class="in1"></span><span class="type">loop</span> = <span class="num">*</span><br/>
 <span class="in2"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span> + <span class="num">$04</span>]<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> &lt; <span class="num">0</span> { \<br/>
-<span class="in3"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>) \<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> <span class="var">tmp</span> &lt; <span class="num">0</span>: \<br/>
+<span class="in3"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>)<br/>
 <span class="in2"></span><span class="var">tmp</span> &lt;- <span class="var">tmp</span> &amp; <span class="num">$ff</span><br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> = <span class="num">0</span>) { \<br/>
-<span class="in3"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>) \<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> <span class="var">tmp</span> = <span class="num">0</span>: \<br/>
+<span class="in3"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>)<br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -157,9 +154,8 @@ only continue if the char is not <code><span class="num">0</span></code>
 <span class="in1"></span><span class="var">tmp2</span> = <span class="keyword">%t1</span><br/>
 <span class="in1"></span><span class="type">normal</span> = <span class="num">*</span><br/>
 <span class="in2"></span><span class="var">tmp2</span> &lt;- [<span class="var">uart</span>]<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp2</span> &lt; <span class="num">0</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> <span class="var">tmp2</span> &lt; <span class="num">0</span>: \<br/>
 <span class="in3"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">normal</span> - *)<br/>
-<span class="in2"></span>}<br/>
 <span class="in2"></span>[<span class="var">uart</span>] &lt;- <span class="var">tmp</span><br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
@@ -174,9 +170,8 @@ then wait for next char
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">tmp</span> &lt;&gt; <span class="var">carriage_return</span>) { \<br/>
-<span class="in2"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>) \<br/>
-<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="keyword">if</span> <span class="var">tmp</span> &lt;&gt; <span class="var">carriage_return</span>: \<br/>
+<span class="in2"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>)<br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -190,10 +185,9 @@ an carriage return is echoed first
 <span class="macro">@add(<span class="name">src</span>)</span><br/>
 <span class="in1"></span><span class="type">do_new_line</span> = <span class="num">*</span><br/>
 <span class="in2"></span><span class="var">tmp</span> &lt;- [<span class="var">uart</span>]<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">tmp</span> &lt; <span class="num">0</span>) { \<br/>
+<span class="in2"></span><span class="keyword">if</span> <span class="var">tmp</span> &lt; <span class="num">0</span>: \<br/>
 <span class="in3"></span><span class="keyword">%pc</span> &lt;- \<br/>
-<span class="in4"></span><span class="keyword">%pc</span> + (<span class="type">do_new_line</span> - *) \<br/>
-<span class="in2"></span>}<br/>
+<span class="in4"></span><span class="keyword">%pc</span> + (<span class="type">do_new_line</span> - *)<br/>
 <span class="in2"></span>[<span class="var">uart</span>] &lt;- <span class="var">new_line</span><br/>
 <span class="in2"></span><span class="keyword">%pc</span> &lt;- <span class="keyword">%pc</span> + (<span class="type">loop</span> - <span class="num">*</span>)<br/>
 <span class="macro">@end(<span class="name">src</span>)</span><br/>

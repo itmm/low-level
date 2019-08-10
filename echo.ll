@@ -9,10 +9,9 @@
 
 		tmp <- %mhartid
 	block_other_harts = *
-		if (tmp != 0) { \
+		if tmp != 0: \
 			%pc <- %pc + \
-				(block_other_harts - *) \
-		}
+				(block_other_harts - *)
 
 	uart = %a0
 	uart <- $1013000
@@ -32,32 +31,27 @@
 
 	loop = *
 		tmp <- [uart + $04]
-		if (tmp < 0 { \
-			%pc <- %pc + (loop - *) \
-		}
+		if tmp < 0: \
+			%pc <- %pc + (loop - *)
 		tmp <- tmp & $ff
-		if (tmp = 0) { \
-			%pc <- %pc + (loop - *) \
-		}
+		if tmp = 0: \
+			%pc <- %pc + (loop - *)
 
 	tmp2 = %t1
 	normal = *
 		tmp2 <- [uart]
-		if (tmp2 < 0) {
+		if tmp2 < 0: \
 			%pc <- %pc + (normal - *)
-		}
 		[uart] <- tmp
 
-	if (tmp <> carriage_return) { \
-		%pc <- %pc + (loop - *) \
-	}
+	if tmp <> carriage_return: \
+		%pc <- %pc + (loop - *)
 
 	do_new_line = *
 		tmp <- [uart]
-		if (tmp < 0) { \
+		if tmp < 0: \
 			%pc <- \
-				%pc + (do_new_line - *) \
-		}
+				%pc + (do_new_line - *)
 		[uart] <- new_line
 		%pc <- %pc + (loop - *)
 

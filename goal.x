@@ -40,10 +40,9 @@ interrupted with some comments.
 @add(src)
 		tmp <- @k(%mhartid)
 	@t(block_other_harts) = @n(*)
-		if (tmp != 0) { \
+		if tmp != 0: \
 			@k(%pc) <- @k(%pc) + \
-				(@t(block_other_harts) - @n(*)) \
-		}
+				(@t(block_other_harts) - @n(*))
 @end(src)
 ```
 * only continue if running on hart `0`
@@ -91,13 +90,11 @@ interrupted with some comments.
 @add(src)
 	@t(loop) = @n(*)
 		tmp <- [uart + @n($04)]
-		if (tmp < 0 { \
-			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
-		}
+		if tmp < 0: \
+			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 		tmp <- tmp & @n($ff)
-		if (tmp = 0) { \
-			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
-		}
+		if tmp = 0: \
+			@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 @end(src)
 ```
 * wait until char is available and read char
@@ -108,9 +105,8 @@ interrupted with some comments.
 	tmp2 = @k(%t1)
 	@t(normal) = @n(*)
 		tmp2 <- [uart]
-		if (tmp2 < 0) {
+		if tmp2 < 0: \
 			@k(%pc) <- @k(%pc) + (@t(normal) - *)
-		}
 		[uart] <- tmp
 @end(src)
 ```
@@ -120,9 +116,8 @@ interrupted with some comments.
 
 ```
 @add(src)
-	if (tmp <> carriage_return) { \
-		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*)) \
-	}
+	if tmp <> carriage_return: \
+		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 @end(src)
 ```
 * special processing for new-line characters
@@ -132,10 +127,9 @@ interrupted with some comments.
 @add(src)
 	@t(do_new_line) = @n(*)
 		tmp <- [uart]
-		if (tmp < 0) { \
+		if tmp < 0: \
 			@k(%pc) <- \
-				@k(%pc) + (@t(do_new_line) - *) \
-		}
+				@k(%pc) + (@t(do_new_line) - *)
 		[uart] <- new_line
 		@k(%pc) <- @k(%pc) + (@t(loop) - @n(*))
 @end(src)

@@ -1081,11 +1081,18 @@
 #line 1272 "start.x"
 
 	assert_line(
+		"%x5 <- %x5 & $ff",
+		0x0ff2f293
+	);
+
+#line 1281 "start.x"
+
+	assert_line(
 		"%x5 <- %x5 | $1",
 		0x0012e293
 	);
 
-#line 1281 "start.x"
+#line 1290 "start.x"
 
 	assert_line(
 		"%x6 <- %x6 | $1",

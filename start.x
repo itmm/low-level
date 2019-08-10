@@ -1271,6 +1271,15 @@ These syntax trees are then transformed into machine code.
 ```
 @add(unit-tests)
 	assert_line(
+		"%x5 <- %x5 & $ff",
+		0x0ff2f293
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
 		"%x5 <- %x5 | $1",
 		0x0012e293
 	);
