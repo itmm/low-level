@@ -663,13 +663,23 @@
 		return build_u_cmd(imm, dst, 0x17);
 	}
 
-#line 1460 "start.x"
+#line 1468 "start.x"
 
 	int build_csrrw(
 		char dst, int csr, char src
 	) {
 		return build_i_cmd(
 			csr, src, 0x1, dst, 0x73
+		);
+	}
+
+#line 1503 "start.x"
+
+	int build_csrrs(
+		char dst, int csr, char src
+	) {
+		return build_i_cmd(
+			csr, src, 0x2, dst, 0x73
 		);
 	}
 
@@ -800,24 +810,24 @@
 ;
 	}
 
-#line 1437 "start.x"
+#line 1445 "start.x"
 
 	if (src1->name() == "pc") {
 		
-#line 1445 "start.x"
+#line 1453 "start.x"
 
 	const Number *n2 = dynamic_cast<const Number *>(&*o->second());
 	if (n2) {
 		add_machine(build_auipc(
 			(char) dst->nr(), n2->value()
 		));
-		if (n2->value() & 0x7ff) {
-			add_machine(build_add((char) dst->nr(), (char) dst->nr(), n2->value() & 0x7ff));
+		if (n2->value() & 0xfff) {
+			add_machine(build_add((char) dst->nr(), (char) dst->nr(), n2->value() & 0xfff));
 		}
 		return;
 	}
 
-#line 1439 "start.x"
+#line 1447 "start.x"
 ;
 	}
 
@@ -894,14 +904,14 @@
 		
 #line 1363 "start.x"
 
-	int upper { o->value() & ~ 0x7ff };
-	if (upper && upper != ~ 0x7ff) {
+	int upper { o->value() & ~ 0xfff };
+	if (upper && upper != ~ 0xfff) {
 		add_machine(build_lui(dst->nr(), o->value()));
 	}
 
 #line 1372 "start.x"
 
-	if (o->value() == 0 || (o->value() & 0x7ff)) {
+	if (o->value() == 0 || (o->value() & 0xfff)) {
 		add_machine(build_add((char) dst->nr(), (char) 0, o->value()));
 	}
 	return;
@@ -913,9 +923,24 @@
 #line 1418 "start.x"
  {
 	const Register *o = dynamic_cast<const Register *>(&*a->second());
-	if (o && o->name() == "pc") {
+	if (o) {
+		
+#line 1427 "start.x"
+
+	if (o->name() == "pc") {
 		add_machine(build_auipc(dst->nr(), 0));
 		return;
+	}
+
+#line 1515 "start.x"
+
+	if (o->name() == "mhartid") {
+		add_machine(build_csrrs(dst->nr(), 0xf14, '\0'));
+		return;
+	}
+
+#line 1421 "start.x"
+;
 	}
 } 
 #line 929 "start.x"
@@ -953,7 +978,7 @@
 		}
 	}
 
-#line 1472 "start.x"
+#line 1480 "start.x"
 
 	if (dst->name() == "mtvec") {
 		const Register *src = dynamic_cast<const Register *>(&*a->second());
@@ -1247,18 +1272,25 @@
 		0x1013537
 	);
 
-#line 1428 "start.x"
+#line 1436 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 1486 "start.x"
+#line 1494 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
+	);
+
+#line 1524 "start.x"
+
+	assert_line(
+		"%x5 <- %mhartid",
+		0xf14022f3
 	);
 
 #line 172 "start.x"

@@ -1361,8 +1361,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(load number)
-	int upper { o->value() & ~ 0x7ff };
-	if (upper && upper != ~ 0x7ff) {
+	int upper { o->value() & ~ 0xfff };
+	if (upper && upper != ~ 0xfff) {
 		add_machine(build_lui(dst->nr(), o->value()));
 	}
 @end(load number)
@@ -1370,7 +1370,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(load number)
-	if (o->value() == 0 || (o->value() & 0x7ff)) {
+	if (o->value() == 0 || (o->value() & 0xfff)) {
 		add_machine(build_add((char) dst->nr(), (char) 0, o->value()));
 	}
 	return;
@@ -1417,11 +1417,19 @@ These syntax trees are then transformed into machine code.
 ```
 @add(assign to general) {
 	const Register *o = dynamic_cast<const Register *>(&*a->second());
-	if (o && o->name() == "pc") {
+	if (o) {
+		@put(assign register to general);
+	}
+} @end(assign to general)
+```
+
+```
+@def(assign register to general)
+	if (o->name() == "pc") {
 		add_machine(build_auipc(dst->nr(), 0));
 		return;
 	}
-} @end(assign to general)
+@end(assign register to general)
 ```
 
 ```
@@ -1448,8 +1456,8 @@ These syntax trees are then transformed into machine code.
 		add_machine(build_auipc(
 			(char) dst->nr(), n2->value()
 		));
-		if (n2->value() & 0x7ff) {
-			add_machine(build_add((char) dst->nr(), (char) dst->nr(), n2->value() & 0x7ff));
+		if (n2->value() & 0xfff) {
+			add_machine(build_add((char) dst->nr(), (char) dst->nr(), n2->value() & 0xfff));
 		}
 		return;
 	}
@@ -1487,6 +1495,36 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
+	);
+@end(unit-tests)
+```
+
+```
+@add(needed by state)
+	int build_csrrs(
+		char dst, int csr, char src
+	) {
+		return build_i_cmd(
+			csr, src, 0x2, dst, 0x73
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(assign register to general)
+	if (o->name() == "mhartid") {
+		add_machine(build_csrrs(dst->nr(), 0xf14, '\0'));
+		return;
+	}
+@end(assign register to general)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x5 <- %mhartid",
+		0xf14022f3
 	);
 @end(unit-tests)
 ```
