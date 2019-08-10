@@ -940,28 +940,44 @@ These syntax trees are then transformed into machine code.
 			std::cerr << "first op of addition no register\n";
 			return;
 		}
-		if (! src1->is_general()) {
-			std::cerr << "first of of addition no general register\n";
-		}
-		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
-		if (src2) {
-			if (! src2->is_general()) {
-				std::cerr << "second of of addition no general register\n";
-			}
-			add_machine(build_add(
-				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
-			));
-			return;
-		}
-		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
-		if (n2) {
-			add_machine(build_add(
-				(char) dst->nr(), (char) src1->nr(), n2->value()
-			));
-			return;
-		}
+		@put(add to register);
 	}
 } @end(assign to general)
+```
+
+```
+@def(add to register)
+	if (src1->is_general()) {
+		@put(add to general);
+	}
+@end(add to register)
+```
+
+```
+@def(add to general)
+	const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+	if (src2) {
+		if (! src2->is_general()) {
+			std::cerr << "second of of addition no general register\n";
+		}
+		add_machine(build_add(
+			(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+		));
+		return;
+	}
+@end(add to general)
+```
+
+```
+@add(add to general)
+	const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+	if (n2) {
+		add_machine(build_add(
+			(char) dst->nr(), (char) src1->nr(), n2->value()
+		));
+		return;
+	}
+@end(add to general)
 ```
 
 ```
@@ -1415,5 +1431,28 @@ These syntax trees are then transformed into machine code.
 		0x00000297
 	);
 @end(unit-tests)
+```
+
+```
+@add(add to register)
+	if (src1->name() == "pc") {
+		@put(add to pc);
+	}
+@end(add to register)
+```
+
+```
+@def(add to pc)
+	const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+	if (n2) {
+		add_machine(build_auipc(
+			(char) dst->nr(), n2->value()
+		));
+		if (n2->value() & 0x7ff) {
+			add_machine(build_add((char) dst->nr(), (char) dst->nr(), n2->value() & 0x7ff));
+		}
+		return;
+	}
+@end(add to pc)
 ```
 
