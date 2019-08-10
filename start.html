@@ -267,6 +267,7 @@ the first test checks that a simple register add can be parsed
 <span class="in1"></span><span class="type">State</span> <span class="var">s</span>;<br/>
 <span class="in1"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">line</span>);<br/>
 <span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">code_size</span>() == <span class="num">1</span>);<br/>
+<span class="in1"></span>// <span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">expected</span> &lt;&lt; <span class="str">", "</span> &lt;&lt; <span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) == <span class="var">expected</span>);<br/>
 <span class="macro">@end(<span class="name">assert line</span>)</span><br/>
 </code></div>
@@ -695,6 +696,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in2"></span><span class="type">std</span>::<span class="var">unique_ptr</span>&lt;<span class="type">Expression</span>&gt;;<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+shortcut for expression pointer
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -709,6 +713,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+a binary expression has two operands
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -722,6 +729,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>{ }<br/>
 <span class="macro">@end(<span class="name">bin expr methods</span>)</span><br/>
 </code></div>
+<ul><li>
+the constructor consumes the operands
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -734,6 +744,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">bin expr methods</span>)</span><br/>
 </code></div>
+<ul><li>
+accessors for the operands
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -752,6 +765,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+assignment is a special binary expression
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -770,6 +786,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+addition is a special binary expression
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -781,6 +800,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+register access is an expression
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -789,6 +811,13 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span><span class="type">const</span> <span class="type">int</span> <span class="var">_nr</span>;<br/>
 <span class="macro">@end(<span class="name">register privates</span>)</span><br/>
 </code></div>
+<ul><li>
+register has a name
+</li><li>
+and a number if it is a general purpose register
+</li><li>
+otherwise <code><span class="var">_nr</span></code> is negative
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -802,15 +831,41 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">register privates</span>)</span><br/>
 </code></div>
+<ul><li>
+get register number from name, if it is a general purpose register
+</li><li>
+otherwise return a negitave number
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">nr from name</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span>.<span class="fn">empty</span>()) { <span class="keyword">return</span> -<span class="num">1</span>; }<br/>
+<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
+</code></div>
+<ul><li>
+empty name is no general purpose register
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">nr from name</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span> == <span class="str">"x"</span>) { <span class="keyword">return</span> -<span class="num">1</span>; }<br/>
+<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
+</code></div>
+<ul><li>
+the name <code>%<span class="var">x</span></code> is no general purpose register
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">nr from name</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span>[<span class="num">0</span>] != <span class="str">'x'</span>) { <span class="keyword">return</span> -<span class="num">1</span>; }<br/>
 <span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
 </code></div>
+<ul><li>
+if the name does not start with <code>%<span class="var">x</span></code> it is not a general purpose  register
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -828,6 +883,11 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
 </code></div>
+<ul><li>
+parse the register number from the digits
+</li><li>
+if some other char occurs, it is no general purpose register
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -837,6 +897,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
 </code></div>
+<ul><li>
+only numbers <code><span class="num">0</span></code> to <code><span class="num">31</span></code> are valid general purpose registers
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -847,6 +910,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>{ }<br/>
 <span class="macro">@end(<span class="name">register methods</span>)</span><br/>
 </code></div>
+<ul><li>
+init with name and register number
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -860,6 +926,11 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">register methods</span>)</span><br/>
 </code></div>
+<ul><li>
+accessors for attributes
+</li><li>
+and shortcut to decide if the register is a general purpose register
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -878,6 +949,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+number is a special expression
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -891,6 +965,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+parses a arithmetic factor
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -905,37 +982,58 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">parse factor</span>)</span><br/>
 </code></div>
+<ul><li>
+registers are valid factors
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">needed by parse</span>)</span>;<br/>
 <span class="in1"></span><span class="type">Expression_Ptr</span> <span class="fn">parse</span>(<span class="type">Tokenizer</span> &amp;<span class="var">t</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">dst</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>);<br/>
-<span class="in2"></span><span class="type">bool</span> <span class="var">is_reg</span> = !! <span class="var">dynamic_cast</span>&lt;<span class="type">Register</span> *&gt;(&amp;*<span class="var">dst</span>);<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">becomes</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">is_reg</span>) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"assigment to no-reg\n"</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
-<span class="in3"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse</span>(<span class="var">t</span>);<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no expression after &lt;-\n"</span>;<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Assignment</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
-<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">plus</span>) {<br/>
-<span class="in3"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
-<span class="in3"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse</span>(<span class="var">t</span>);<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no expression after +\n"</span>;<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Addition</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
-<span class="in2"></span>} <span class="keyword">else</span> {<br/>
-<span class="in3"></span><span class="keyword">return</span> <span class="var">dst</span>;<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">do</span> {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">parse binary</span>)</span>;<br/>
+<span class="in2"></span>} <span class="keyword">while</span> (<span class="num">false</span>);<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="var">dst</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+<ul><li>
+parses a factor that can be followed by a binary expression
+</li><li>
+otherwise returns the factor
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">parse binary</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">becomes</span>) {<br/>
+<span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse</span>(<span class="var">t</span>);<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no expression after &lt;-\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Assignment</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse binary</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">plus</span>) {<br/>
+<span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>);<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no factor after +\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">dst</span> = <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Addition</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse binary</span>)</span>;<br/>
 </code></div>
 </div>
 <div><div>
@@ -1071,36 +1169,7 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span>}<br/>
 <br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">o</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"only addition supported now\n"</span>;<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition no register\n"</span>;<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first of of addition no general register\n"</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of addition no general register\n"</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_add</span>(<br/>
-<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
-<span class="in3"></span>));<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
-<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_add</span>(<br/>
-<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), <span class="var">n2</span>-&gt;<span class="fn">value</span>()<br/>
-<span class="in3"></span>));<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">assign to general</span>)</span>;<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"unexpected second operand\n"</span>;<br/>
 <span class="in1"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">name</span>() == <span class="str">"pc"</span>) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
@@ -1132,6 +1201,40 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"unknown register "</span> &lt;&lt; <span class="var">dst</span>-&gt;<span class="fn">name</span>() &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">assign to general</span>)</span> {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition no register\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first of of addition no general register\n"</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
+<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of addition no general register\n"</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_add</span>(<br/>
+<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
+<span class="in3"></span>));<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_add</span>(<br/>
+<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), <span class="var">n2</span>-&gt;<span class="fn">value</span>()<br/>
+<span class="in3"></span>));<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1227,6 +1330,252 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">token types</span>)</span><br/>
+<span class="in1"></span><span class="var">t_and</span>,<br/>
+<span class="in1"></span><span class="var">t_or</span>,<br/>
+<span class="macro">@end(<span class="name">token types</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">recognize</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'&amp;'</span>) {<br/>
+<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_and</span>;<br/>
+<span class="in2"></span>++<span class="var">_cur</span>;<br/>
+<span class="in2"></span><span class="keyword">break</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">recognize</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">recognize</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'|'</span>) {<br/>
+<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_or</span>;<br/>
+<span class="in2"></span>++<span class="var">_cur</span>;<br/>
+<span class="in2"></span><span class="keyword">break</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">recognize</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">needed by parse</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">BinaryAnd</span>:<br/>
+<span class="in2"></span><span class="keyword">public</span> <span class="type">BinaryExpression</span><br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">BinaryAnd</span>(<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">first</span>,<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">second</span><br/>
+<span class="in3"></span>): <span class="fn">BinaryExpression</span>(<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">first</span>),<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">second</span>)<br/>
+<span class="in3"></span>) { }<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by parse</span>)</span><br/>
+</code></div>
+<ul><li>
+and is a special binary expression
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by parse</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">BinaryOr</span>:<br/>
+<span class="in2"></span><span class="keyword">public</span> <span class="type">BinaryExpression</span><br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">BinaryOr</span>(<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">first</span>,<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">second</span><br/>
+<span class="in3"></span>): <span class="fn">BinaryExpression</span>(<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">first</span>),<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">second</span>)<br/>
+<span class="in3"></span>) { }<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by parse</span>)</span><br/>
+</code></div>
+<ul><li>
+and is a special binary expression
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_and</span>) {<br/>
+<span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>);<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no factor after &amp;\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">dst</span> = <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">BinaryAnd</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse binary</span>)</span>;<br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_or</span>) {<br/>
+<span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>);<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no factor after |\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">dst</span> = <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">BinaryOr</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse binary</span>)</span>;<br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">BinaryAnd</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">BinaryAnd</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of and no register\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first of of and no general register\n"</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
+<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of and no general register\n"</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_and</span>(<br/>
+<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
+<span class="in3"></span>));<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_and</span>(<br/>
+<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), <span class="var">n2</span>-&gt;<span class="fn">value</span>()<br/>
+<span class="in3"></span>));<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">BinaryOr</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">BinaryOr</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of or no register\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first of of or no general register\n"</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
+<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of or no general register\n"</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_or</span>(<br/>
+<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
+<span class="in3"></span>));<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
+<span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_or</span>(<br/>
+<span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), <span class="var">n2</span>-&gt;<span class="fn">value</span>()<br/>
+<span class="in3"></span>));<br/>
+<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_and</span>(<br/>
+<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">char</span> <span class="var">src2</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_r_cmd</span>(<br/>
+<span class="in3"></span><span class="num">0x00</span>, <span class="var">src2</span>, <span class="var">src1</span>,<br/>
+<span class="in3"></span><span class="num">0x7</span>, <span class="var">dst</span>, <span class="num">0x33</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_and</span>(<br/>
+<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">int</span> <span class="var">imm</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
+<span class="in3"></span><span class="var">imm</span>, <span class="var">src1</span>, <span class="num">0x7</span>, <span class="var">dst</span>, <span class="num">0x13</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_or</span>(<br/>
+<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">char</span> <span class="var">src2</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_r_cmd</span>(<br/>
+<span class="in3"></span><span class="num">0x00</span>, <span class="var">src2</span>, <span class="var">src1</span>,<br/>
+<span class="in3"></span><span class="num">0x6</span>, <span class="var">dst</span>, <span class="num">0x33</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="fn">build_or</span>(<br/>
+<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">int</span> <span class="var">imm</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
+<span class="in3"></span><span class="var">imm</span>, <span class="var">src1</span>, <span class="num">0x6</span>, <span class="var">dst</span>, <span class="num">0x13</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %x5 | $1"</span>,<br/>
+<span class="in2"></span><span class="num">0x0012e293</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x6 &lt;- %x6 | $1"</span>,<br/>
+<span class="in2"></span><span class="num">0x00136313</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
 </div>
 </body>

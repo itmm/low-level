@@ -189,6 +189,7 @@ the machine code.
 	State s;
 	s.add_line(line);
 	assert(s.code_size() == 1);
+	// std::cerr << std::hex << expected << ", " << s.get_code(0) << '\n';
 	assert(s.get_code(0) == expected);
 @end(assert line)
 ```
@@ -510,6 +511,7 @@ These syntax trees are then transformed into machine code.
 		std::unique_ptr<Expression>;
 @end(needed by state)
 ```
+* shortcut for expression pointer
 
 ```
 @add(needed by state)
@@ -523,6 +525,7 @@ These syntax trees are then transformed into machine code.
 	};
 @end(needed by state)
 ```
+* a binary expression has two operands
 
 ```
 @def(bin expr methods)
@@ -535,6 +538,7 @@ These syntax trees are then transformed into machine code.
 	{ }
 @end(bin expr methods)
 ```
+* the constructor consumes the operands
 
 ```
 @add(bin expr methods)
@@ -546,6 +550,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(bin expr methods)
 ```
+* accessors for the operands
 
 ```
 @add(needed by state)
@@ -563,6 +568,7 @@ These syntax trees are then transformed into machine code.
 	};
 @end(needed by state)
 ```
+* assignment is a special binary expression
 
 ```
 @add(needed by state)
@@ -580,6 +586,7 @@ These syntax trees are then transformed into machine code.
 	};
 @end(needed by state)
 ```
+* addition is a special binary expression
 
 ```
 @add(needed by state)
@@ -590,6 +597,8 @@ These syntax trees are then transformed into machine code.
 	};
 @end(needed by state)
 ```
+* register access is an expression
+
 
 ```
 @def(register privates)
@@ -597,6 +606,10 @@ These syntax trees are then transformed into machine code.
 	const int _nr;
 @end(register privates)
 ```
+* register has a name
+* and a number if it is a general purpose register
+* otherwise `_nr` is negative
+
 
 ```
 @add(register privates)
@@ -609,14 +622,31 @@ These syntax trees are then transformed into machine code.
 	}
 @end(register privates)
 ```
+* get register number from name, if it is a general purpose register
+* otherwise return a negitave number
+
 
 ```
 @def(nr from name)
 	if (name.empty()) { return -1; }
+@end(nr from name)
+```
+* empty name is no general purpose register
+
+```
+@add(nr from name)
 	if (name == "x") { return -1; }
+@end(nr from name)
+```
+* the name `%x` is no general purpose register
+
+```
+@add(nr from name)
 	if (name[0] != 'x') { return -1; }
 @end(nr from name)
 ```
+* if the name does not start with `%x` it is not a general purpose
+  register
 
 ```
 @add(nr from name)
@@ -633,6 +663,8 @@ These syntax trees are then transformed into machine code.
 	}
 @end(nr from name)
 ```
+* parse the register number from the digits
+* if some other char occurs, it is no general purpose register
 
 ```
 @add(nr from name)
@@ -641,6 +673,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(nr from name)
 ```
+* only numbers `0` to `31` are valid general purpose registers
 
 ```
 @def(register methods)
@@ -650,6 +683,7 @@ These syntax trees are then transformed into machine code.
 	{ }
 @end(register methods)
 ```
+* init with name and register number
 
 ```
 @add(register methods)
@@ -662,6 +696,8 @@ These syntax trees are then transformed into machine code.
 	}
 @end(register methods)
 ```
+* accessors for attributes
+* and shortcut to decide if the register is a general purpose register
 
 ```
 @add(needed by state)
@@ -679,6 +715,7 @@ These syntax trees are then transformed into machine code.
 	};
 @end(needed by state)
 ```
+* number is a special expression
 
 ```
 @add(needed by state)
@@ -691,6 +728,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(needed by state)
 ```
+* parses a arithmetic factor
 
 ```
 @def(parse factor)
@@ -704,36 +742,50 @@ These syntax trees are then transformed into machine code.
 	}
 @end(parse factor)
 ```
+* registers are valid factors
 
 ```
 @add(needed by state)
+	@put(needed by parse);
 	Expression_Ptr parse(Tokenizer &t) {
 		auto dst = parse_factor(t);
-		bool is_reg = !! dynamic_cast<Register *>(&*dst);
-		if (t.type() == Token_Type::becomes) {
-			if (! is_reg) {
-				std::cerr << "assigment to no-reg\n";
-			}
-			t.next();
-			auto src = parse(t);
-			if (! src) {
-				std::cerr << "no expression after <-\n";
-				return Expression_Ptr { };
-			}
-			return std::make_unique<Assignment>(std::move(dst), std::move(src));
-		} else if (t.type() == Token_Type::plus) {
-			t.next();
-			auto src = parse(t);
-			if (! src) {
-				std::cerr << "no expression after +\n";
-				return Expression_Ptr { };
-			}
-			return std::make_unique<Addition>(std::move(dst), std::move(src));
-		} else {
-			return dst;
-		}
+		do {
+			@put(parse binary);
+		} while (false);
+		return dst;
 	}
 @end(needed by state)
+```
+* parses a factor that can be followed by a binary expression
+* otherwise returns the factor
+
+```
+@def(parse binary)
+	if (t.type() == Token_Type::becomes) {
+		t.next();
+		auto src = parse(t);
+		if (! src) {
+			std::cerr << "no expression after <-\n";
+			return Expression_Ptr { };
+		}
+		return std::make_unique<Assignment>(std::move(dst), std::move(src));
+	}
+@end(parse binary)
+```
+
+```
+@add(parse binary)
+	if (t.type() == Token_Type::plus) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after +\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<Addition>(std::move(dst), std::move(src));
+		continue;
+	}
+@end(parse binary);
 ```
 
 ```
@@ -859,36 +911,7 @@ These syntax trees are then transformed into machine code.
 	}
 
 	if (dst->is_general()) {
-		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
-		if (! o) {
-			std::cerr << "only addition supported now\n";
-			return;
-		}
-		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
-		if (! src1) {
-			std::cerr << "first op of addition no register\n";
-			return;
-		}
-		if (! src1->is_general()) {
-			std::cerr << "first of of addition no general register\n";
-		}
-		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
-		if (src2) {
-			if (! src2->is_general()) {
-				std::cerr << "second of of addition no general register\n";
-			}
-			add_machine(build_add(
-				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
-			));
-			return;
-		}
-		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
-		if (n2) {
-			add_machine(build_add(
-				(char) dst->nr(), (char) src1->nr(), n2->value()
-			));
-			return;
-		}
+		@put(assign to general);
 		std::cerr << "unexpected second operand\n";
 	} else if (dst->name() == "pc") {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
@@ -920,6 +943,39 @@ These syntax trees are then transformed into machine code.
 		std::cerr << "unknown register " << dst->name() << '\n';
 	}
 @end(add line)
+```
+
+```
+@def(assign to general) {
+	const Addition *o = dynamic_cast<const Addition *>(&*a->second());
+	if (o) {
+		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		if (! src1) {
+			std::cerr << "first op of addition no register\n";
+			return;
+		}
+		if (! src1->is_general()) {
+			std::cerr << "first of of addition no general register\n";
+		}
+		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+		if (src2) {
+			if (! src2->is_general()) {
+				std::cerr << "second of of addition no general register\n";
+			}
+			add_machine(build_add(
+				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+			));
+			return;
+		}
+		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+		if (n2) {
+			add_machine(build_add(
+				(char) dst->nr(), (char) src1->nr(), n2->value()
+			));
+			return;
+		}
+	}
+} @end(assign to general)
 ```
 
 ```
@@ -1001,5 +1057,232 @@ These syntax trees are then transformed into machine code.
 		break;
 	}
 @end(recognize)
+```
+
+```
+@add(token types)
+	t_and,
+	t_or,
+@end(token types)
+```
+
+```
+@add(recognize)
+	if (*_cur == '&') {
+		_type = Token_Type::t_and;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(recognize)
+	if (*_cur == '|') {
+		_type = Token_Type::t_or;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@def(needed by parse)
+	class BinaryAnd:
+		public BinaryExpression
+	{
+		public:
+			BinaryAnd(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by parse)
+```
+* and is a special binary expression
+
+```
+@add(needed by parse)
+	class BinaryOr:
+		public BinaryExpression
+	{
+		public:
+			BinaryOr(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by parse)
+```
+* and is a special binary expression
+
+```
+@add(parse binary)
+	if (t.type() == Token_Type::t_and) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after &\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<BinaryAnd>(std::move(dst), std::move(src));
+		continue;
+	}
+@end(parse binary);
+```
+
+```
+@add(parse binary)
+	if (t.type() == Token_Type::t_or) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after |\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<BinaryOr>(std::move(dst), std::move(src));
+		continue;
+	}
+@end(parse binary);
+```
+
+```
+@add(assign to general) {
+	const BinaryAnd *o = dynamic_cast<const BinaryAnd *>(&*a->second());
+	if (o) {
+		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		if (! src1) {
+			std::cerr << "first op of and no register\n";
+			return;
+		}
+		if (! src1->is_general()) {
+			std::cerr << "first of of and no general register\n";
+		}
+		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+		if (src2) {
+			if (! src2->is_general()) {
+				std::cerr << "second of of and no general register\n";
+			}
+			add_machine(build_and(
+				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+			));
+			return;
+		}
+		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+		if (n2) {
+			add_machine(build_and(
+				(char) dst->nr(), (char) src1->nr(), n2->value()
+			));
+			return;
+		}
+	}
+} @end(assign to general)
+```
+
+```
+@add(assign to general) {
+	const BinaryOr *o = dynamic_cast<const BinaryOr *>(&*a->second());
+	if (o) {
+		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		if (! src1) {
+			std::cerr << "first op of or no register\n";
+			return;
+		}
+		if (! src1->is_general()) {
+			std::cerr << "first of of or no general register\n";
+		}
+		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+		if (src2) {
+			if (! src2->is_general()) {
+				std::cerr << "second of of or no general register\n";
+			}
+			add_machine(build_or(
+				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
+			));
+			return;
+		}
+		const Number *n2 = dynamic_cast<const Number *>(&*o->second());
+		if (n2) {
+			add_machine(build_or(
+				(char) dst->nr(), (char) src1->nr(), n2->value()
+			));
+			return;
+		}
+	}
+} @end(assign to general)
+```
+
+```
+@add(needed by state)
+	int build_and(
+		char dst, char src1, char src2
+	) {
+		return build_r_cmd(
+			0x00, src2, src1,
+			0x7, dst, 0x33
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_and(
+		char dst, char src1, int imm
+	) {
+		return build_i_cmd(
+			imm, src1, 0x7, dst, 0x13
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_or(
+		char dst, char src1, char src2
+	) {
+		return build_r_cmd(
+			0x00, src2, src1,
+			0x6, dst, 0x33
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_or(
+		char dst, char src1, int imm
+	) {
+		return build_i_cmd(
+			imm, src1, 0x6, dst, 0x13
+		);
+	}
+@end(needed by state)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x5 <- %x5 | $1",
+		0x0012e293
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x6 <- %x6 | $1",
+		0x00136313
+	);
+@end(unit-tests)
 ```
 
