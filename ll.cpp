@@ -655,6 +655,14 @@
 		return build_u_cmd(imm, dst, 0x37);
 	}
 
+#line 1392 "start.x"
+
+	int build_auipc(
+		char dst, int imm
+	) {
+		return build_u_cmd(imm, dst, 0x17);
+	}
+
 #line 45 "start.x"
 ;
 	class State {
@@ -855,6 +863,14 @@
 
 #line 1321 "start.x"
 ;
+	}
+} 
+#line 1402 "start.x"
+ {
+	const Register *o = dynamic_cast<const Register *>(&*a->second());
+	if (o && o->name() == "pc") {
+		add_machine(build_auipc(dst->nr(), 0));
+		return;
 	}
 } 
 #line 929 "start.x"
@@ -1172,6 +1188,13 @@
 	assert_line(
 		"%x10 <- $1013000",
 		0x1013537
+	);
+
+#line 1412 "start.x"
+
+	assert_line(
+		"%x5 <- %pc",
+		0x00000297
 	);
 
 #line 172 "start.x"

@@ -1387,3 +1387,33 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+
+```
+@add(needed by state)
+	int build_auipc(
+		char dst, int imm
+	) {
+		return build_u_cmd(imm, dst, 0x17);
+	}
+@end(needed by state)
+```
+
+```
+@add(assign to general) {
+	const Register *o = dynamic_cast<const Register *>(&*a->second());
+	if (o && o->name() == "pc") {
+		add_machine(build_auipc(dst->nr(), 0));
+		return;
+	}
+} @end(assign to general)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x5 <- %pc",
+		0x00000297
+	);
+@end(unit-tests)
+```
+
