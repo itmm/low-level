@@ -6,9 +6,9 @@ It presents a small example of an low-level program as a linear listing
 interrupted with some comments.
 
 ```
-@Def(file: echo.ll)
+@Def(file: goal.ll)
 	@put(src)
-@End(file: echo.ll)
+@End(file: goal.ll)
 ```
 * the `src` fragment contains all the code
 

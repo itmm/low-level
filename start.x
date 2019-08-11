@@ -923,9 +923,8 @@ These syntax trees are then transformed into machine code.
 	Assignment *a = dynamic_cast<Assignment *>(&*e);
 	if (a) {
 		const Register *dst = dynamic_cast<const Register *>(&*a->first());
-		if (! dst) {
-			std::cerr << "no assignment to register\n";
-			return;
+		if (dst) {
+			@put(parse assignment to register);
 		}
 		@put(parse assignment);
 	}
@@ -933,11 +932,11 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(parse assignment)
+@def(parse assignment to register)
 	if (dst->is_general()) {
 		@put(assign to general);
 	}
-@end(parse assignment)
+@end(parse assignment to register)
 ```
 
 ```
@@ -990,7 +989,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(parse assignment)
+@add(parse assignment to register)
 	if (dst->name() == "pc") {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 		if (! o) {
@@ -1019,7 +1018,7 @@ These syntax trees are then transformed into machine code.
 			std::cerr << "expected number as second argument of jump\n";
 		}
 	}
-@end(parse assignment)
+@end(parse assignment to register)
 ```
 
 ```
@@ -1486,7 +1485,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(parse assignment)
+@add(parse assignment to register)
 	if (dst->name() == "mtvec") {
 		const Register *src = dynamic_cast<const Register *>(&*a->second());
 		if (! src || ! src->is_general()) {
@@ -1496,7 +1495,7 @@ These syntax trees are then transformed into machine code.
 		add_machine(build_csrrw('\0', 0x305, src->nr()));
 		return;
 	}
-@end(parse assignment)
+@end(parse assignment to register)
 ```
 
 ```
@@ -2026,6 +2025,85 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
+	);
+@end(unit-tests)
+```
+
+```
+@def(parse assignment) {
+	const Access *x = dynamic_cast<const Access *>(&*a->first());
+	if (x) {
+		const Register *s = dynamic_cast<const Register *>(&*a->second());
+		@put(parse store assignment);
+	}
+} @end(parse assignment)
+```
+
+```
+@add(needed by state)
+	int build_s_cmd(
+		int imm, char rs2, char rs1, int type, int opcode
+	) {
+		return
+			((imm & 0xfe0) << (25 - 5)) |
+			(rs2 << 20) | (rs1 << 15) |
+			(type << 12) |
+			((imm & 0x1f) << 7) |
+			opcode;
+	}
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	int build_store(
+		char src, char dst, int imm
+	) {
+		return build_s_cmd(
+			imm, src, dst, 0x2, 0x23
+		);
+	}
+@end(needed by state)
+```
+
+```
+@def(parse store assignment) {
+	const Register *d = dynamic_cast<const Register *>(x->inner());
+	if (d && d->is_general() && s && s->is_general()) {
+		add_machine(build_store(s->nr(), d->nr(), 0));
+		return;
+	}
+} @end(parse store assignment)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"[%x10] <- %x12",
+		0x00c52023
+	);
+@end(unit-tests)
+```
+
+```
+@add(parse store assignment) {
+	const Addition *p = dynamic_cast<const Addition *>(x->inner());
+	if (p) {
+		const Register *d = dynamic_cast<const Register *>(&*p->first());
+		const Number *n = dynamic_cast<const Number *>(&*p->second());
+		if (d && d->is_general() && s && s->is_general() && n) {
+			add_machine(build_store(s->nr(), d->nr(), n->value()));
+			return;
+		}
+	}
+} @end(parse store assignment)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"[%x10 + $08] <- %x5",
+		0x00552423
 	);
 @end(unit-tests)
 ```
