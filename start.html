@@ -2034,26 +2034,33 @@ if is a special binary expression
 <span class="in2"></span><span class="type">const</span> <span class="type">Less</span> *<span class="var">l</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Less</span> *&gt;(&amp;*<span class="var">i</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">l</span>) {<br/>
 <span class="in3"></span><span class="var">cond</span> = <span class="num">0x4</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">parse if cond</span>)</span>;<br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">BinaryExpression</span> *<span class="var">b</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">BinaryExpression</span> *&gt;(&amp;*<span class="var">i</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">b</span>) {<br/>
 <span class="in3"></span>{<br/>
-<span class="in4"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">l</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in4"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in4"></span><span class="keyword">if</span> (<span class="var">n</span> &amp;&amp; <span class="var">n</span>-&gt;<span class="fn">value</span>() == <span class="num">0</span>) {<br/>
 <span class="in5"></span><span class="var">reg1</span> = <span class="num">0</span>;<br/>
 <span class="in4"></span>}<br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span>{<br/>
-<span class="in4"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">l</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in4"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in4"></span><span class="keyword">if</span> (<span class="var">r</span>) {<br/>
 <span class="in5"></span><span class="var">reg1</span> = <span class="var">r</span>-&gt;<span class="fn">nr</span>();<br/>
 <span class="in4"></span>}<br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span>{<br/>
-<span class="in4"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">l</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in4"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in4"></span><span class="keyword">if</span> (<span class="var">n</span> &amp;&amp; <span class="var">n</span>-&gt;<span class="fn">value</span>() == <span class="num">0</span>) {<br/>
 <span class="in5"></span><span class="var">reg2</span> = <span class="num">0</span>;<br/>
 <span class="in4"></span>}<br/>
+<br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span>{<br/>
-<span class="in4"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">l</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in4"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in4"></span><span class="keyword">if</span> (<span class="var">r</span>) {<br/>
 <span class="in5"></span><span class="var">reg2</span> = <span class="var">r</span>-&gt;<span class="fn">nr</span>();<br/>
 <span class="in4"></span>}<br/>
@@ -2073,6 +2080,158 @@ if is a special binary expression
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"if %x5 &lt; 0: %pc &lt;- %pc + -4"</span>,<br/>
 <span class="in2"></span><span class="num">0xfe02cee3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">token types</span>)</span><br/>
+<span class="in1"></span><span class="var">t_equals</span>,<br/>
+<span class="in1"></span><span class="var">t_not_equals</span>,<br/>
+<span class="macro">@end(<span class="name">token types</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">recognize</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'='</span>) {<br/>
+<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_equals</span>;<br/>
+<span class="in2"></span>++<span class="var">_cur</span>;<br/>
+<span class="in2"></span><span class="keyword">break</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">recognize</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">recognize</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'!'</span> &amp;&amp; <span class="var">_cur</span> + <span class="num">1</span> &lt; <span class="var">_end</span> &amp;&amp; <span class="var">_cur</span>[<span class="num">1</span>] == <span class="str">'='</span>) {<br/>
+<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_not_equals</span>;<br/>
+<span class="in2"></span><span class="var">_cur</span> += <span class="num">2</span>;<br/>
+<span class="in2"></span><span class="keyword">break</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">recognize</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by parse</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Equals</span>:<br/>
+<span class="in2"></span><span class="keyword">public</span> <span class="type">BinaryExpression</span><br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">Equals</span>(<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">first</span>,<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">second</span><br/>
+<span class="in3"></span>): <span class="fn">BinaryExpression</span>(<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">first</span>),<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">second</span>)<br/>
+<span class="in3"></span>) { }<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by parse</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by parse</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">NotEquals</span>:<br/>
+<span class="in2"></span><span class="keyword">public</span> <span class="type">BinaryExpression</span><br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">NotEquals</span>(<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">first</span>,<br/>
+<span class="in4"></span><span class="type">Expression_Ptr</span> <span class="var">second</span><br/>
+<span class="in3"></span>): <span class="fn">BinaryExpression</span>(<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">first</span>),<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">second</span>)<br/>
+<span class="in3"></span>) { }<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by parse</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_equals</span>) {<br/>
+<span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>);<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no factor after =\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">dst</span> = <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Equals</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse binary</span>)</span>;<br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_not_equals</span>) {<br/>
+<span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>);<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no factor after !=\n"</span>;<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">dst</span> = <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">NotEquals</span>&gt;(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">dst</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">src</span>));<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse binary</span>)</span>;<br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">parse if cond</span>)</span><br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Equals</span> *<span class="var">e</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Equals</span> *&gt;(&amp;*<span class="var">i</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">e</span>) {<br/>
+<span class="in3"></span><span class="var">cond</span> = <span class="num">0x0</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse if cond</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">parse if cond</span>)</span><br/>
+<span class="in1"></span>{<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">NotEquals</span> *<span class="var">ne</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">NotEquals</span> *&gt;(&amp;*<span class="var">i</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">ne</span>) {<br/>
+<span class="in3"></span><span class="var">cond</span> = <span class="num">0x1</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">parse if cond</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"if %x5 = 0: %pc &lt;- %pc + -12"</span>,<br/>
+<span class="in2"></span><span class="num">0xfe028ae3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"if %x5 != %x11: %pc &lt;- %pc + -28"</span>,<br/>
+<span class="in2"></span><span class="num">0xfeb292e3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"if %x5 != 0: %pc &lt;- %pc + 0"</span>,<br/>
+<span class="in2"></span><span class="num">0x00029063</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>

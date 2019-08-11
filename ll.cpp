@@ -55,6 +55,11 @@
 	t_if,
 	t_colon,
 
+#line 1766 "start.x"
+
+	t_equals,
+	t_not_equals,
+
 #line 226 "start.x"
 
 		end
@@ -263,6 +268,22 @@
 	if (*_cur == ':') {
 		_type = Token_Type::t_colon;
 		++_cur;
+		break;
+	}
+
+#line 1773 "start.x"
+
+	if (*_cur == '=') {
+		_type = Token_Type::t_equals;
+		++_cur;
+		break;
+	}
+
+#line 1783 "start.x"
+
+	if (*_cur == '!' && _cur + 1 < _end && _cur[1] == '=') {
+		_type = Token_Type::t_not_equals;
+		_cur += 2;
 		break;
 	}
 
@@ -550,6 +571,36 @@
 			) { }
 	};
 
+#line 1793 "start.x"
+
+	class Equals:
+		public BinaryExpression
+	{
+		public:
+			Equals(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+
+#line 1810 "start.x"
+
+	class NotEquals:
+		public BinaryExpression
+	{
+		public:
+			NotEquals(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+
 #line 755 "start.x"
 ;
 	Expression_Ptr parse(Tokenizer &t) {
@@ -642,6 +693,32 @@
 			return Expression_Ptr { };
 		}
 		dst = std::make_unique<Less>(std::move(dst), std::move(src));
+		continue;
+	}
+
+#line 1827 "start.x"
+
+	if (t.type() == Token_Type::t_equals) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after =\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<Equals>(std::move(dst), std::move(src));
+		continue;
+	}
+
+#line 1842 "start.x"
+
+	if (t.type() == Token_Type::t_not_equals) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after !=\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<NotEquals>(std::move(dst), std::move(src));
 		continue;
 	}
 
@@ -1156,26 +1233,53 @@
 		const Less *l = dynamic_cast<const Less *>(&*i->first());
 		if (l) {
 			cond = 0x4;
+		}
+	}
+	
+#line 1857 "start.x"
+
+	{
+		const Equals *e = dynamic_cast<const Equals *>(&*i->first());
+		if (e) {
+			cond = 0x0;
+		}
+	}
+
+#line 1868 "start.x"
+
+	{
+		const NotEquals *ne = dynamic_cast<const NotEquals *>(&*i->first());
+		if (ne) {
+			cond = 0x1;
+		}
+	}
+
+#line 1718 "start.x"
+;
+	{
+		const BinaryExpression *b = dynamic_cast<const BinaryExpression *>(&*i->first());
+		if (b) {
 			{
-				const Number *n = dynamic_cast<const Number *>(&*l->first());
+				const Number *n = dynamic_cast<const Number *>(&*b->first());
 				if (n && n->value() == 0) {
 					reg1 = 0;
 				}
 			}
 			{
-				const Register *r = dynamic_cast<const Register *>(&*l->first());
+				const Register *r = dynamic_cast<const Register *>(&*b->first());
 				if (r) {
 					reg1 = r->nr();
 				}
 			}
 			{
-				const Number *n = dynamic_cast<const Number *>(&*l->second());
+				const Number *n = dynamic_cast<const Number *>(&*b->second());
 				if (n && n->value() == 0) {
 					reg2 = 0;
 				}
+
 			}
 			{
-				const Register *r = dynamic_cast<const Register *>(&*l->second());
+				const Register *r = dynamic_cast<const Register *>(&*b->second());
 				if (r) {
 					reg2 = r->nr();
 				}
@@ -1490,11 +1594,32 @@
 		0xf14022f3
 	);
 
-#line 1750 "start.x"
+#line 1757 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
+	);
+
+#line 1879 "start.x"
+
+	assert_line(
+		"if %x5 = 0: %pc <- %pc + -12",
+		0xfe028ae3
+	);
+
+#line 1888 "start.x"
+
+	assert_line(
+		"if %x5 != %x11: %pc <- %pc + -28",
+		0xfeb292e3
+	);
+
+#line 1897 "start.x"
+
+	assert_line(
+		"if %x5 != 0: %pc <- %pc + 0",
+		0x00029063
 	);
 
 #line 172 "start.x"

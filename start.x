@@ -1713,26 +1713,33 @@ These syntax trees are then transformed into machine code.
 		const Less *l = dynamic_cast<const Less *>(&*i->first());
 		if (l) {
 			cond = 0x4;
+		}
+	}
+	@put(parse if cond);
+	{
+		const BinaryExpression *b = dynamic_cast<const BinaryExpression *>(&*i->first());
+		if (b) {
 			{
-				const Number *n = dynamic_cast<const Number *>(&*l->first());
+				const Number *n = dynamic_cast<const Number *>(&*b->first());
 				if (n && n->value() == 0) {
 					reg1 = 0;
 				}
 			}
 			{
-				const Register *r = dynamic_cast<const Register *>(&*l->first());
+				const Register *r = dynamic_cast<const Register *>(&*b->first());
 				if (r) {
 					reg1 = r->nr();
 				}
 			}
 			{
-				const Number *n = dynamic_cast<const Number *>(&*l->second());
+				const Number *n = dynamic_cast<const Number *>(&*b->second());
 				if (n && n->value() == 0) {
 					reg2 = 0;
 				}
+
 			}
 			{
-				const Register *r = dynamic_cast<const Register *>(&*l->second());
+				const Register *r = dynamic_cast<const Register *>(&*b->second());
 				if (r) {
 					reg2 = r->nr();
 				}
@@ -1751,6 +1758,146 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
+	);
+@end(unit-tests)
+```
+
+```
+@add(token types)
+	t_equals,
+	t_not_equals,
+@end(token types)
+```
+
+```
+@add(recognize)
+	if (*_cur == '=') {
+		_type = Token_Type::t_equals;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(recognize)
+	if (*_cur == '!' && _cur + 1 < _end && _cur[1] == '=') {
+		_type = Token_Type::t_not_equals;
+		_cur += 2;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(needed by parse)
+	class Equals:
+		public BinaryExpression
+	{
+		public:
+			Equals(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by parse)
+```
+
+```
+@add(needed by parse)
+	class NotEquals:
+		public BinaryExpression
+	{
+		public:
+			NotEquals(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by parse)
+```
+
+```
+@add(parse binary)
+	if (t.type() == Token_Type::t_equals) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after =\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<Equals>(std::move(dst), std::move(src));
+		continue;
+	}
+@end(parse binary);
+```
+
+```
+@add(parse binary)
+	if (t.type() == Token_Type::t_not_equals) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after !=\n";
+			return Expression_Ptr { };
+		}
+		dst = std::make_unique<NotEquals>(std::move(dst), std::move(src));
+		continue;
+	}
+@end(parse binary);
+```
+
+```
+@def(parse if cond)
+	{
+		const Equals *e = dynamic_cast<const Equals *>(&*i->first());
+		if (e) {
+			cond = 0x0;
+		}
+	}
+@end(parse if cond)
+```
+
+```
+@add(parse if cond)
+	{
+		const NotEquals *ne = dynamic_cast<const NotEquals *>(&*i->first());
+		if (ne) {
+			cond = 0x1;
+		}
+	}
+@end(parse if cond)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"if %x5 = 0: %pc <- %pc + -12",
+		0xfe028ae3
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"if %x5 != %x11: %pc <- %pc + -28",
+		0xfeb292e3
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"if %x5 != 0: %pc <- %pc + 0",
+		0x00029063
 	);
 @end(unit-tests)
 ```
