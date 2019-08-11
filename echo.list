@@ -1,5 +1,5 @@
 
-echo_small.hex:     file format ihex
+echo.hex:     file format ihex
 
 
 Disassembly of section .sec1:

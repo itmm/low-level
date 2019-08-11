@@ -2,12 +2,12 @@ CXXFLAGS += -Wall
 
 .PHONY: all clean tests
 
-all: tests echo_small.list
+all: tests echo.list
 
-tests: ll
+tests: ll echo-as.hex
 	@echo run unit-tests
-	@./ll <echo_small.ll >echo_small.hex
-	@diff echo.hex echo_small.hex
+	@./ll <echo.ll >echo.hex
+	@diff echo.hex echo-as.hex
 
 SOURCEs := $(wildcard *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))
@@ -26,15 +26,15 @@ clean:
 	@echo RM
 	@rm -f .hx-run $(GENs)
 
-echo_small.o: echo_small.s
+echo.o: echo.s
 	riscv32-unknown-elf-gcc -Wall -march=rv32g -c $^
 
-echo_small.elf: echo_small.o
+echo.elf: echo.o
 	riscv32-unknown-elf-ld -T memory.lds $^  -o $@
 
-echo_small.hex: echo_small.elf
+echo-as.hex: echo.elf
 	riscv32-unknown-elf-objcopy $^ -O ihex $@
 
-echo_small.list: echo_small.hex
+echo.list: echo.hex
 	@echo LIST
 	@riscv32-unknown-elf-objdump -EL -D -mriscv $^ >$@

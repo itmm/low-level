@@ -1,60 +1,26 @@
-
-	
-	* <- $20010000
-
-	tmp = %t0
-	tmp <- %pc
-	tmp <- tmp + (early_trap - * + 4)
-	%mtvec <- tmp
-
-		tmp <- %mhartid
-	block_other_harts = *
-		if tmp != 0: \
-			%pc <- %pc + \
-				(block_other_harts - *)
-
-	uart = %a0
-	uart <- $1013000
-
-	tmp <- [uart + $08]
-	tmp <- tmp | $01
-	[uart + $08] <- tmp
-
-	tmp <- [uart + $0c]
-	tmp <- tmp | $01
-	[uart + $0c] <- tmp
-
-	carriage_return = %a1
-	carriage_return <- $0d
-	new_line = %a2
-	new_line <- $0a
-
-	loop = *
-		tmp <- [uart + $04]
-		if tmp < 0: \
-			%pc <- %pc + (loop - *)
-		tmp <- tmp & $ff
-		if tmp = 0: \
-			%pc <- %pc + (loop - *)
-
-	tmp2 = %t1
-	normal = *
-		tmp2 <- [uart]
-		if tmp2 < 0: \
-			%pc <- %pc + (normal - *)
-		[uart] <- tmp
-
-	if tmp <> carriage_return: \
-		%pc <- %pc + (loop - *)
-
-	do_new_line = *
-		tmp <- [uart]
-		if tmp < 0: \
-			%pc <- \
-				%pc + (do_new_line - *)
-		[uart] <- new_line
-		%pc <- %pc + (loop - *)
-
-	early_trap = *
-		%pc <- %pc + (early_trap - *)
-
+				%x5 <- %pc + 104 # 2 words!
+				%mtvec <- %x5
+				%x5 <- %mhartid
+				if %x5 != 0: %pc <- %pc + 0
+				%x10 <- $10013000
+				%x5 <- [%x10 + $08]
+				%x11 <- $0d
+				%x12 <- $0a
+				%x6 <- [%x10 + $0c]
+				%x5 <- %x5 | $01
+				%x6 <- %x6 | $01
+$00552423	#	[%x10 + $08] <- %x5
+$00652623	#	[%x10 + $0c] <- %x6
+				%x5 <- [%x10 + $04]
+				if %x5 < 0: %pc <- %pc + -4
+				%x5 <- %x5 & $ff
+				if %x5 = 0: %pc <- %pc + -12
+				%x6 <- [%x10]
+				if %x6 < 0: %pc <- %pc + -4
+$00552023	#	[%x10] <- %x5
+				if %x5 != %x11: %pc <- %pc + -28
+				%x5 <- [%x10]
+				if %x5 < 0: %pc <- %pc + -4
+$00c52023	#	[%x10] <- %x12
+				%pc <- %pc + -44
+				%pc <- %pc + 0
