@@ -725,6 +725,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(needed by state)
+	Expression_Ptr parse(Tokenizer &t);
+	@put(needed by parse factor);
 	Expression_Ptr parse_factor(
 		Tokenizer &t
 	) {
@@ -1898,6 +1900,132 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
+	);
+@end(unit-tests)
+```
+
+```
+@add(token types)
+	t_open_bracket,
+	t_close_bracket,
+@end(token types)
+```
+
+```
+@add(recognize)
+	if (*_cur == '[') {
+		_type = Token_Type::t_open_bracket;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(recognize)
+	if (*_cur == ']') {
+		_type = Token_Type::t_close_bracket;
+		++_cur;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(parse factor)
+	if (t.type() == Token_Type::t_open_bracket) {
+		t.next();
+		auto inner = parse(t);
+		if (! inner) {
+			std::cerr << "no expr in memory access\n";
+			return Expression_Ptr { };
+		}
+		if (t.type() != Token_Type::t_close_bracket) {
+			std::cerr << "expecting ]\n";
+			return Expression_Ptr { };
+		}
+		t.next();
+		return std::make_unique<Access>(inner);
+	}
+@end(parse factor)
+```
+
+```
+@def(needed by parse factor)
+	class Access: public Expression {
+			const Expression_Ptr _inner;
+
+		public:
+			Access(Expression_Ptr &inner):
+				_inner { std::move(inner) }
+			{ }
+
+			Expression *inner() const {
+				return &*_inner;
+			}
+	};
+@end(needed by parse factor)
+```
+
+```
+@add(assign to general) {
+	const Access *x = dynamic_cast<const Access *>(&*a->second());
+	if (x) {
+		@put(assign access to general);
+	}
+} @end(assign to general)
+```
+
+```
+@add(needed by state)
+	int build_load(
+		char dst, char src, int imm
+	) {
+		return build_i_cmd(
+			imm, src, 0x2, dst, 0x03
+		);
+	}
+@end(needed by state)
+```
+
+```
+@def(assign access to general) {
+	const Register *r = dynamic_cast<const Register *>(x->inner());
+	if (r && r->is_general()) {
+		add_machine(build_load(dst->nr(), r->nr(), 0));
+		return;
+	}
+} @end(assign access to general)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x6 <- [%x10]",
+		0x00052303
+	);
+@end(unit-tests)
+```
+
+```
+@add(assign access to general) {
+	const Addition *d = dynamic_cast<const Addition *>(x->inner());
+	if (d) {
+		const Register *r = dynamic_cast<const Register *>(&*d->first());
+		const Number *n = dynamic_cast<const Number *>(&*d->second());
+		if (r && r->is_general() && n) {
+			add_machine(build_load(dst->nr(), r->nr(), n->value()));
+			return;
+		}
+	}
+} @end(assign access to general)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x5 <- [%x10 + $04]",
+		0x00452283
 	);
 @end(unit-tests)
 ```
