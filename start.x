@@ -160,6 +160,7 @@ the machine code.
 		const char *line,
 		int expected
 	) {
+		@put(init assert line);
 		@put(assert line);
 	}
 @end(needed by main)
@@ -189,7 +190,6 @@ the machine code.
 	State s;
 	s.add_line(line);
 	assert(s.code_size() == 1);
-	// std::cerr << std::hex << expected << ", " << s.get_code(0) << '\n';
 	assert(s.get_code(0) == expected);
 @end(assert line)
 ```
@@ -357,6 +357,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(assert token)
+	@put(init assert token);
 	Tokenizer t(line);
 	assert(t.type() == token);
 	t.next();
@@ -413,7 +414,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(token types)
-	reg,
+	ident,
 @end(token types)
 ```
 * add token for register
@@ -449,7 +450,7 @@ These syntax trees are then transformed into machine code.
 ```
 @def(assert register)
 	Tokenizer t(line);
-	assert(t.type() == Token_Type::reg);
+	assert(t.type() == Token_Type::ident);
 	assert(t.name() == name);
 	t.next();
 	assert(t.type() == Token_Type::end);
@@ -459,8 +460,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_register("%x10", "x10");
-	assert_register("%pc", "pc");
+	assert_register("%x10", "%x10");
+	assert_register("%pc", "%pc");
 @end(unit-tests)
 ```
 * verify some register names
@@ -474,17 +475,22 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(recognize)
-	if (*_cur == '%') {
-		auto c = _cur + 1;
+	if (isalpha(*_cur) || *_cur == '%') {
+		auto c = _cur;
 		_name = {};
-		while (c != _end && isalnum(*c)) {
+		while (c != _end && (
+			isalnum(*c) || *c == '_' ||
+			*c == '%'
+		)) {
 			_name += *c++;
 		}
-		if (! _name.empty()) {
-			_type = Token_Type::reg;
-			_cur = c;
-			break;
+		_type = Token_Type::ident;
+		@put(recognize keywords);
+		if (_name == "if") {
+			_type = Token_Type::t_if;
 		}
+		_cur = c;
+		break;
 	}
 @end(recognize)
 ```
@@ -496,20 +502,23 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(needed by state)
-	class Expression {
-		public:
-			virtual ~Expression() {}
-	};
-@end(needed by state)
-```
-* a lot of structure is encoded in an expression
-
-```
-@add(needed by state)
 	#include <memory>
 @end(needed by state)
 ```
 * needs `unique_ptr`
+
+```
+@add(needed by state)
+	class Expression {
+		public:
+			virtual ~Expression() {}
+			virtual std::unique_ptr<Expression> clone() {
+				return std::unique_ptr<Expression> {};
+			}
+	};
+@end(needed by state)
+```
+* a lot of structure is encoded in an expression
 
 ```
 @add(needed by state)
@@ -700,6 +709,9 @@ These syntax trees are then transformed into machine code.
 	bool is_general() const {
 		return _nr >= 0;
 	}
+	Expression_Ptr clone() override {
+		return std::make_unique<Register>(_name);
+	}
 @end(register methods)
 ```
 * accessors for attributes
@@ -714,6 +726,10 @@ These syntax trees are then transformed into machine code.
 			Number(int value):
 				_value { value }
 			{ }
+
+			Expression_Ptr clone() override {
+				return std::make_unique<Number>(_value);
+			}
 
 			int value() const {
 				return _value;
@@ -739,14 +755,65 @@ These syntax trees are then transformed into machine code.
 * parses a arithmetic factor
 
 ```
+@def(needed by parse factor)
+	#include <map>
+@end(needed by parse factor)
+```
+
+```
+@add(needed by parse factor)
+	static std::map<std::string, Expression_Ptr> _symbols;
+@end(needed by parse factor)
+```
+
+```
+@add(needed by parse factor)
+	void clear_symbols() {
+		_symbols.clear();
+		@put(clear symbols);
+	}
+@end(needed by parse factor)
+```
+
+```
+@def(init assert line)
+	clear_symbols();
+@end(init assert line)
+```
+
+```
+@def(init assert token)
+	clear_symbols();
+@end(init assert token)
+```
+
+```
+@def(clear symbols)
+	_symbols["%pc"] = std::move(std::make_unique<Register>("pc"));
+	_symbols["%mtvec"] = std::move(std::make_unique<Register>("mtvec"));
+	_symbols["%mhartid"] = std::move(std::make_unique<Register>("mhartid"));
+	char name1[] = "%x#";
+	for (int i = 0; i < 10; ++i) {
+		name1[2] = '0' + i;
+		_symbols[name1] = std::move(std::make_unique<Register>(name1 + 1));
+	}
+	char name2[] = "%x##";
+	for (int i = 10; i < 32; ++i) {
+		name2[2] = '0' + (i / 10);
+		name2[3] = '0' + (i % 10);
+		_symbols[name2] = std::move(std::make_unique<Register>(name2 + 1));
+	}
+@end(clear symbols)
+```
+
+```
 @def(parse factor)
-	if (t.type() == Token_Type::reg) {
-		auto res =
-			std::make_unique<Register>(
-				t.name()
-			);
-		t.next();
-		return res;
+	if (t.type() == Token_Type::ident) {
+		auto found { _symbols.find(t.name()) };
+		if (found != _symbols.end()) {
+			t.next();
+			return found->second->clone();
+		}
 	}
 @end(parse factor)
 ```
@@ -1545,13 +1612,11 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(recognize)
-	if (*_cur == 'i' && _cur[1] == 'f' && _cur[2] <= ' ') {
+@def(recognize keywords)
+	if (_name == "if") {
 		_type = Token_Type::t_if;
-		_cur += 2;
-		break;
 	}
-@end(recognize)
+@end(recognize keywords)
 ```
 
 ```
@@ -1950,7 +2015,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(needed by parse factor)
+@add(needed by parse factor)
 	class Access: public Expression {
 			const Expression_Ptr _inner;
 
