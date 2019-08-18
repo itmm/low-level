@@ -486,9 +486,6 @@ These syntax trees are then transformed into machine code.
 		}
 		_type = Token_Type::ident;
 		@put(recognize keywords);
-		if (_name == "if") {
-			_type = Token_Type::t_if;
-		}
 		_cur = c;
 		break;
 	}
@@ -1152,26 +1149,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(recognize)
-	if (*_cur == '&') {
-		_type = Token_Type::t_and;
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(recognize)
-	if (*_cur == '|') {
-		_type = Token_Type::t_or;
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
 @def(needed by parse)
 	class BinaryAnd:
 		public BinaryExpression
@@ -1344,7 +1321,7 @@ These syntax trees are then transformed into machine code.
 ```
 @add(unit-tests)
 	assert_line(
-		"%x5 <- %x5 & $ff",
+		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 @end(unit-tests)
@@ -1353,7 +1330,7 @@ These syntax trees are then transformed into machine code.
 ```
 @add(unit-tests)
 	assert_line(
-		"%x5 <- %x5 | $1",
+		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 @end(unit-tests)
@@ -1362,7 +1339,7 @@ These syntax trees are then transformed into machine code.
 ```
 @add(unit-tests)
 	assert_line(
-		"%x6 <- %x6 | $1",
+		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 @end(unit-tests)
@@ -1572,6 +1549,12 @@ These syntax trees are then transformed into machine code.
 @def(recognize keywords)
 	if (_name == "if") {
 		_type = Token_Type::t_if;
+	}
+	if (_name == "and") {
+		_type = Token_Type::t_and;
+	}
+	if (_name == "or") {
+		_type = Token_Type::t_or;
 	}
 @end(recognize keywords)
 ```
