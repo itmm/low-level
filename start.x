@@ -746,7 +746,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(clear symbols)
+@def(clear symbols) {
 	_symbols["%pc"] = std::move(std::make_unique<Pc_Register>());
 	_symbols["%mtvec"] = std::move(std::make_unique<Csr_Register>(0x305));
 	_symbols["%mhartid"] = std::move(std::make_unique<Csr_Register>(0xf14));
@@ -760,6 +760,46 @@ These syntax trees are then transformed into machine code.
 		name2[2] = '0' + (i / 10);
 		name2[3] = '0' + (i % 10);
 		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i));
+	}
+} @end(clear symbols)
+```
+
+```
+@add(clear symbols)
+	_symbols["%zero"] = _symbols["%x0"]->clone();
+	_symbols["%ra"] = _symbols["%x1"]->clone();
+	_symbols["%sp"] = _symbols["%x2"]->clone();
+	_symbols["%gp"] = _symbols["%x3"]->clone();
+	_symbols["%tp"] = _symbols["%x4"]->clone();
+	char name1[] = "%t#";
+	for (int i = 0; i < 3; ++i) {
+		name1[2] = '0' + i;
+		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i + 5));
+	}
+	char name2[] = "%s#";
+	for (int i = 0; i < 2; ++i) {
+		name2[2] = '0' + i;
+		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i + 8));
+	}
+	_symbols["%fp"] = _symbols["%x8"]->clone();
+	char name3[] = "%a#";
+	for (int i = 0; i < 8; ++i) {
+		name3[2] = '0' + i;
+		_symbols[name3] = std::move(std::make_unique<Gen_Register>(i + 10));
+	}
+	for (int i = 2; i < 10; ++i) {
+		name2[2] = '0' + i;
+		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i + 16));
+	}
+	char name4[] = "%s##";
+	for (int i = 10; i < 12; ++i) {
+		name4[2] = '0' + (i / 10);
+		name4[3] = '0' + (i % 10);
+		_symbols[name4] = std::move(std::make_unique<Gen_Register>(i + 16));
+	}
+	for (int i = 3; i < 7; ++i) {
+		name1[2] = '0' + i;
+		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i + 25));
 	}
 @end(clear symbols)
 ```

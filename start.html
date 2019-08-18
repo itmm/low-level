@@ -961,7 +961,7 @@ parses a arithmetic factor
 </div>
 <div><div>
 <code>
-<span class="macro">@def(<span class="name">clear symbols</span>)</span><br/>
+<span class="macro">@def(<span class="name">clear symbols</span>)</span> {<br/>
 <span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%pc"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Pc_Register</span>&gt;());<br/>
 <span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%mtvec"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Csr_Register</span>&gt;(<span class="num">0x305</span>));<br/>
 <span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%mhartid"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Csr_Register</span>&gt;(<span class="num">0xf14</span>));<br/>
@@ -975,6 +975,47 @@ parses a arithmetic factor
 <span class="in2"></span><span class="var">name2</span>[<span class="num">2</span>] = <span class="str">'0'</span> + (<span class="var">i</span> / <span class="num">10</span>);<br/>
 <span class="in2"></span><span class="var">name2</span>[<span class="num">3</span>] = <span class="str">'0'</span> + (<span class="var">i</span> % <span class="num">10</span>);<br/>
 <span class="in2"></span><span class="var">_symbols</span>[<span class="var">name2</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span>));<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">clear symbols</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">clear symbols</span>)</span><br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%zero"</span>] = <span class="var">_symbols</span>[<span class="str">"%x0"</span>]-&gt;<span class="fn">clone</span>();<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%ra"</span>] = <span class="var">_symbols</span>[<span class="str">"%x1"</span>]-&gt;<span class="fn">clone</span>();<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%sp"</span>] = <span class="var">_symbols</span>[<span class="str">"%x2"</span>]-&gt;<span class="fn">clone</span>();<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%gp"</span>] = <span class="var">_symbols</span>[<span class="str">"%x3"</span>]-&gt;<span class="fn">clone</span>();<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%tp"</span>] = <span class="var">_symbols</span>[<span class="str">"%x4"</span>]-&gt;<span class="fn">clone</span>();<br/>
+<span class="in1"></span><span class="type">char</span> <span class="var">name1</span>[] = <span class="str">"%t#"</span>;<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">3</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="var">name1</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name1</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span> + <span class="num">5</span>));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="type">char</span> <span class="var">name2</span>[] = <span class="str">"%s#"</span>;<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">2</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="var">name2</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name2</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span> + <span class="num">8</span>));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%fp"</span>] = <span class="var">_symbols</span>[<span class="str">"%x8"</span>]-&gt;<span class="fn">clone</span>();<br/>
+<span class="in1"></span><span class="type">char</span> <span class="var">name3</span>[] = <span class="str">"%a#"</span>;<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">8</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="var">name3</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name3</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span> + <span class="num">10</span>));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">2</span>; <span class="var">i</span> &lt; <span class="num">10</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="var">name2</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name2</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span> + <span class="num">16</span>));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="type">char</span> <span class="var">name4</span>[] = <span class="str">"%s##"</span>;<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">10</span>; <span class="var">i</span> &lt; <span class="num">12</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="var">name4</span>[<span class="num">2</span>] = <span class="str">'0'</span> + (<span class="var">i</span> / <span class="num">10</span>);<br/>
+<span class="in2"></span><span class="var">name4</span>[<span class="num">3</span>] = <span class="str">'0'</span> + (<span class="var">i</span> % <span class="num">10</span>);<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name4</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span> + <span class="num">16</span>));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">3</span>; <span class="var">i</span> &lt; <span class="num">7</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="var">name1</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name1</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span> + <span class="num">25</span>));<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">clear symbols</span>)</span><br/>
 </code></div>
