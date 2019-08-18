@@ -794,7 +794,7 @@ addition is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Register</span>: <span class="keyword">public</span> <span class="type">Expression</span> {<br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Gen_Register</span>: <span class="keyword">public</span> <span class="type">Expression</span> {<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">register privates</span>)</span>;<br/>
 <span class="in2"></span><span class="keyword">public</span>:<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">register methods</span>)</span>;<br/>
@@ -808,7 +808,6 @@ register access is an expression
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">register privates</span>)</span><br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> <span class="var">_name</span>;<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">int</span> <span class="var">_nr</span>;<br/>
 <span class="macro">@end(<span class="name">register privates</span>)</span><br/>
 </code></div>
@@ -822,92 +821,9 @@ otherwise <code><span class="var">_nr</span></code> is negative
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">register privates</span>)</span><br/>
-<span class="in1"></span><span class="keyword">static</span> <span class="type">int</span> <span class="fn">nr_from_name</span>(<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">name</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">nr</span> { <span class="num">0</span> };<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">nr from name</span>)</span>;<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="var">nr</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">register privates</span>)</span><br/>
-</code></div>
-<ul><li>
-get register number from name, if it is a general purpose register
-</li><li>
-otherwise return a negitave number
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@def(<span class="name">nr from name</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span>.<span class="fn">empty</span>()) { <span class="keyword">return</span> -<span class="num">1</span>; }<br/>
-<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
-</code></div>
-<ul><li>
-empty name is no general purpose register
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">nr from name</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span> == <span class="str">"x"</span>) { <span class="keyword">return</span> -<span class="num">1</span>; }<br/>
-<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
-</code></div>
-<ul><li>
-the name <code>%<span class="var">x</span></code> is no general purpose register
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">nr from name</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span>[<span class="num">0</span>] != <span class="str">'x'</span>) { <span class="keyword">return</span> -<span class="num">1</span>; }<br/>
-<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
-</code></div>
-<ul><li>
-if the name does not start with <code>%<span class="var">x</span></code> it is not a general purpose  register
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">nr from name</span>)</span><br/>
-<span class="in1"></span><span class="keyword">for</span> (<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">i</span> { <span class="num">1</span> };<br/>
-<span class="in2"></span><span class="var">i</span> &lt; (<span class="type">int</span>) <span class="var">name</span>.<span class="fn">size</span>();<br/>
-<span class="in2"></span>++<span class="var">i</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">ch</span> = <span class="var">name</span>[<span class="var">i</span>];<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="fn">isdigit</span>(<span class="var">ch</span>)) {<br/>
-<span class="in3"></span><span class="keyword">return</span> -<span class="num">1</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="var">nr</span> = <span class="var">nr</span> * <span class="num">10</span> + (<span class="var">ch</span> - <span class="str">'0'</span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
-</code></div>
-<ul><li>
-parse the register number from the digits
-</li><li>
-if some other char occurs, it is no general purpose register
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">nr from name</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">nr</span> &lt; <span class="num">0</span> || <span class="var">nr</span> &gt; <span class="num">31</span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> -<span class="num">1</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">nr from name</span>)</span><br/>
-</code></div>
-<ul><li>
-only numbers <code><span class="num">0</span></code> to <code><span class="num">31</span></code> are valid general purpose registers
-</li></ul>
-</div>
-<div><div>
-<code>
 <span class="macro">@def(<span class="name">register methods</span>)</span><br/>
-<span class="in1"></span><span class="fn">Register</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">name</span>):<br/>
-<span class="in2"></span><span class="var">_name</span> { <span class="var">name</span> },<br/>
-<span class="in2"></span><span class="var">_nr</span> { <span class="fn">nr_from_name</span>(<span class="var">name</span>) }<br/>
+<span class="in1"></span><span class="fn">Gen_Register</span>(<span class="type">int</span> <span class="var">nr</span>):<br/>
+<span class="in2"></span><span class="var">_nr</span> { <span class="var">nr</span> }<br/>
 <span class="in1"></span>{ }<br/>
 <span class="macro">@end(<span class="name">register methods</span>)</span><br/>
 </code></div>
@@ -918,15 +834,9 @@ init with name and register number
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">register methods</span>)</span><br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">name</span>() <span class="type">const</span> {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="var">_name</span>;<br/>
-<span class="in1"></span>}<br/>
 <span class="in1"></span><span class="type">int</span> <span class="fn">nr</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_nr</span>; }<br/>
-<span class="in1"></span><span class="type">bool</span> <span class="fn">is_general</span>() <span class="type">const</span> {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="var">_nr</span> &gt;= <span class="num">0</span>;<br/>
-<span class="in1"></span>}<br/>
 <span class="in1"></span><span class="type">Expression_Ptr</span> <span class="fn">clone</span>() <span class="var">override</span> {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Register</span>&gt;(<span class="var">_name</span>);<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">_nr</span>);<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">register methods</span>)</span><br/>
 </code></div>
@@ -935,6 +845,38 @@ accessors for attributes
 </li><li>
 and shortcut to decide if the register is a general purpose register
 </li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Pc_Register</span>: <span class="keyword">public</span> <span class="type">Expression</span> {<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">Pc_Register</span>() {}<br/>
+<span class="in3"></span><span class="type">Expression_Ptr</span> <span class="fn">clone</span>() <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Pc_Register</span>&gt;();<br/>
+<span class="in3"></span>}<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Csr_Register</span>: <span class="keyword">public</span> <span class="type">Expression</span> {<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_addr</span>;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">Csr_Register</span>(<span class="type">int</span> <span class="var">addr</span>):<br/>
+<span class="in4"></span><span class="var">_addr</span> { <span class="var">addr</span> }<br/>
+<span class="in3"></span>{ }<br/>
+<span class="in3"></span><span class="type">Expression_Ptr</span> <span class="fn">clone</span>() <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Csr_Register</span>&gt;(<span class="var">_addr</span>);<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">addr</span>() <span class="type">const</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="var">_addr</span>; <br/>
+<span class="in3"></span>}<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
 </div>
 <div><div>
 <code>
@@ -1020,19 +962,19 @@ parses a arithmetic factor
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">clear symbols</span>)</span><br/>
-<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%pc"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Register</span>&gt;(<span class="str">"pc"</span>));<br/>
-<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%mtvec"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Register</span>&gt;(<span class="str">"mtvec"</span>));<br/>
-<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%mhartid"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Register</span>&gt;(<span class="str">"mhartid"</span>));<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%pc"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Pc_Register</span>&gt;());<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%mtvec"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Csr_Register</span>&gt;(<span class="num">0x305</span>));<br/>
+<span class="in1"></span><span class="var">_symbols</span>[<span class="str">"%mhartid"</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Csr_Register</span>&gt;(<span class="num">0xf14</span>));<br/>
 <span class="in1"></span><span class="type">char</span> <span class="var">name1</span>[] = <span class="str">"%x#"</span>;<br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">10</span>; ++<span class="var">i</span>) {<br/>
 <span class="in2"></span><span class="var">name1</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name1</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Register</span>&gt;(<span class="var">name1</span> + <span class="num">1</span>));<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name1</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span>));<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="type">char</span> <span class="var">name2</span>[] = <span class="str">"%x##"</span>;<br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">10</span>; <span class="var">i</span> &lt; <span class="num">32</span>; ++<span class="var">i</span>) {<br/>
 <span class="in2"></span><span class="var">name2</span>[<span class="num">2</span>] = <span class="str">'0'</span> + (<span class="var">i</span> / <span class="num">10</span>);<br/>
 <span class="in2"></span><span class="var">name2</span>[<span class="num">3</span>] = <span class="str">'0'</span> + (<span class="var">i</span> % <span class="num">10</span>);<br/>
-<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name2</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Register</span>&gt;(<span class="var">name2</span> + <span class="num">1</span>));<br/>
+<span class="in2"></span><span class="var">_symbols</span>[<span class="var">name2</span>] = <span class="type">std</span>::<span class="fn">move</span>(<span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Gen_Register</span>&gt;(<span class="var">i</span>));<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">clear symbols</span>)</span><br/>
 </code></div>
@@ -1241,9 +1183,9 @@ otherwise returns the factor
 <span class="macro">@add(<span class="name">parse expression</span>)</span><br/>
 <span class="in1"></span><span class="type">Assignment</span> *<span class="var">a</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">Assignment</span> *&gt;(&amp;*<span class="var">e</span>);<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">a</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">dst</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">dst</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">dst</span>) {<br/>
-<span class="in3"></span><span class="macro">@put(<span class="name">parse assignment to register</span>)</span>;<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">assign to general</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">parse assignment</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1252,45 +1194,23 @@ otherwise returns the factor
 </div>
 <div><div>
 <code>
-<span class="macro">@def(<span class="name">parse assignment to register</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">assign to general</span>)</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">parse assignment to register</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@def(<span class="name">assign to general</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition no register\n"</span>;<br/>
-<span class="in3"></span><span class="keyword">return</span>;<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">src1</span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">add to general</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">add to register</span>)</span>;<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">parse addition</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
 <code>
-<span class="macro">@def(<span class="name">add to register</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">add to general</span>)</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">add to register</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@def(<span class="name">add to general</span>)</span><br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of addition no general register\n"</span>;<br/>
-<span class="in2"></span>}<br/>
 <span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_add</span>(<br/>
 <span class="in3"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
 <span class="in2"></span>));<br/>
@@ -1314,20 +1234,17 @@ otherwise returns the factor
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">parse assignment to register</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">name</span>() == <span class="str">"pc"</span>) {<br/>
+<span class="macro">@def(<span class="name">parse assignment</span>)</span> {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Pc_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>())) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">o</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"only addition supported now\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Pc_Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Pc_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition no register\n"</span>;<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of addition not pc register\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">src1</span>-&gt;<span class="fn">name</span>() != <span class="str">"pc"</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of jump is not %pc, but "</span> &lt;&lt; <span class="var">dst</span>-&gt;<span class="fn">name</span>() &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">num</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">num</span>) {<br/>
@@ -1343,7 +1260,7 @@ otherwise returns the factor
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expected number as second argument of jump\n"</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">parse assignment to register</span>)</span><br/>
+} <span class="macro">@end(<span class="name">parse assignment</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1550,19 +1467,13 @@ and is a special binary expression
 <span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">BinaryAnd</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">BinaryAnd</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of and no register\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first of of and no general register\n"</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of and no general register\n"</span>;<br/>
-<span class="in3"></span>}<br/>
 <span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_and</span>(<br/>
 <span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
 <span class="in3"></span>));<br/>
@@ -1584,19 +1495,13 @@ and is a special binary expression
 <span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">BinaryOr</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">BinaryOr</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src1</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first op of or no register\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src1</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"first of of or no general register\n"</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src2</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">src2</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">src2</span>-&gt;<span class="fn">is_general</span>()) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"second of of or no general register\n"</span>;<br/>
-<span class="in3"></span>}<br/>
 <span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_or</span>(<br/>
 <span class="in4"></span>(<span class="type">char</span>) <span class="var">dst</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src1</span>-&gt;<span class="fn">nr</span>(), (<span class="type">char</span>) <span class="var">src2</span>-&gt;<span class="fn">nr</span>()<br/>
 <span class="in3"></span>));<br/>
@@ -1793,21 +1698,12 @@ and is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Pc_Register</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Pc_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">assign register to general</span>)</span>;<br/>
-<span class="in1"></span>}<br/>
-} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@def(<span class="name">assign register to general</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>-&gt;<span class="fn">name</span>() == <span class="str">"pc"</span>) {<br/>
 <span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_auipc</span>(<span class="var">dst</span>-&gt;<span class="fn">nr</span>(), <span class="num">0</span>));<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">assign register to general</span>)</span><br/>
+} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1822,11 +1718,11 @@ and is a special binary expression
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">add to register</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">src1</span>-&gt;<span class="fn">name</span>() == <span class="str">"pc"</span>) {<br/>
+<span class="macro">@def(<span class="name">parse addition</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Pc_Register</span> *&gt;(&amp;*<span class="var">o</span>-&gt;<span class="fn">first</span>())) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">add to pc</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">add to register</span>)</span><br/>
+<span class="macro">@end(<span class="name">parse addition</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1860,17 +1756,18 @@ and is a special binary expression
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">parse assignment to register</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">dst</span>-&gt;<span class="fn">name</span>() == <span class="str">"mtvec"</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">src</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span> || ! <span class="var">src</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="macro">@add(<span class="name">parse assignment</span>)</span> {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Csr_Register</span> *<span class="var">x</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Csr_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">x</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">src</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"only assign general register\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_csrrw</span>(<span class="str">'\0'</span>, <span class="num">0x305</span>, <span class="var">src</span>-&gt;<span class="fn">nr</span>()));<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_csrrw</span>(<span class="str">'\0'</span>, <span class="var">x</span>-&gt;<span class="fn">addr</span>(), <span class="var">src</span>-&gt;<span class="fn">nr</span>()));<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">parse assignment to register</span>)</span><br/>
+} <span class="macro">@end(<span class="name">parse assignment</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1898,12 +1795,13 @@ and is a special binary expression
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">assign register to general</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>-&gt;<span class="fn">name</span>() == <span class="str">"mhartid"</span>) {<br/>
-<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_csrrs</span>(<span class="var">dst</span>-&gt;<span class="fn">nr</span>(), <span class="num">0xf14</span>, <span class="str">'\0'</span>));<br/>
+<span class="macro">@add(<span class="name">assign to general</span>)</span> {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Csr_Register</span> *<span class="var">o</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Csr_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">o</span>) {<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_csrrs</span>(<span class="var">dst</span>-&gt;<span class="fn">nr</span>(), <span class="var">o</span>-&gt;<span class="fn">addr</span>(), <span class="str">'\0'</span>));<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">assign register to general</span>)</span><br/>
+} <span class="macro">@end(<span class="name">assign to general</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -2080,8 +1978,8 @@ if is a special binary expression
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span>{<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (! <span class="var">r</span> || <span class="var">r</span>-&gt;<span class="fn">name</span>() != <span class="str">"pc"</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Pc_Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Pc_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (! <span class="var">r</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expect %pc in if assignment\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>
@@ -2089,8 +1987,8 @@ if is a special binary expression
 <span class="in1"></span>{<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">d</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">d</span>) {<br/>
-<span class="in3"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">d</span>-&gt;<span class="fn">first</span>());<br/>
-<span class="in3"></span><span class="keyword">if</span> (! <span class="var">r</span> || <span class="var">r</span>-&gt;<span class="fn">name</span>() != <span class="str">"pc"</span>) {<br/>
+<span class="in3"></span><span class="type">const</span> <span class="type">Pc_Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Pc_Register</span> *&gt;(&amp;*<span class="var">d</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in3"></span><span class="keyword">if</span> (! <span class="var">r</span>) {<br/>
 <span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expect %pc in addition\n"</span>;<br/>
 <span class="in4"></span><span class="keyword">return</span>;<br/>
 <span class="in3"></span>}<br/>
@@ -2119,7 +2017,7 @@ if is a special binary expression
 <span class="in4"></span>}<br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span>{<br/>
-<span class="in4"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in4"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in4"></span><span class="keyword">if</span> (<span class="var">r</span>) {<br/>
 <span class="in5"></span><span class="var">reg1</span> = <span class="var">r</span>-&gt;<span class="fn">nr</span>();<br/>
 <span class="in4"></span>}<br/>
@@ -2132,7 +2030,7 @@ if is a special binary expression
 <br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span>{<br/>
-<span class="in4"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in4"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">b</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in4"></span><span class="keyword">if</span> (<span class="var">r</span>) {<br/>
 <span class="in5"></span><span class="var">reg2</span> = <span class="var">r</span>-&gt;<span class="fn">nr</span>();<br/>
 <span class="in4"></span>}<br/>
@@ -2402,8 +2300,8 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">assign access to general</span>)</span> {<br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(<span class="var">x</span>-&gt;<span class="fn">inner</span>());<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">r</span> &amp;&amp; <span class="var">r</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(<span class="var">x</span>-&gt;<span class="fn">inner</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">r</span>) {<br/>
 <span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_load</span>(<span class="var">dst</span>-&gt;<span class="fn">nr</span>(), <span class="var">r</span>-&gt;<span class="fn">nr</span>(), <span class="num">0</span>));<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2425,9 +2323,9 @@ if is a special binary expression
 <span class="macro">@add(<span class="name">assign access to general</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">d</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(<span class="var">x</span>-&gt;<span class="fn">inner</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">d</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">d</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">r</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">d</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">d</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">r</span> &amp;&amp; <span class="var">r</span>-&gt;<span class="fn">is_general</span>() &amp;&amp; <span class="var">n</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">r</span> &amp;&amp; <span class="var">n</span>) {<br/>
 <span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_load</span>(<span class="var">dst</span>-&gt;<span class="fn">nr</span>(), <span class="var">r</span>-&gt;<span class="fn">nr</span>(), <span class="var">n</span>-&gt;<span class="fn">value</span>()));<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>
@@ -2447,10 +2345,10 @@ if is a special binary expression
 </div>
 <div><div>
 <code>
-<span class="macro">@def(<span class="name">parse assignment</span>)</span> {<br/>
+<span class="macro">@add(<span class="name">parse assignment</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">Access</span> *<span class="var">x</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Access</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">x</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">s</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">s</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">a</span>-&gt;<span class="fn">second</span>());<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">parse store assignment</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">parse assignment</span>)</span><br/>
@@ -2488,8 +2386,8 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">parse store assignment</span>)</span> {<br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">d</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(<span class="var">x</span>-&gt;<span class="fn">inner</span>());<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">d</span> &amp;&amp; <span class="var">d</span>-&gt;<span class="fn">is_general</span>() &amp;&amp; <span class="var">s</span> &amp;&amp; <span class="var">s</span>-&gt;<span class="fn">is_general</span>()) {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">d</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(<span class="var">x</span>-&gt;<span class="fn">inner</span>());<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">d</span> &amp;&amp; <span class="var">s</span>) {<br/>
 <span class="in2"></span><span class="fn">add_machine</span>(<span class="fn">build_store</span>(<span class="var">s</span>-&gt;<span class="fn">nr</span>(), <span class="var">d</span>-&gt;<span class="fn">nr</span>(), <span class="num">0</span>));<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2511,9 +2409,9 @@ if is a special binary expression
 <span class="macro">@add(<span class="name">parse store assignment</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">Addition</span> *<span class="var">p</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Addition</span> *&gt;(<span class="var">x</span>-&gt;<span class="fn">inner</span>());<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">p</span>) {<br/>
-<span class="in2"></span><span class="type">const</span> <span class="type">Register</span> *<span class="var">d</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Register</span> *&gt;(&amp;*<span class="var">p</span>-&gt;<span class="fn">first</span>());<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Gen_Register</span> *<span class="var">d</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Gen_Register</span> *&gt;(&amp;*<span class="var">p</span>-&gt;<span class="fn">first</span>());<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">Number</span> *<span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">p</span>-&gt;<span class="fn">second</span>());<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">d</span> &amp;&amp; <span class="var">d</span>-&gt;<span class="fn">is_general</span>() &amp;&amp; <span class="var">s</span> &amp;&amp; <span class="var">s</span>-&gt;<span class="fn">is_general</span>() &amp;&amp; <span class="var">n</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">d</span> &amp;&amp; <span class="var">s</span> &amp;&amp; <span class="var">n</span>) {<br/>
 <span class="in3"></span><span class="fn">add_machine</span>(<span class="fn">build_store</span>(<span class="var">s</span>-&gt;<span class="fn">nr</span>(), <span class="var">d</span>-&gt;<span class="fn">nr</span>(), <span class="var">n</span>-&gt;<span class="fn">value</span>()));<br/>
 <span class="in3"></span><span class="keyword">return</span>;<br/>
 <span class="in2"></span>}<br/>

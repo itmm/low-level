@@ -605,7 +605,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(needed by state)
-	class Register: public Expression {
+	class Gen_Register: public Expression {
 			@put(register privates);
 		public:
 			@put(register methods);
@@ -617,7 +617,6 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(register privates)
-	const std::string _name;
 	const int _nr;
 @end(register privates)
 ```
@@ -627,74 +626,9 @@ These syntax trees are then transformed into machine code.
 
 
 ```
-@add(register privates)
-	static int nr_from_name(
-		const std::string &name
-	) {
-		int nr { 0 };
-		@put(nr from name);
-		return nr;
-	}
-@end(register privates)
-```
-* get register number from name, if it is a general purpose register
-* otherwise return a negitave number
-
-
-```
-@def(nr from name)
-	if (name.empty()) { return -1; }
-@end(nr from name)
-```
-* empty name is no general purpose register
-
-```
-@add(nr from name)
-	if (name == "x") { return -1; }
-@end(nr from name)
-```
-* the name `%x` is no general purpose register
-
-```
-@add(nr from name)
-	if (name[0] != 'x') { return -1; }
-@end(nr from name)
-```
-* if the name does not start with `%x` it is not a general purpose
-  register
-
-```
-@add(nr from name)
-	for (
-		int i { 1 };
-		i < (int) name.size();
-		++i
-	) {
-		char ch = name[i];
-		if (! isdigit(ch)) {
-			return -1;
-		}
-		nr = nr * 10 + (ch - '0');
-	}
-@end(nr from name)
-```
-* parse the register number from the digits
-* if some other char occurs, it is no general purpose register
-
-```
-@add(nr from name)
-	if (nr < 0 || nr > 31) {
-		return -1;
-	}
-@end(nr from name)
-```
-* only numbers `0` to `31` are valid general purpose registers
-
-```
 @def(register methods)
-	Register(const std::string &name):
-		_name { name },
-		_nr { nr_from_name(name) }
+	Gen_Register(int nr):
+		_nr { nr }
 	{ }
 @end(register methods)
 ```
@@ -702,20 +636,44 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(register methods)
-	const std::string &name() const {
-		return _name;
-	}
 	int nr() const { return _nr; }
-	bool is_general() const {
-		return _nr >= 0;
-	}
 	Expression_Ptr clone() override {
-		return std::make_unique<Register>(_name);
+		return std::make_unique<Gen_Register>(_nr);
 	}
 @end(register methods)
 ```
 * accessors for attributes
 * and shortcut to decide if the register is a general purpose register
+
+```
+@add(needed by state)
+	class Pc_Register: public Expression {
+		public:
+			Pc_Register() {}
+			Expression_Ptr clone() override {
+				return std::make_unique<Pc_Register>();
+			}
+	};
+@end(needed by state)
+```
+
+```
+@add(needed by state)
+	class Csr_Register: public Expression {
+			int _addr;
+		public:
+			Csr_Register(int addr):
+				_addr { addr }
+			{ }
+			Expression_Ptr clone() override {
+				return std::make_unique<Csr_Register>(_addr);
+			}
+			int addr() const {
+				return _addr; 
+			}
+	};
+@end(needed by state)
+```
 
 ```
 @add(needed by state)
@@ -789,19 +747,19 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(clear symbols)
-	_symbols["%pc"] = std::move(std::make_unique<Register>("pc"));
-	_symbols["%mtvec"] = std::move(std::make_unique<Register>("mtvec"));
-	_symbols["%mhartid"] = std::move(std::make_unique<Register>("mhartid"));
+	_symbols["%pc"] = std::move(std::make_unique<Pc_Register>());
+	_symbols["%mtvec"] = std::move(std::make_unique<Csr_Register>(0x305));
+	_symbols["%mhartid"] = std::move(std::make_unique<Csr_Register>(0xf14));
 	char name1[] = "%x#";
 	for (int i = 0; i < 10; ++i) {
 		name1[2] = '0' + i;
-		_symbols[name1] = std::move(std::make_unique<Register>(name1 + 1));
+		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i));
 	}
 	char name2[] = "%x##";
 	for (int i = 10; i < 32; ++i) {
 		name2[2] = '0' + (i / 10);
 		name2[3] = '0' + (i % 10);
-		_symbols[name2] = std::move(std::make_unique<Register>(name2 + 1));
+		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i));
 	}
 @end(clear symbols)
 ```
@@ -989,9 +947,9 @@ These syntax trees are then transformed into machine code.
 @add(parse expression)
 	Assignment *a = dynamic_cast<Assignment *>(&*e);
 	if (a) {
-		const Register *dst = dynamic_cast<const Register *>(&*a->first());
+		const Gen_Register *dst = dynamic_cast<const Gen_Register *>(&*a->first());
 		if (dst) {
-			@put(parse assignment to register);
+			@put(assign to general);
 		}
 		@put(parse assignment);
 	}
@@ -999,42 +957,22 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(parse assignment to register)
-	if (dst->is_general()) {
-		@put(assign to general);
-	}
-@end(parse assignment to register)
-```
-
-```
 @def(assign to general) {
 	const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 	if (o) {
-		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
-		if (! src1) {
-			std::cerr << "first op of addition no register\n";
-			return;
+		const Gen_Register *src1 = dynamic_cast<const Gen_Register *>(&*o->first());
+		if (src1) {
+			@put(add to general);
 		}
-		@put(add to register);
+		@put(parse addition);
 	}
 } @end(assign to general)
 ```
 
 ```
-@def(add to register)
-	if (src1->is_general()) {
-		@put(add to general);
-	}
-@end(add to register)
-```
-
-```
 @def(add to general)
-	const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+	const Gen_Register *src2 = dynamic_cast<const Gen_Register *>(&*o->second());
 	if (src2) {
-		if (! src2->is_general()) {
-			std::cerr << "second of of addition no general register\n";
-		}
 		add_machine(build_add(
 			(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
 		));
@@ -1056,20 +994,17 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(parse assignment to register)
-	if (dst->name() == "pc") {
+@def(parse assignment) {
+	if (dynamic_cast<const Pc_Register *>(&*a->first())) {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 		if (! o) {
 			std::cerr << "only addition supported now\n";
 			return;
 		}
-		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		const Pc_Register *src1 = dynamic_cast<const Pc_Register *>(&*o->first());
 		if (! src1) {
-			std::cerr << "first op of addition no register\n";
+			std::cerr << "first op of addition not pc register\n";
 			return;
-		}
-		if (src1->name() != "pc") {
-			std::cerr << "first op of jump is not %pc, but " << dst->name() << '\n';
 		}
 		const Number *num = dynamic_cast<const Number *>(&*o->second());
 		if (num) {
@@ -1085,7 +1020,7 @@ These syntax trees are then transformed into machine code.
 			std::cerr << "expected number as second argument of jump\n";
 		}
 	}
-@end(parse assignment to register)
+} @end(parse assignment)
 ```
 
 ```
@@ -1266,19 +1201,13 @@ These syntax trees are then transformed into machine code.
 @add(assign to general) {
 	const BinaryAnd *o = dynamic_cast<const BinaryAnd *>(&*a->second());
 	if (o) {
-		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		const Gen_Register *src1 = dynamic_cast<const Gen_Register *>(&*o->first());
 		if (! src1) {
 			std::cerr << "first op of and no register\n";
 			return;
 		}
-		if (! src1->is_general()) {
-			std::cerr << "first of of and no general register\n";
-		}
-		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+		const Gen_Register *src2 = dynamic_cast<const Gen_Register *>(&*o->second());
 		if (src2) {
-			if (! src2->is_general()) {
-				std::cerr << "second of of and no general register\n";
-			}
 			add_machine(build_and(
 				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
 			));
@@ -1299,19 +1228,13 @@ These syntax trees are then transformed into machine code.
 @add(assign to general) {
 	const BinaryOr *o = dynamic_cast<const BinaryOr *>(&*a->second());
 	if (o) {
-		const Register *src1 = dynamic_cast<const Register *>(&*o->first());
+		const Gen_Register *src1 = dynamic_cast<const Gen_Register *>(&*o->first());
 		if (! src1) {
 			std::cerr << "first op of or no register\n";
 			return;
 		}
-		if (! src1->is_general()) {
-			std::cerr << "first of of or no general register\n";
-		}
-		const Register *src2 = dynamic_cast<const Register *>(&*o->second());
+		const Gen_Register *src2 = dynamic_cast<const Gen_Register *>(&*o->second());
 		if (src2) {
-			if (! src2->is_general()) {
-				std::cerr << "second of of or no general register\n";
-			}
 			add_machine(build_or(
 				(char) dst->nr(), (char) src1->nr(), (char) src2->nr()
 			));
@@ -1491,20 +1414,12 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(assign to general) {
-	const Register *o = dynamic_cast<const Register *>(&*a->second());
+	const Pc_Register *o = dynamic_cast<const Pc_Register *>(&*a->second());
 	if (o) {
-		@put(assign register to general);
-	}
-} @end(assign to general)
-```
-
-```
-@def(assign register to general)
-	if (o->name() == "pc") {
 		add_machine(build_auipc(dst->nr(), 0));
 		return;
 	}
-@end(assign register to general)
+} @end(assign to general)
 ```
 
 ```
@@ -1517,11 +1432,11 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(add to register)
-	if (src1->name() == "pc") {
+@def(parse addition)
+	if (dynamic_cast<const Pc_Register *>(&*o->first())) {
 		@put(add to pc);
 	}
-@end(add to register)
+@end(parse addition)
 ```
 
 ```
@@ -1552,17 +1467,18 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(parse assignment to register)
-	if (dst->name() == "mtvec") {
-		const Register *src = dynamic_cast<const Register *>(&*a->second());
-		if (! src || ! src->is_general()) {
+@add(parse assignment) {
+	const Csr_Register *x = dynamic_cast<const Csr_Register *>(&*a->first());
+	if (x) {
+		const Gen_Register *src = dynamic_cast<const Gen_Register *>(&*a->second());
+		if (! src) {
 			std::cerr << "only assign general register\n";
 			return;
 		}
-		add_machine(build_csrrw('\0', 0x305, src->nr()));
+		add_machine(build_csrrw('\0', x->addr(), src->nr()));
 		return;
 	}
-@end(parse assignment to register)
+} @end(parse assignment)
 ```
 
 ```
@@ -1587,12 +1503,13 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(assign register to general)
-	if (o->name() == "mhartid") {
-		add_machine(build_csrrs(dst->nr(), 0xf14, '\0'));
+@add(assign to general) {
+	const Csr_Register *o = dynamic_cast<const Csr_Register *>(&*a->second());
+	if (o) {
+		add_machine(build_csrrs(dst->nr(), o->addr(), '\0'));
 		return;
 	}
-@end(assign register to general)
+} @end(assign to general)
 ```
 
 ```
@@ -1753,8 +1670,8 @@ These syntax trees are then transformed into machine code.
 		return;
 	}
 	{
-		const Register *r = dynamic_cast<const Register *>(&*a->first());
-		if (! r || r->name() != "pc") {
+		const Pc_Register *r = dynamic_cast<const Pc_Register *>(&*a->first());
+		if (! r) {
 			std::cerr << "expect %pc in if assignment\n";
 			return;
 		}
@@ -1762,8 +1679,8 @@ These syntax trees are then transformed into machine code.
 	{
 		const Addition *d = dynamic_cast<const Addition *>(&*a->second());
 		if (d) {
-			const Register *r = dynamic_cast<const Register *>(&*d->first());
-			if (! r || r->name() != "pc") {
+			const Pc_Register *r = dynamic_cast<const Pc_Register *>(&*d->first());
+			if (! r) {
 				std::cerr << "expect %pc in addition\n";
 				return;
 			}
@@ -1792,7 +1709,7 @@ These syntax trees are then transformed into machine code.
 				}
 			}
 			{
-				const Register *r = dynamic_cast<const Register *>(&*b->first());
+				const Gen_Register *r = dynamic_cast<const Gen_Register *>(&*b->first());
 				if (r) {
 					reg1 = r->nr();
 				}
@@ -1805,7 +1722,7 @@ These syntax trees are then transformed into machine code.
 
 			}
 			{
-				const Register *r = dynamic_cast<const Register *>(&*b->second());
+				const Gen_Register *r = dynamic_cast<const Gen_Register *>(&*b->second());
 				if (r) {
 					reg2 = r->nr();
 				}
@@ -2054,8 +1971,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(assign access to general) {
-	const Register *r = dynamic_cast<const Register *>(x->inner());
-	if (r && r->is_general()) {
+	const Gen_Register *r = dynamic_cast<const Gen_Register *>(x->inner());
+	if (r) {
 		add_machine(build_load(dst->nr(), r->nr(), 0));
 		return;
 	}
@@ -2075,9 +1992,9 @@ These syntax trees are then transformed into machine code.
 @add(assign access to general) {
 	const Addition *d = dynamic_cast<const Addition *>(x->inner());
 	if (d) {
-		const Register *r = dynamic_cast<const Register *>(&*d->first());
+		const Gen_Register *r = dynamic_cast<const Gen_Register *>(&*d->first());
 		const Number *n = dynamic_cast<const Number *>(&*d->second());
-		if (r && r->is_general() && n) {
+		if (r && n) {
 			add_machine(build_load(dst->nr(), r->nr(), n->value()));
 			return;
 		}
@@ -2095,10 +2012,10 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(parse assignment) {
+@add(parse assignment) {
 	const Access *x = dynamic_cast<const Access *>(&*a->first());
 	if (x) {
-		const Register *s = dynamic_cast<const Register *>(&*a->second());
+		const Gen_Register *s = dynamic_cast<const Gen_Register *>(&*a->second());
 		@put(parse store assignment);
 	}
 } @end(parse assignment)
@@ -2133,8 +2050,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(parse store assignment) {
-	const Register *d = dynamic_cast<const Register *>(x->inner());
-	if (d && d->is_general() && s && s->is_general()) {
+	const Gen_Register *d = dynamic_cast<const Gen_Register *>(x->inner());
+	if (d && s) {
 		add_machine(build_store(s->nr(), d->nr(), 0));
 		return;
 	}
@@ -2154,9 +2071,9 @@ These syntax trees are then transformed into machine code.
 @add(parse store assignment) {
 	const Addition *p = dynamic_cast<const Addition *>(x->inner());
 	if (p) {
-		const Register *d = dynamic_cast<const Register *>(&*p->first());
+		const Gen_Register *d = dynamic_cast<const Gen_Register *>(&*p->first());
 		const Number *n = dynamic_cast<const Number *>(&*p->second());
-		if (d && d->is_general() && s && s->is_general() && n) {
+		if (d && s && n) {
 			add_machine(build_store(s->nr(), d->nr(), n->value()));
 			return;
 		}
