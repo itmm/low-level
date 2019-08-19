@@ -389,7 +389,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(token types)
-	plus,
+	plus, minus,
 @end(token types)
 ```
 * add token for addition
@@ -397,6 +397,7 @@ These syntax trees are then transformed into machine code.
 ```
 @add(unit-tests)
 	assert_token("+", Token_Type::plus);
+	assert_token("-", Token_Type::minus);
 @end(unit-tests)
 ```
 * try to recognize addition
@@ -405,6 +406,11 @@ These syntax trees are then transformed into machine code.
 @add(recognize)
 	if (*_cur == '+') {
 		_type = Token_Type::plus;
+		++_cur;
+		break;
+	}
+	if (*_cur == '-') {
+		_type = Token_Type::minus;
 		++_cur;
 		break;
 	}
@@ -599,6 +605,24 @@ These syntax trees are then transformed into machine code.
 @end(needed by state)
 ```
 * addition is a special binary expression
+
+```
+@add(needed by state)
+	class Subtraction:
+		public BinaryExpression
+	{
+		public:
+			Subtraction(
+				Expression_Ptr first,
+				Expression_Ptr second
+			): BinaryExpression(
+				std::move(first),
+				std::move(second)
+			) { }
+	};
+@end(needed by state)
+```
+* subtraction is a special binary expression
 
 ```
 @add(needed by state)
@@ -860,6 +884,26 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(parse binary)
+	if (t.type() == Token_Type::minus) {
+		t.next();
+		auto src = parse_factor(t);
+		if (! src) {
+			std::cerr << "no factor after -\n";
+			return Expression_Ptr { };
+		}
+		auto n = dynamic_cast<const Number *>(&*src);
+		if (n) {
+			dst = std::make_unique<Addition>(std::move(dst), std::make_unique<Number>(-n->value()));
+		} else {
+			dst = std::make_unique<Subtraction>(std::move(dst), std::move(src));
+		}
+		continue;
+	}
+@end(parse binary)
+```
+
+```
 @add(needed by state)
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -922,16 +966,13 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(recognize)
-	if (*_cur == '-' || isdigit(*_cur)) {
-		bool neg = *_cur == '-';
-		if (neg) { ++_cur; }
+	if (isdigit(*_cur)) {
 		_value = 0;
 		while (isdigit(*_cur)) {
 			_value = _value * 10 +
 				(*_cur - '0');
 			++_cur;
 		}
-		if (neg) { _value = -_value; }
 		_type = Token_Type::number;
 		break;
 	}
@@ -953,6 +994,22 @@ These syntax trees are then transformed into machine code.
 			);
 		t.next();
 		return res;
+	}
+@end(parse factor)
+```
+
+```
+@add(parse factor)
+	if (t.type() == Token_Type::minus) {
+		t.next();
+		auto res = parse_factor(t);
+		auto n = dynamic_cast<const Number *>(&*res);
+		if (n) {
+			return std::make_unique<Number>(
+				-t.value()
+			);
+		}
+		std::cerr << "no number after -\n";
 	}
 @end(parse factor)
 ```

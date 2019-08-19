@@ -12,15 +12,15 @@
 	[%a0 + $08] <- %t0
 	[%a0 + $0c] <- %t1
 	%t0 <- [%a0 + $04]
-	if %t0 < 0: %pc <- %pc + -4
+	if %t0 < 0: %pc <- %pc - 4
 	%t0 <- %t0 and $ff
-	if %t0 = 0: %pc <- %pc + -12
+	if %t0 = 0: %pc <- %pc - 12
 	%t1 <- [%a0]
-	if %t1 < 0: %pc <- %pc + -4
+	if %t1 < 0: %pc <- %pc - 4
 	[%a0] <- %t0
-	if %t0 != %a1: %pc <- %pc + -28
+	if %t0 != %a1: %pc <- %pc - 28
 	%t0 <- [%a0]
-	if %t0 < 0: %pc <- %pc + -4
+	if %t0 < 0: %pc <- %pc - 4
 	[%a0] <- %a2
-	%pc <- %pc + -44
+	%pc <- %pc - 44
 	%pc <- %pc + 0
