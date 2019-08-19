@@ -601,6 +601,11 @@ These syntax trees are then transformed into machine code.
 				std::move(first),
 				std::move(second)
 			) { }
+			Expression_Ptr clone() override {
+				return std::make_unique<Addition>(
+					first()->clone(), second()->clone()
+				);
+			}
 	};
 @end(needed by state)
 ```

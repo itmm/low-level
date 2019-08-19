@@ -787,6 +787,11 @@ assignment is a special binary expression
 <span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">first</span>),<br/>
 <span class="in4"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">second</span>)<br/>
 <span class="in3"></span>) { }<br/>
+<span class="in3"></span><span class="type">Expression_Ptr</span> <span class="fn">clone</span>() <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Addition</span>&gt;(<br/>
+<span class="in5"></span><span class="fn">first</span>()-&gt;<span class="fn">clone</span>(), <span class="fn">second</span>()-&gt;<span class="fn">clone</span>()<br/>
+<span class="in4"></span>);<br/>
+<span class="in3"></span>}<br/>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>

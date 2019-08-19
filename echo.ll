@@ -5,34 +5,42 @@
 loop_hart = *
 	if %t0 != 0: %pc <- %pc + (loop_hart + -*)
 
+# goto LABEL = %pc <- %pc + (LABEL - *)
+# R1 <- R2 or R3 = r_inst($2, num(R1), num(R2), $3, num(R3), $33)
+
 # init UART
-	%a0 <- $10013000
-	%t0 <- [%a0 + $08]
-	%a1 <- $0d
-	%a2 <- $0a
-	%t1 <- [%a0 + $0c]
+	uart = %a0
+	uart <- $10013000
+	%t0 <- [uart + $08]
+	ch_cr = %a1
+	ch_cr <- $0d
+	ch_nl = %a2
+	ch_nl <- $0a
+	%t1 <- [uart + $0c]
 	%t0 <- %t0 or $01
 	%t1 <- %t1 or $01
-	[%a0 + $08] <- %t0
-	[%a0 + $0c] <- %t1
+	[uart + $08] <- %t0
+	[uart + $0c] <- %t1
+	uart_rd = uart + $04
+	uart_wr = uart + $00
 
 # read loop
 read = *
-	%t0 <- [%a0 + $04]
+	%t0 <- [uart_rd]
 	if %t0 < 0: %pc <- %pc + (read + -*)
 	%t0 <- %t0 and $ff
 	if %t0 = 0: %pc <- %pc + (read + -*)
 can_write = *
-	%t1 <- [%a0]
+	%t1 <- [uart_wr]
 	if %t1 < 0: %pc <- %pc + (can_write + -*)
-	[%a0] <- %t0
-	if %t0 != %a1: %pc <- %pc + (read + -*)
+	[uart + $00] <- %t0
+	if %t0 != ch_cr: %pc <- %pc + (read + -*)
 
-#write additional CR
-can_write_cr = *
-	%t0 <- [%a0]
-	if %t0 < 0: %pc <- %pc + (can_write_cr + -*)
-	[%a0] <- %a2
+#write additional NL after CR
+can_write_nl = *
+	%t0 <- [uart_wr]
+	if %t0 < 0: %pc <- %pc + (can_write_nl + -*)
+	[uart + $00] <- ch_nl
 	%pc <- %pc + (read + -*)
 
 # dummy interrupt handler
