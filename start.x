@@ -726,7 +726,6 @@ These syntax trees are then transformed into machine code.
 		Tokenizer &t, int addr
 	) {
 		@put(parse factor);
-		std::cerr << "no factor\n";
 		return Expression_Ptr {};
 	}
 @end(needed by state)
