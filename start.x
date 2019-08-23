@@ -328,6 +328,127 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(token types)
+	ident,
+@end(token types)
+```
+
+```
+@add(tokenizer attributes)
+	std::string _name = {};
+@end(tokenizer attributes)
+```
+* store name of register
+
+```
+@add(tokenizer methods)
+	const std::string &name() const {
+		return _name;
+	}
+@end(tokenizer methods)
+```
+* return register name
+
+```
+@def(recognize)
+	if (isalpha(*_cur) || *_cur == '%' || *_cur == '_') {
+		auto c = _cur;
+		_name = {};
+		while (c != _end && (
+			isalnum(*c) || *c == '_' ||
+			*c == '%'
+		)) {
+			_name += *c++;
+		}
+		_type = Token_Type::ident;
+		@put(recognize keywords);
+		_cur = c;
+		break;
+	}
+@end(recognize)
+```
+* recognize register
+
+```
+@add(token types)
+	t_raw,
+@end(token types)
+```
+
+```
+@def(recognize keywords)
+	if (_name == "raw") {
+		_type = Token_Type::t_raw;
+	}
+@end(recognize keywords)
+```
+
+```
+@add(recognize)
+	if (*_cur == '#') {
+		_type = Token_Type::end;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(token types)
+	number,
+@end(token types)
+```
+
+```
+@add(tokenizer attributes)
+	int _value = 0;
+@end(tokenizer attributes)
+```
+
+```
+@add(recognize)
+	if (isdigit(*_cur)) {
+		_value = 0;
+		while (isdigit(*_cur)) {
+			_value = _value * 10 +
+				(*_cur - '0');
+			++_cur;
+		}
+		_type = Token_Type::number;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(tokenizer methods)
+	int value() const { return _value; }
+@end(tokenizer methods)
+```
+
+```
+@add(recognize)
+	if (*_cur == '$') {
+		_value = 0;
+		++_cur;
+		while (isxdigit(*_cur)) {
+			int digit;
+			if (*_cur <= '9') {
+				digit = *_cur - '0';
+			} else if (*_cur <= 'F') {
+				digit = *_cur - 'A' + 10;
+			} else {
+				digit = *_cur - 'a' + 10;
+			}
+			_value = (_value << 4) + digit;
+			++_cur;
+		}
+		_type = Token_Type::number;
+		break;
+	}
+@end(recognize)
+```
+
+```
+@add(token types)
 	becomes,
 	t_less,
 @end(token types)
@@ -368,7 +489,7 @@ These syntax trees are then transformed into machine code.
   token
 
 ```
-@def(recognize)
+@add(recognize)
 	if (*_cur == '<') {
 		if (
 			_cur  + 1 != _end &&
@@ -419,29 +540,6 @@ These syntax trees are then transformed into machine code.
 * recognize addition
 
 ```
-@add(token types)
-	ident,
-@end(token types)
-```
-* add token for register
-
-```
-@add(tokenizer attributes)
-	std::string _name = {};
-@end(tokenizer attributes)
-```
-* store name of register
-
-```
-@add(tokenizer methods)
-	const std::string &name() const {
-		return _name;
-	}
-@end(tokenizer methods)
-```
-* return register name
-
-```
 @add(needed by main)
 	void assert_register(
 		const char *line,
@@ -478,27 +576,6 @@ These syntax trees are then transformed into machine code.
 @end(needed by tokenizer)
 ```
 * needs `@f(isalnum)` and `@f(isdigit)`
-
-```
-@add(recognize)
-	if (isalpha(*_cur) || *_cur == '%' || *_cur == '_') {
-		auto c = _cur;
-		_name = {};
-		while (c != _end && (
-			isalnum(*c) || *c == '_' ||
-			*c == '%'
-		)) {
-			_name += *c++;
-		}
-		_type = Token_Type::ident;
-		@put(recognize keywords);
-		_cur = c;
-		break;
-	}
-@end(recognize)
-```
-* recognize register
-
 
 ## Parsing
 * parses simple additions
@@ -963,39 +1040,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(token types)
-	number,
-@end(token types)
-```
-
-```
-@add(tokenizer attributes)
-	int _value = 0;
-@end(tokenizer attributes)
-```
-
-```
-@add(recognize)
-	if (isdigit(*_cur)) {
-		_value = 0;
-		while (isdigit(*_cur)) {
-			_value = _value * 10 +
-				(*_cur - '0');
-			++_cur;
-		}
-		_type = Token_Type::number;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(tokenizer methods)
-	int value() const { return _value; }
-@end(tokenizer methods)
-```
-
-```
 @add(parse factor)
 	if (t.type() == Token_Type::number) {
 		auto res =
@@ -1171,38 +1215,6 @@ These syntax trees are then transformed into machine code.
 		s.add_line(l);
 	}
 @end(read stdin)
-```
-
-```
-@add(recognize)
-	if (*_cur == '$') {
-		_value = 0;
-		++_cur;
-		while (isxdigit(*_cur)) {
-			int digit;
-			if (*_cur <= '9') {
-				digit = *_cur - '0';
-			} else if (*_cur <= 'F') {
-				digit = *_cur - 'A' + 10;
-			} else {
-				digit = *_cur - 'a' + 10;
-			}
-			_value = (_value << 4) + digit;
-			++_cur;
-		}
-		_type = Token_Type::number;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(recognize)
-	if (*_cur == '#') {
-		_type = Token_Type::end;
-		break;
-	}
-@end(recognize)
 ```
 
 ```
@@ -1610,7 +1622,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(recognize keywords)
+@add(recognize keywords)
 	if (_name == "if") {
 		_type = Token_Type::t_if;
 	}
@@ -1653,6 +1665,20 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(parse special)
+	if (t.type() == Token_Type::t_raw) {
+		t.next();
+		auto val { parse(t, addr) };
+		if (! val) {
+			std::cerr << "no number after raw\n";
+			return Expression_Ptr { };
+		}
+		return val;
+	}
+@end(parse special)
+```
+
+```
+@add(parse special)
 	if (t.type() == Token_Type::t_if) {
 		t.next();
 		auto cond = parse(t, addr);
