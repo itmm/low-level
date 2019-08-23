@@ -20,114 +20,114 @@
 
 	#include <vector>
 
-#line 210 "start.x"
+#line 218 "start.x"
 
 	
-#line 223 "start.x"
+#line 231 "start.x"
 
 	enum class Token_Type {
 		unknown,
 		
-#line 330 "start.x"
+#line 338 "start.x"
 
 	ident,
 
-#line 372 "start.x"
+#line 380 "start.x"
 
 	t_raw,
 
-#line 395 "start.x"
+#line 403 "start.x"
 
 	number,
 
-#line 451 "start.x"
+#line 459 "start.x"
 
 	becomes,
 	t_less,
 
-#line 512 "start.x"
+#line 520 "start.x"
 
 	plus, minus,
 
-#line 1221 "start.x"
+#line 1229 "start.x"
 
 	t_and,
 	t_or,
 
-#line 1618 "start.x"
+#line 1626 "start.x"
 
 	t_if,
 	t_colon,
 
-#line 1862 "start.x"
+#line 1870 "start.x"
 
 	t_equals,
 	t_not_equals,
 
-#line 2002 "start.x"
+#line 2010 "start.x"
 
 	t_open_bracket,
 	t_close_bracket,
 
-#line 2207 "start.x"
+#line 2215 "start.x"
 
 	t_open_parenthesis,
 	t_close_parenthesis,
 
-#line 2274 "start.x"
+#line 2282 "start.x"
 
 	t_times,
 
-#line 226 "start.x"
+#line 234 "start.x"
 
 		end
 	};
 
-#line 308 "start.x"
+#line 316 "start.x"
 
 	#include <iostream>
 
-#line 574 "start.x"
+#line 582 "start.x"
 
 	#include <cctype>
 
-#line 211 "start.x"
+#line 219 "start.x"
 
 	class Tokenizer {
 			
-#line 234 "start.x"
+#line 242 "start.x"
 
 	Token_Type _type =
 		Token_Type::unknown;
 
-#line 251 "start.x"
+#line 259 "start.x"
 
 	std::string::const_iterator _cur;
 	std::string::const_iterator _end;
 
-#line 336 "start.x"
+#line 344 "start.x"
 
 	std::string _name = {};
 
-#line 401 "start.x"
+#line 409 "start.x"
 
 	int _value = 0;
 
-#line 213 "start.x"
+#line 221 "start.x"
 ;
 		public:
 			
-#line 242 "start.x"
+#line 250 "start.x"
 
 	Token_Type type() const {
 		return _type;
 	}
 
-#line 259 "start.x"
+#line 267 "start.x"
 
 	void next();
 
-#line 266 "start.x"
+#line 274 "start.x"
 
 	Tokenizer(const std::string &s):
 		_cur { s.begin() },
@@ -136,25 +136,25 @@
 		next();
 	}
 
-#line 343 "start.x"
+#line 351 "start.x"
 
 	const std::string &name() const {
 		return _name;
 	}
 
-#line 422 "start.x"
+#line 430 "start.x"
 
 	int value() const { return _value; }
 
-#line 215 "start.x"
+#line 223 "start.x"
 ;
 	};
 	
-#line 278 "start.x"
+#line 286 "start.x"
 
 	void Tokenizer::next() {
 		
-#line 287 "start.x"
+#line 295 "start.x"
 
 	while (
 		_cur != _end && *_cur <= ' '
@@ -162,18 +162,18 @@
 		++_cur;
 	}
 
-#line 298 "start.x"
+#line 306 "start.x"
 
 	if (_cur == _end) {
 		_type = Token_Type::end;
 		return;
 	}
 
-#line 315 "start.x"
+#line 323 "start.x"
 
 	do {
 		
-#line 352 "start.x"
+#line 360 "start.x"
 
 	if (isalpha(*_cur) || *_cur == '%' || *_cur == '_') {
 		auto c = _cur;
@@ -186,13 +186,13 @@
 		}
 		_type = Token_Type::ident;
 		
-#line 378 "start.x"
+#line 386 "start.x"
 
 	if (_name == "raw") {
 		_type = Token_Type::t_raw;
 	}
 
-#line 1625 "start.x"
+#line 1633 "start.x"
 
 	if (_name == "if") {
 		_type = Token_Type::t_if;
@@ -204,20 +204,20 @@
 		_type = Token_Type::t_or;
 	}
 
-#line 363 "start.x"
+#line 371 "start.x"
 ;
 		_cur = c;
 		break;
 	}
 
-#line 386 "start.x"
+#line 394 "start.x"
 
 	if (*_cur == '#') {
 		_type = Token_Type::end;
 		break;
 	}
 
-#line 407 "start.x"
+#line 415 "start.x"
 
 	if (isdigit(*_cur)) {
 		_value = 0;
@@ -230,7 +230,7 @@
 		break;
 	}
 
-#line 428 "start.x"
+#line 436 "start.x"
 
 	if (*_cur == '$') {
 		_value = 0;
@@ -251,7 +251,7 @@
 		break;
 	}
 
-#line 492 "start.x"
+#line 500 "start.x"
 
 	if (*_cur == '<') {
 		if (
@@ -268,7 +268,7 @@
 		}
 	}
 
-#line 527 "start.x"
+#line 535 "start.x"
 
 	if (*_cur == '+') {
 		_type = Token_Type::plus;
@@ -281,7 +281,7 @@
 		break;
 	}
 
-#line 1639 "start.x"
+#line 1647 "start.x"
 
 	if (*_cur == ':') {
 		_type = Token_Type::t_colon;
@@ -289,7 +289,7 @@
 		break;
 	}
 
-#line 1869 "start.x"
+#line 1877 "start.x"
 
 	if (*_cur == '=') {
 		_type = Token_Type::t_equals;
@@ -297,7 +297,7 @@
 		break;
 	}
 
-#line 1879 "start.x"
+#line 1887 "start.x"
 
 	if (*_cur == '!' && _cur + 1 < _end && _cur[1] == '=') {
 		_type = Token_Type::t_not_equals;
@@ -305,7 +305,7 @@
 		break;
 	}
 
-#line 2009 "start.x"
+#line 2017 "start.x"
 
 	if (*_cur == '[') {
 		_type = Token_Type::t_open_bracket;
@@ -313,7 +313,7 @@
 		break;
 	}
 
-#line 2019 "start.x"
+#line 2027 "start.x"
 
 	if (*_cur == ']') {
 		_type = Token_Type::t_close_bracket;
@@ -321,7 +321,7 @@
 		break;
 	}
 
-#line 2214 "start.x"
+#line 2222 "start.x"
 
 	if (*_cur == '(') {
 		_type = Token_Type::t_open_parenthesis;
@@ -329,7 +329,7 @@
 		break;
 	}
 
-#line 2224 "start.x"
+#line 2232 "start.x"
 
 	if (*_cur == ')') {
 		_type = Token_Type::t_close_parenthesis;
@@ -337,7 +337,7 @@
 		break;
 	}
 
-#line 2280 "start.x"
+#line 2288 "start.x"
 
 	if (*_cur == '*') {
 		_type = Token_Type::t_times;
@@ -345,7 +345,7 @@
 		break;
 	}
 
-#line 317 "start.x"
+#line 325 "start.x"
 ;
 		_type = Token_Type::unknown;
 		std::cerr <<
@@ -354,18 +354,18 @@
 		++_cur;
 	} while (false);
 
-#line 280 "start.x"
+#line 288 "start.x"
 ;
 	}
 
-#line 217 "start.x"
+#line 225 "start.x"
 ;
 
-#line 584 "start.x"
+#line 592 "start.x"
 
 	#include <memory>
 
-#line 591 "start.x"
+#line 599 "start.x"
 
 	class Expression {
 		public:
@@ -375,12 +375,12 @@
 			}
 	};
 
-#line 604 "start.x"
+#line 612 "start.x"
 
 	using Expression_Ptr =
 		std::unique_ptr<Expression>;
 
-#line 612 "start.x"
+#line 620 "start.x"
 
 	class BinaryExpression:
 		public Expression
@@ -389,7 +389,7 @@
 			Expression_Ptr _second;
 		public:
 			
-#line 626 "start.x"
+#line 634 "start.x"
 
 	BinaryExpression(
 		Expression_Ptr first,
@@ -399,7 +399,7 @@
 		_second { std::move(second) }
 	{ }
 
-#line 639 "start.x"
+#line 647 "start.x"
 
 	const Expression_Ptr &first() const {
 		return _first;
@@ -408,11 +408,11 @@
 		return _second;
 	}
 
-#line 619 "start.x"
+#line 627 "start.x"
 ;
 	};
 
-#line 651 "start.x"
+#line 659 "start.x"
 
 	class Assignment:
 		public BinaryExpression
@@ -427,7 +427,7 @@
 			) { }
 	};
 
-#line 669 "start.x"
+#line 677 "start.x"
 
 	class Addition:
 		public BinaryExpression
@@ -447,7 +447,7 @@
 			}
 	};
 
-#line 692 "start.x"
+#line 700 "start.x"
 
 	class Subtraction:
 		public BinaryExpression
@@ -462,36 +462,36 @@
 			) { }
 	};
 
-#line 710 "start.x"
+#line 718 "start.x"
 
 	class Gen_Register: public Expression {
 			
-#line 722 "start.x"
+#line 730 "start.x"
 
 	const int _nr;
 
-#line 712 "start.x"
+#line 720 "start.x"
 ;
 		public:
 			
-#line 732 "start.x"
+#line 740 "start.x"
 
 	Gen_Register(int nr):
 		_nr { nr }
 	{ }
 
-#line 741 "start.x"
+#line 749 "start.x"
 
 	int nr() const { return _nr; }
 	Expression_Ptr clone() override {
 		return std::make_unique<Gen_Register>(_nr);
 	}
 
-#line 714 "start.x"
+#line 722 "start.x"
 ;
 	};
 
-#line 752 "start.x"
+#line 760 "start.x"
 
 	class Pc_Register: public Expression {
 		public:
@@ -501,7 +501,7 @@
 			}
 	};
 
-#line 764 "start.x"
+#line 772 "start.x"
 
 	class Csr_Register: public Expression {
 			int _addr;
@@ -517,7 +517,7 @@
 			}
 	};
 
-#line 782 "start.x"
+#line 790 "start.x"
 
 	class Number: public Expression {
 			const int _value;
@@ -536,24 +536,24 @@
 			}
 	};
 
-#line 804 "start.x"
+#line 812 "start.x"
 
 	Expression_Ptr parse(Tokenizer &t, int addr);
 	
-#line 818 "start.x"
+#line 826 "start.x"
 
 	#include <map>
 
-#line 824 "start.x"
+#line 832 "start.x"
 
 	static std::map<std::string, Expression_Ptr> _symbols;
 
-#line 830 "start.x"
+#line 838 "start.x"
 
 	void clear_symbols() {
 		_symbols.clear();
 		
-#line 851 "start.x"
+#line 859 "start.x"
  {
 	_symbols["%pc"] = std::move(std::make_unique<Pc_Register>());
 	_symbols["%mtvec"] = std::move(std::make_unique<Csr_Register>(0x305));
@@ -570,7 +570,7 @@
 		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i));
 	}
 } 
-#line 870 "start.x"
+#line 878 "start.x"
 
 	_symbols["%zero"] = _symbols["%x0"]->clone();
 	_symbols["%ra"] = _symbols["%x1"]->clone();
@@ -608,11 +608,11 @@
 		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i + 25));
 	}
 
-#line 833 "start.x"
+#line 841 "start.x"
 ;
 	}
 
-#line 2048 "start.x"
+#line 2056 "start.x"
 
 	class Access: public Expression {
 			const Expression_Ptr _inner;
@@ -627,13 +627,13 @@
 			}
 	};
 
-#line 806 "start.x"
+#line 814 "start.x"
 ;
 	Expression_Ptr parse_factor(
 		Tokenizer &t, int addr
 	) {
 		
-#line 910 "start.x"
+#line 918 "start.x"
 
 	if (t.type() == Token_Type::ident) {
 		auto found { _symbols.find(t.name()) };
@@ -643,7 +643,7 @@
 		}
 	}
 
-#line 1043 "start.x"
+#line 1051 "start.x"
 
 	if (t.type() == Token_Type::number) {
 		auto res =
@@ -654,7 +654,7 @@
 		return res;
 	}
 
-#line 1056 "start.x"
+#line 1064 "start.x"
 
 	if (t.type() == Token_Type::minus) {
 		t.next();
@@ -668,7 +668,7 @@
 		std::cerr << "no number after -\n";
 	}
 
-#line 2029 "start.x"
+#line 2037 "start.x"
 
 	if (t.type() == Token_Type::t_open_bracket) {
 		t.next();
@@ -685,7 +685,7 @@
 		return std::make_unique<Access>(inner);
 	}
 
-#line 2234 "start.x"
+#line 2242 "start.x"
 
 	if (t.type() == Token_Type::t_open_parenthesis) {
 		t.next();
@@ -702,7 +702,7 @@
 		return inner;
 	}
 
-#line 2253 "start.x"
+#line 2261 "start.x"
 
 	if (t.type() == Token_Type::ident) {
 		std::string name { t.name() };
@@ -721,22 +721,22 @@
 		return Expression_Ptr { };
 	}
 
-#line 2290 "start.x"
+#line 2298 "start.x"
 
 	if (t.type() == Token_Type::t_times) {
 		t.next();
 		return std::make_unique<Number>(addr);
 	}
 
-#line 810 "start.x"
+#line 818 "start.x"
 ;
 		return Expression_Ptr {};
 	}
 
-#line 923 "start.x"
+#line 931 "start.x"
 
 	
-#line 1228 "start.x"
+#line 1236 "start.x"
 
 	class BinaryAnd:
 		public BinaryExpression
@@ -751,7 +751,7 @@
 			) { }
 	};
 
-#line 1246 "start.x"
+#line 1254 "start.x"
 
 	class BinaryOr:
 		public BinaryExpression
@@ -766,7 +766,7 @@
 			) { }
 	};
 
-#line 1649 "start.x"
+#line 1657 "start.x"
 
 	class If:
 		public BinaryExpression
@@ -781,7 +781,7 @@
 			) { }
 	};
 
-#line 1705 "start.x"
+#line 1713 "start.x"
 
 	class Less:
 		public BinaryExpression
@@ -796,7 +796,7 @@
 			) { }
 	};
 
-#line 1889 "start.x"
+#line 1897 "start.x"
 
 	class Equals:
 		public BinaryExpression
@@ -811,7 +811,7 @@
 			) { }
 	};
 
-#line 1906 "start.x"
+#line 1914 "start.x"
 
 	class NotEquals:
 		public BinaryExpression
@@ -826,11 +826,11 @@
 			) { }
 	};
 
-#line 924 "start.x"
+#line 932 "start.x"
 ;
 	Expression_Ptr parse(Tokenizer &t, int addr) {
 		
-#line 1667 "start.x"
+#line 1675 "start.x"
 
 	if (t.type() == Token_Type::t_raw) {
 		t.next();
@@ -842,7 +842,7 @@
 		return val;
 	}
 
-#line 1681 "start.x"
+#line 1689 "start.x"
 
 	if (t.type() == Token_Type::t_if) {
 		t.next();
@@ -864,12 +864,12 @@
 		return std::make_unique<If>(std::move(cond), std::move(body));
 	}
 
-#line 926 "start.x"
+#line 934 "start.x"
 ;
 		auto dst = parse_factor(t, addr);
 		do {
 			
-#line 939 "start.x"
+#line 947 "start.x"
 
 	if (t.type() == Token_Type::becomes) {
 		t.next();
@@ -881,7 +881,7 @@
 		return std::make_unique<Assignment>(std::move(dst), std::move(src));
 	}
 
-#line 953 "start.x"
+#line 961 "start.x"
 
 	if (t.type() == Token_Type::plus) {
 		t.next();
@@ -900,7 +900,7 @@
 		continue;
 	}
 
-#line 974 "start.x"
+#line 982 "start.x"
 
 	if (t.type() == Token_Type::minus) {
 		t.next();
@@ -918,7 +918,7 @@
 		continue;
 	}
 
-#line 1264 "start.x"
+#line 1272 "start.x"
 
 	if (t.type() == Token_Type::t_and) {
 		t.next();
@@ -931,7 +931,7 @@
 		continue;
 	}
 
-#line 1279 "start.x"
+#line 1287 "start.x"
 
 	if (t.type() == Token_Type::t_or) {
 		t.next();
@@ -944,7 +944,7 @@
 		continue;
 	}
 
-#line 1723 "start.x"
+#line 1731 "start.x"
 
 	if (t.type() == Token_Type::t_less) {
 		t.next();
@@ -957,7 +957,7 @@
 		continue;
 	}
 
-#line 1923 "start.x"
+#line 1931 "start.x"
 
 	if (t.type() == Token_Type::t_equals) {
 		t.next();
@@ -970,7 +970,7 @@
 		continue;
 	}
 
-#line 1938 "start.x"
+#line 1946 "start.x"
 
 	if (t.type() == Token_Type::t_not_equals) {
 		t.next();
@@ -983,13 +983,13 @@
 		continue;
 	}
 
-#line 929 "start.x"
+#line 937 "start.x"
 ;
 		} while (false);
 		return dst;
 	}
 
-#line 994 "start.x"
+#line 1002 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -1001,7 +1001,7 @@
 			opcode;
 	}
 
-#line 1008 "start.x"
+#line 1016 "start.x"
 
 	int build_i_cmd(
 		int imm, char src1, int funct3, char dst, int opcode
@@ -1009,7 +1009,7 @@
 		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
 	}
 
-#line 1018 "start.x"
+#line 1026 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -1020,7 +1020,7 @@
 		);
 	}
 
-#line 1031 "start.x"
+#line 1039 "start.x"
 
 	int build_add(
 		char dst, char src1, int imm
@@ -1030,7 +1030,7 @@
 		);
 	}
 
-#line 1348 "start.x"
+#line 1356 "start.x"
 
 	int build_and(
 		char dst, char src1, char src2
@@ -1041,7 +1041,7 @@
 		);
 	}
 
-#line 1361 "start.x"
+#line 1369 "start.x"
 
 	int build_and(
 		char dst, char src1, int imm
@@ -1051,7 +1051,7 @@
 		);
 	}
 
-#line 1373 "start.x"
+#line 1381 "start.x"
 
 	int build_or(
 		char dst, char src1, char src2
@@ -1062,7 +1062,7 @@
 		);
 	}
 
-#line 1386 "start.x"
+#line 1394 "start.x"
 
 	int build_or(
 		char dst, char src1, int imm
@@ -1072,7 +1072,7 @@
 		);
 	}
 
-#line 1434 "start.x"
+#line 1442 "start.x"
 
 	int build_u_cmd(
 		int imm, char dst, int opcode
@@ -1080,7 +1080,7 @@
 		return (imm & 0xfffff800) | (dst << 7) | opcode;
 	}
 
-#line 1444 "start.x"
+#line 1452 "start.x"
 
 	int build_lui(
 		char dst, int imm
@@ -1088,7 +1088,7 @@
 		return build_u_cmd(imm, dst, 0x37);
 	}
 
-#line 1499 "start.x"
+#line 1507 "start.x"
 
 	int build_auipc(
 		char dst, int imm
@@ -1096,7 +1096,7 @@
 		return build_u_cmd(imm, dst, 0x17);
 	}
 
-#line 1551 "start.x"
+#line 1559 "start.x"
 
 	int build_csrrw(
 		char dst, int csr, char src
@@ -1106,7 +1106,7 @@
 		);
 	}
 
-#line 1587 "start.x"
+#line 1595 "start.x"
 
 	int build_csrrs(
 		char dst, int csr, char src
@@ -1116,7 +1116,7 @@
 		);
 	}
 
-#line 1752 "start.x"
+#line 1760 "start.x"
 
 	int build_b_cmd(
 		int offset, int reg2, int reg1, int cond, int opcode
@@ -1129,7 +1129,7 @@
 			opcode;
 	}
 
-#line 1767 "start.x"
+#line 1775 "start.x"
 
 	int build_branch(
 		int cond, char reg1, char reg2, int offset
@@ -1139,7 +1139,7 @@
 		);
 	}
 
-#line 2074 "start.x"
+#line 2082 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -1149,7 +1149,7 @@
 		);
 	}
 
-#line 2138 "start.x"
+#line 2146 "start.x"
 
 	int build_s_cmd(
 		int imm, char rs2, char rs1, int type, int opcode
@@ -1162,7 +1162,7 @@
 			opcode;
 	}
 
-#line 2153 "start.x"
+#line 2161 "start.x"
 
 	int build_store(
 		char src, char dst, int imm
@@ -1227,13 +1227,13 @@
 		const std::string &line
 	) {
 		
-#line 1072 "start.x"
+#line 1080 "start.x"
 
 	Tokenizer t { line };
 	auto e = parse(t, code.size() * 4 + 0x20010000);
 	if (e) {
 		
-#line 1082 "start.x"
+#line 1090 "start.x"
 
 	Number *n = dynamic_cast<Number *>(&*e);
 	if (n) {
@@ -1241,21 +1241,21 @@
 		return;
 	}
 
-#line 1092 "start.x"
+#line 1100 "start.x"
 
 	Assignment *a = dynamic_cast<Assignment *>(&*e);
 	if (a) {
 		const Gen_Register *dst = dynamic_cast<const Gen_Register *>(&*a->first());
 		if (dst) {
 			
-#line 1105 "start.x"
+#line 1113 "start.x"
  {
 	const Addition *o = dynamic_cast<const Addition *>(&*a->second());
 	if (o) {
 		const Gen_Register *src1 = dynamic_cast<const Gen_Register *>(&*o->first());
 		if (src1) {
 			
-#line 1118 "start.x"
+#line 1126 "start.x"
 
 	const Gen_Register *src2 = dynamic_cast<const Gen_Register *>(&*o->second());
 	if (src2) {
@@ -1265,7 +1265,7 @@
 		return;
 	}
 
-#line 1130 "start.x"
+#line 1138 "start.x"
 
 	const Number *n2 = dynamic_cast<const Number *>(&*o->second());
 	if (n2) {
@@ -1275,15 +1275,15 @@
 		return;
 	}
 
-#line 1110 "start.x"
+#line 1118 "start.x"
 ;
 		}
 		
-#line 1528 "start.x"
+#line 1536 "start.x"
 
 	if (dynamic_cast<const Pc_Register *>(&*o->first())) {
 		
-#line 1536 "start.x"
+#line 1544 "start.x"
 
 	const Number *n2 = dynamic_cast<const Number *>(&*o->second());
 	if (n2) {
@@ -1296,15 +1296,15 @@
 		return;
 	}
 
-#line 1530 "start.x"
+#line 1538 "start.x"
 ;
 	}
 
-#line 1112 "start.x"
+#line 1120 "start.x"
 ;
 	}
 } 
-#line 1294 "start.x"
+#line 1302 "start.x"
  {
 	const BinaryAnd *o = dynamic_cast<const BinaryAnd *>(&*a->second());
 	if (o) {
@@ -1329,7 +1329,7 @@
 		}
 	}
 } 
-#line 1321 "start.x"
+#line 1329 "start.x"
  {
 	const BinaryOr *o = dynamic_cast<const BinaryOr *>(&*a->second());
 	if (o) {
@@ -1354,30 +1354,30 @@
 		}
 	}
 } 
-#line 1425 "start.x"
+#line 1433 "start.x"
  {
 	const Number *o = dynamic_cast<const Number *>(&*a->second());
 	if (o) {
 		
-#line 1454 "start.x"
+#line 1462 "start.x"
 
 	int upper { o->value() & ~ 0xfff };
 	if (upper && upper != ~ 0xfff) {
 		add_machine(build_lui(dst->nr(), o->value()));
 	}
 
-#line 1463 "start.x"
+#line 1471 "start.x"
 
 	if (o->value() == 0 || (o->value() & 0xfff)) {
 		add_machine(build_add((char) dst->nr(), (char) 0, o->value()));
 	}
 	return;
 
-#line 1428 "start.x"
+#line 1436 "start.x"
 ;
 	}
 } 
-#line 1509 "start.x"
+#line 1517 "start.x"
  {
 	const Pc_Register *o = dynamic_cast<const Pc_Register *>(&*a->second());
 	if (o) {
@@ -1385,7 +1385,7 @@
 		return;
 	}
 } 
-#line 1599 "start.x"
+#line 1607 "start.x"
  {
 	const Csr_Register *o = dynamic_cast<const Csr_Register *>(&*a->second());
 	if (o) {
@@ -1393,12 +1393,12 @@
 		return;
 	}
 } 
-#line 2065 "start.x"
+#line 2073 "start.x"
  {
 	const Access *x = dynamic_cast<const Access *>(&*a->second());
 	if (x) {
 		
-#line 2086 "start.x"
+#line 2094 "start.x"
  {
 	const Gen_Register *r = dynamic_cast<const Gen_Register *>(x->inner());
 	if (r) {
@@ -1406,7 +1406,7 @@
 		return;
 	}
 } 
-#line 2105 "start.x"
+#line 2113 "start.x"
  {
 	const Addition *d = dynamic_cast<const Addition *>(x->inner());
 	if (d) {
@@ -1418,15 +1418,15 @@
 		}
 	}
 } 
-#line 2068 "start.x"
+#line 2076 "start.x"
 ;
 	}
 } 
-#line 1097 "start.x"
+#line 1105 "start.x"
 ;
 		}
 		
-#line 1142 "start.x"
+#line 1150 "start.x"
  {
 	if (dynamic_cast<const Pc_Register *>(&*a->first())) {
 		const Addition *o = dynamic_cast<const Addition *>(&*a->second());
@@ -1454,7 +1454,7 @@
 		}
 	}
 } 
-#line 1563 "start.x"
+#line 1571 "start.x"
  {
 	const Csr_Register *x = dynamic_cast<const Csr_Register *>(&*a->first());
 	if (x) {
@@ -1467,13 +1467,13 @@
 		return;
 	}
 } 
-#line 2128 "start.x"
+#line 2136 "start.x"
  {
 	const Access *x = dynamic_cast<const Access *>(&*a->first());
 	if (x) {
 		const Gen_Register *s = dynamic_cast<const Gen_Register *>(&*a->second());
 		
-#line 2165 "start.x"
+#line 2173 "start.x"
  {
 	const Gen_Register *d = dynamic_cast<const Gen_Register *>(x->inner());
 	if (d && s) {
@@ -1481,7 +1481,7 @@
 		return;
 	}
 } 
-#line 2184 "start.x"
+#line 2192 "start.x"
  {
 	const Addition *p = dynamic_cast<const Addition *>(x->inner());
 	if (p) {
@@ -1493,15 +1493,15 @@
 		}
 	}
 } 
-#line 2132 "start.x"
+#line 2140 "start.x"
 ;
 	}
 } 
-#line 1099 "start.x"
+#line 1107 "start.x"
 ;
 	}
 
-#line 1738 "start.x"
+#line 1746 "start.x"
 
 	If *i = dynamic_cast<If *>(&*e);
 	if (i) {
@@ -1511,7 +1511,7 @@
 		int offset { 0x7fffffff };
 		t.next();
 		
-#line 1779 "start.x"
+#line 1787 "start.x"
 
 	const Assignment *a = dynamic_cast<const Assignment *>(&*i->second());
 	if (! a) {
@@ -1548,7 +1548,7 @@
 		}
 	}
 	
-#line 1953 "start.x"
+#line 1961 "start.x"
 
 	{
 		const Equals *e = dynamic_cast<const Equals *>(&*i->first());
@@ -1557,7 +1557,7 @@
 		}
 	}
 
-#line 1964 "start.x"
+#line 1972 "start.x"
 
 	{
 		const NotEquals *ne = dynamic_cast<const NotEquals *>(&*i->first());
@@ -1566,7 +1566,7 @@
 		}
 	}
 
-#line 1814 "start.x"
+#line 1822 "start.x"
 ;
 	{
 		const BinaryExpression *b = dynamic_cast<const BinaryExpression *>(&*i->first());
@@ -1603,11 +1603,11 @@
 		return;
 	}
 
-#line 1746 "start.x"
+#line 1754 "start.x"
 ;
 	}
 
-#line 1076 "start.x"
+#line 1084 "start.x"
 ;
 	}
 
@@ -1637,14 +1637,14 @@
 		int expected
 	) {
 		
-#line 839 "start.x"
+#line 847 "start.x"
 
 	clear_symbols();
 
 #line 163 "start.x"
 ;
 		
-#line 189 "start.x"
+#line 197 "start.x"
 
 	State s;
 	s.add_line(line);
@@ -1655,39 +1655,39 @@
 ;
 	}
 
-#line 459 "start.x"
+#line 467 "start.x"
 
 	void assert_token(
 		const char *line,
 		Token_Type token
 	) {
 		
-#line 480 "start.x"
+#line 488 "start.x"
 
 	
-#line 845 "start.x"
+#line 853 "start.x"
 
 	clear_symbols();
 
-#line 481 "start.x"
+#line 489 "start.x"
 ;
 	Tokenizer t(line);
 	assert(t.type() == token);
 	t.next();
 	assert(t.type() == Token_Type::end);
 
-#line 464 "start.x"
+#line 472 "start.x"
 ;
 	}
 
-#line 543 "start.x"
+#line 551 "start.x"
 
 	void assert_register(
 		const char *line,
 		const char *name
 	) {
 		
-#line 555 "start.x"
+#line 563 "start.x"
 
 	Tokenizer t(line);
 	assert(t.type() == Token_Type::ident);
@@ -1695,7 +1695,7 @@
 	t.next();
 	assert(t.type() == Token_Type::end);
 
-#line 548 "start.x"
+#line 556 "start.x"
 ;
 	}
 
@@ -1816,160 +1816,166 @@
 #line 179 "start.x"
 
 	assert_line(
+		"raw $87654321", 0x87654321
+	);
+
+#line 187 "start.x"
+
+	assert_line(
 		"%x4 <- %x2 + %x3",
 		0x00310233
 	);
 
-#line 471 "start.x"
+#line 479 "start.x"
 
 	assert_token(
 		"<-", Token_Type::becomes
 	);
 
-#line 519 "start.x"
+#line 527 "start.x"
 
 	assert_token("+", Token_Type::plus);
 	assert_token("-", Token_Type::minus);
 
-#line 566 "start.x"
+#line 574 "start.x"
 
 	assert_register("%x10", "%x10");
 	assert_register("%pc", "%pc");
 
-#line 1172 "start.x"
+#line 1180 "start.x"
 
 	assert_line(
 		"%pc <- %pc + 0",
 		0x0000006f
 	);
 
-#line 1183 "start.x"
+#line 1191 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -28",
 		0xfe5ff06f
 	);
 
-#line 1193 "start.x"
+#line 1201 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -32",
 		0xfe1ff06f
 	);
 
-#line 1398 "start.x"
+#line 1406 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 1407 "start.x"
+#line 1415 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 1416 "start.x"
+#line 1424 "start.x"
 
 	assert_line(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 1472 "start.x"
+#line 1480 "start.x"
 
 	assert_line(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 1481 "start.x"
+#line 1489 "start.x"
 
 	assert_line(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 1490 "start.x"
+#line 1498 "start.x"
 
 	assert_line(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 1519 "start.x"
+#line 1527 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 1578 "start.x"
+#line 1586 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 1609 "start.x"
+#line 1617 "start.x"
 
 	assert_line(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 1853 "start.x"
+#line 1861 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 
-#line 1975 "start.x"
+#line 1983 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
 		0xfe028ae3
 	);
 
-#line 1984 "start.x"
+#line 1992 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc + -28",
 		0xfeb292e3
 	);
 
-#line 1993 "start.x"
+#line 2001 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 2096 "start.x"
+#line 2104 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 2119 "start.x"
+#line 2127 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 2175 "start.x"
+#line 2183 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 2198 "start.x"
+#line 2206 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
@@ -1982,10 +1988,10 @@
 #line 10 "start.x"
 
 		
-#line 1203 "start.x"
+#line 1211 "start.x"
 
 	
-#line 1210 "start.x"
+#line 1218 "start.x"
 
 	State s;
 	std::string l;
@@ -1994,7 +2000,7 @@
 		s.add_line(l);
 	}
 
-#line 1204 "start.x"
+#line 1212 "start.x"
 
 
 #line 16 "hex.x"

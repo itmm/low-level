@@ -178,12 +178,10 @@ the machine code.
 ```
 @def(unit-tests)
 	assert_line(
-		"%x4 <- %x2 + %x3",
-		0x00310233
+		"raw $87654321", 0x87654321
 	);
 @end(unit-tests)
 ```
-* the first test checks that a simple register add can be parsed
 
 ```
 @def(assert line)
@@ -607,6 +605,16 @@ These syntax trees are then transformed into machine code.
 @end(needed by state)
 ```
 * shortcut for expression pointer
+
+```
+@add(unit-tests)
+	assert_line(
+		"%x4 <- %x2 + %x3",
+		0x00310233
+	);
+@end(unit-tests)
+```
+* the first test checks that a simple register add can be parsed
 
 ```
 @add(needed by state)

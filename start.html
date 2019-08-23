@@ -239,6 +239,15 @@ group local tests in a fragment
 <code>
 <span class="macro">@def(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"raw $87654321"</span>, <span class="num">0x87654321</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x4 &lt;- %x2 + %x3"</span>,<br/>
 <span class="in2"></span><span class="num">0x00310233</span><br/>
 <span class="in1"></span>);<br/>
