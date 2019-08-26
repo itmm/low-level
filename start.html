@@ -246,19 +246,6 @@ group local tests in a fragment
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"%x4 &lt;- %x2 + %x3"</span>,<br/>
-<span class="in2"></span><span class="num">0x00310233</span><br/>
-<span class="in1"></span>);<br/>
-<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-<ul><li>
-the first test checks that a simple register add can be parsed
-</li></ul>
-</div>
-<div><div>
-<code>
 <span class="macro">@def(<span class="name">assert line</span>)</span><br/>
 <span class="in1"></span><span class="type">State</span> <span class="var">s</span>;<br/>
 <span class="in1"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">line</span>);<br/>
@@ -320,9 +307,27 @@ type of parsed token
 </div>
 <div><div>
 <code>
+<span class="macro">@add(<span class="name">needed by tokenizer</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Token</span> {<br/>
+<span class="in2"></span><span class="keyword">private</span>:<br/>
+<span class="in3"></span><span class="type">Token_Type</span> <span class="var">_type</span>;<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_name</span> = { };<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_value</span> = { } ;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">Token</span>(<span class="type">Token_Type</span> <span class="var">type</span>): <span class="var">_type</span> { <span class="var">type</span> } { }<br/>
+<span class="in3"></span><span class="fn">Token</span>(<span class="type">Token_Type</span> <span class="var">type</span>, <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">name</span>): <span class="var">_type</span> { <span class="var">type</span> }, <span class="var">_name</span> { <span class="var">name</span> } { }<br/>
+<span class="in3"></span><span class="fn">Token</span>(<span class="type">Token_Type</span> <span class="var">type</span>, <span class="type">int</span> <span class="var">value</span>): <span class="var">_type</span> { <span class="var">type</span> }, <span class="var">_value</span> { <span class="var">value</span> } { }<br/>
+<span class="in3"></span><span class="type">Token_Type</span> <span class="fn">type</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_type</span>; }<br/>
+<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">name</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_name</span>; }<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by tokenizer</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
 <span class="macro">@def(<span class="name">tokenizer attributes</span>)</span><br/>
-<span class="in1"></span><span class="type">Token_Type</span> <span class="var">_type</span> =<br/>
-<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">unknown</span>;<br/>
+<span class="in1"></span><span class="type">Token</span> <span class="var">_token</span> { <span class="type">Token_Type</span>::<span class="var">unknown</span> };<br/>
 <span class="macro">@end(<span class="name">tokenizer attributes</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -332,8 +337,8 @@ stores type of parsed token
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">tokenizer methods</span>)</span><br/>
-<span class="in1"></span><span class="type">Token_Type</span> <span class="fn">type</span>() <span class="type">const</span> {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="var">_type</span>;<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Token</span> &amp;<span class="fn">token</span>() <span class="type">const</span> {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="var">_token</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
 </code></div>
@@ -407,7 +412,7 @@ skip spaces
 <code>
 <span class="macro">@add(<span class="name">next</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">_cur</span> == <span class="var">_end</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">end</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">end</span> };<br/>
 <span class="in2"></span><span class="keyword">return</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">next</span>)</span><br/>
@@ -431,7 +436,7 @@ needs <code><span class="var">cerr</span></code>
 <span class="macro">@add(<span class="name">next</span>)</span><br/>
 <span class="in1"></span><span class="var">do</span> {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">recognize</span>)</span>;<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">unknown</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">unknown</span> };<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
 <span class="in3"></span><span class="str">"unrecognized char ["</span> &lt;&lt;<br/>
 <span class="in3"></span>*<span class="var">_cur</span> &lt;&lt; <span class="str">"] == "</span> &lt;&lt; (<span class="type">int</span>) *<span class="var">_cur</span> &lt;&lt; <span class="str">'\n'</span>;<br/>
@@ -454,40 +459,19 @@ write warning when not recognizing token
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">tokenizer attributes</span>)</span><br/>
-<span class="in1"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_name</span> = {};<br/>
-<span class="macro">@end(<span class="name">tokenizer attributes</span>)</span><br/>
-</code></div>
-<ul><li>
-store name of register
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">tokenizer methods</span>)</span><br/>
-<span class="in1"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">name</span>() <span class="type">const</span> {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="var">_name</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
-</code></div>
-<ul><li>
-return register name
-</li></ul>
-</div>
-<div><div>
-<code>
 <span class="macro">@def(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="fn">isalpha</span>(*<span class="var">_cur</span>) || *<span class="var">_cur</span> == <span class="str">'%'</span> || *<span class="var">_cur</span> == <span class="str">'_'</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">c</span> = <span class="var">_cur</span>;<br/>
-<span class="in2"></span><span class="var">_name</span> = {};<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> {};<br/>
 <span class="in2"></span><span class="keyword">while</span> (<span class="var">c</span> != <span class="var">_end</span> &amp;&amp; (<br/>
 <span class="in3"></span><span class="fn">isalnum</span>(*<span class="var">c</span>) || *<span class="var">c</span> == <span class="str">'_'</span> ||<br/>
 <span class="in3"></span>*<span class="var">c</span> == <span class="str">'%'</span><br/>
 <span class="in2"></span>)) {<br/>
-<span class="in3"></span><span class="var">_name</span> += *<span class="var">c</span>++;<br/>
+<span class="in3"></span><span class="var">name</span> += *<span class="var">c</span>++;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">ident</span>;<br/>
+<span class="in2"></span><span class="type">Token_Type</span> <span class="var">type</span> { <span class="type">Token_Type</span>::<span class="var">ident</span> };<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">recognize keywords</span>)</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="var">type</span>, <span class="var">name</span> };<br/>
 <span class="in2"></span><span class="var">_cur</span> = <span class="var">c</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -507,8 +491,8 @@ recognize register
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">recognize keywords</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">_name</span> == <span class="str">"raw"</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_raw</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span> == <span class="str">"raw"</span>) {<br/>
+<span class="in2"></span><span class="var">type</span> = <span class="type">Token_Type</span>::<span class="var">t_raw</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize keywords</span>)</span><br/>
 </code></div>
@@ -517,7 +501,7 @@ recognize register
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'#'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">end</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">end</span> };<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize</span>)</span><br/>
@@ -532,22 +516,15 @@ recognize register
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">tokenizer attributes</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="var">_value</span> = <span class="num">0</span>;<br/>
-<span class="macro">@end(<span class="name">tokenizer attributes</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">_cur</span>)) {<br/>
-<span class="in2"></span><span class="var">_value</span> = <span class="num">0</span>;<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
 <span class="in2"></span><span class="keyword">while</span> (<span class="fn">isdigit</span>(*<span class="var">_cur</span>)) {<br/>
-<span class="in3"></span><span class="var">_value</span> = <span class="var">_value</span> * <span class="num">10</span> +<br/>
+<span class="in3"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">10</span> +<br/>
 <span class="in4"></span>(*<span class="var">_cur</span> - <span class="str">'0'</span>);<br/>
 <span class="in3"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">number</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">number</span>, <span class="var">value</span> };<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize</span>)</span><br/>
@@ -555,16 +532,9 @@ recognize register
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">tokenizer methods</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
-<span class="macro">@end(<span class="name">tokenizer methods</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'$'</span>) {<br/>
-<span class="in2"></span><span class="var">_value</span> = <span class="num">0</span>;<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">while</span> (<span class="fn">isxdigit</span>(*<span class="var">_cur</span>)) {<br/>
 <span class="in3"></span><span class="type">int</span> <span class="var">digit</span>;<br/>
@@ -575,10 +545,10 @@ recognize register
 <span class="in3"></span>} <span class="keyword">else</span> {<br/>
 <span class="in4"></span><span class="var">digit</span> = *<span class="var">_cur</span> - <span class="str">'a'</span> + <span class="num">10</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">_value</span> = (<span class="var">_value</span> &lt;&lt; <span class="num">4</span>) + <span class="var">digit</span>;<br/>
+<span class="in3"></span><span class="var">value</span> = (<span class="var">value</span> &lt;&lt; <span class="num">4</span>) + <span class="var">digit</span>;<br/>
 <span class="in3"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">number</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">number</span>, <span class="var">value</span> };<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize</span>)</span><br/>
@@ -627,9 +597,9 @@ try to recognize assignment
 <span class="macro">@def(<span class="name">assert token</span>)</span><br/>
 <span class="in1"></span><span class="macro">@put(<span class="name">init assert token</span>)</span>;<br/>
 <span class="in1"></span><span class="type">Tokenizer</span> <span class="fn">t</span>(<span class="var">line</span>);<br/>
-<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">type</span>() == <span class="var">token</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="var">token</span>);<br/>
 <span class="in1"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
-<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">end</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">end</span>);<br/>
 <span class="macro">@end(<span class="name">assert token</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -644,11 +614,11 @@ initialize tokenizer and verify that it only contains the one expected  token
 <span class="in3"></span><span class="var">_cur</span>  + <span class="num">1</span> != <span class="var">_end</span> &amp;&amp;<br/>
 <span class="in4"></span><span class="var">_cur</span>[<span class="num">1</span>] == <span class="str">'-'</span><br/>
 <span class="in2"></span>) {<br/>
-<span class="in3"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">becomes</span>;<br/>
+<span class="in3"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">becomes</span> };<br/>
 <span class="in3"></span><span class="var">_cur</span> += <span class="num">2</span>;<br/>
 <span class="in3"></span><span class="keyword">break</span>;<br/>
 <span class="in2"></span>} <span class="keyword">else</span> {<br/>
-<span class="in3"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_less</span>;<br/>
+<span class="in3"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_less</span> };<br/>
 <span class="in3"></span>++<span class="var">_cur</span>;<br/>
 <span class="in3"></span><span class="keyword">break</span>;<br/>
 <span class="in2"></span>}<br/>
@@ -684,12 +654,12 @@ try to recognize addition
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'+'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">plus</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">plus</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'-'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">minus</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">minus</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -718,10 +688,10 @@ check for a register token
 <code>
 <span class="macro">@def(<span class="name">assert register</span>)</span><br/>
 <span class="in1"></span><span class="type">Tokenizer</span> <span class="fn">t</span>(<span class="var">line</span>);<br/>
-<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>);<br/>
-<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">name</span>() == <span class="var">name</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">name</span>() == <span class="var">name</span>);<br/>
 <span class="in1"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
-<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">end</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">end</span>);<br/>
 <span class="macro">@end(<span class="name">assert register</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -795,6 +765,19 @@ a lot of structure is encoded in an expression
 </code></div>
 <ul><li>
 shortcut for expression pointer
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x4 &lt;- %x2 + %x3"</span>,<br/>
+<span class="in2"></span><span class="num">0x00310233</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+<ul><li>
+the first test checks that a simple register add can be parsed
 </li></ul>
 </div>
 <div><div>
@@ -1144,8 +1127,8 @@ parses a arithmetic factor
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>) {<br/>
-<span class="in2"></span><span class="type">auto</span> <span class="var">found</span> { <span class="var">_symbols</span>.<span class="fn">find</span>(<span class="var">t</span>.<span class="fn">name</span>()) };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">found</span> { <span class="var">_symbols</span>.<span class="fn">find</span>(<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">name</span>()) };<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">found</span> != <span class="var">_symbols</span>.<span class="fn">end</span>()) {<br/>
 <span class="in3"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="var">found</span>-&gt;<span class="var">second</span>-&gt;<span class="fn">clone</span>();<br/>
@@ -1180,7 +1163,7 @@ otherwise returns the factor
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">becomes</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">becomes</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -1195,7 +1178,7 @@ otherwise returns the factor
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">plus</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">plus</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -1217,7 +1200,7 @@ otherwise returns the factor
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">minus</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">minus</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -1291,10 +1274,10 @@ otherwise returns the factor
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">number</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">number</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">res</span> =<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Number</span>&gt;(<br/>
-<span class="in4"></span><span class="var">t</span>.<span class="fn">value</span>()<br/>
+<span class="in4"></span><span class="var">t</span>.<span class="fn">token</span>().<span class="fn">value</span>()<br/>
 <span class="in3"></span>);<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="keyword">return</span> <span class="var">res</span>;<br/>
@@ -1305,7 +1288,7 @@ otherwise returns the factor
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">minus</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">minus</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">res</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">n</span> = <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Number</span> *&gt;(&amp;*<span class="var">res</span>);<br/>
@@ -1540,7 +1523,7 @@ and is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_and</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_and</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -1556,7 +1539,7 @@ and is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_or</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_or</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -1932,14 +1915,14 @@ and is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">recognize keywords</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">_name</span> == <span class="str">"if"</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_if</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span> == <span class="str">"if"</span>) {<br/>
+<span class="in2"></span><span class="var">type</span> = <span class="type">Token_Type</span>::<span class="var">t_if</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">_name</span> == <span class="str">"and"</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_and</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span> == <span class="str">"and"</span>) {<br/>
+<span class="in2"></span><span class="var">type</span> = <span class="type">Token_Type</span>::<span class="var">t_and</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">_name</span> == <span class="str">"or"</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_or</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">name</span> == <span class="str">"or"</span>) {<br/>
+<span class="in2"></span><span class="var">type</span> = <span class="type">Token_Type</span>::<span class="var">t_or</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize keywords</span>)</span><br/>
 </code></div>
@@ -1948,7 +1931,7 @@ and is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">':'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_colon</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_colon</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1979,7 +1962,7 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">parse special</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_raw</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_raw</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">val</span> { <span class="fn">parse</span>(<span class="var">t</span>, <span class="var">addr</span>) };<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">val</span>) {<br/>
@@ -1994,14 +1977,14 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse special</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_if</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_if</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">cond</span> = <span class="fn">parse</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">cond</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no expression after if\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() != <span class="type">Token_Type</span>::<span class="var">t_colon</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() != <span class="type">Token_Type</span>::<span class="var">t_colon</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expecting : after if expr\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
 <span class="in2"></span>}<br/>
@@ -2040,7 +2023,7 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_less</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_less</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -2194,7 +2177,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'='</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_equals</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_equals</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2205,7 +2188,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'!'</span> &amp;&amp; <span class="var">_cur</span> + <span class="num">1</span> &lt; <span class="var">_end</span> &amp;&amp; <span class="var">_cur</span>[<span class="num">1</span>] == <span class="str">'='</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_not_equals</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_not_equals</span> };<br/>
 <span class="in2"></span><span class="var">_cur</span> += <span class="num">2</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2251,7 +2234,7 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_equals</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_equals</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -2267,7 +2250,7 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse binary</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_not_equals</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_not_equals</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">src</span> = <span class="fn">parse_factor</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">src</span>) {<br/>
@@ -2346,7 +2329,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'['</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_open_bracket</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token_Type</span>::<span class="var">t_open_bracket</span>;<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2357,7 +2340,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">']'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_close_bracket</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token_Type</span>::<span class="var">t_close_bracket</span>;<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2367,14 +2350,14 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_open_bracket</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_open_bracket</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">inner</span> = <span class="fn">parse</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">inner</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no expr in memory access\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() != <span class="type">Token_Type</span>::<span class="var">t_close_bracket</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() != <span class="type">Token_Type</span>::<span class="var">t_close_bracket</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expecting ]\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
 <span class="in2"></span>}<br/>
@@ -2569,7 +2552,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'('</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_open_parenthesis</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_open_parenthesis</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2580,7 +2563,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">')'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2590,15 +2573,15 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_open_parenthesis</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_open_parenthesis</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">inner</span> = <span class="fn">parse</span>(<span class="var">t</span>, <span class="var">addr</span>);<br/>
 <span class="in2"></span><span class="keyword">if</span> (! <span class="var">inner</span>) {<br/>
 <span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"no expr in after (\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
 <span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() != <span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expecting )\n"</span> &lt;&lt; (<span class="type">int</span>) <span class="var">t</span>.<span class="fn">type</span>() &lt;&lt; <span class="str">", "</span> &lt;&lt; (<span class="type">int</span>) <span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() != <span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"expecting )\n"</span> &lt;&lt; (<span class="type">int</span>) <span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() &lt;&lt; <span class="str">", "</span> &lt;&lt; (<span class="type">int</span>) <span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="type">Expression_Ptr</span> { };<br/>
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
@@ -2610,10 +2593,10 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="var">t</span>.<span class="fn">name</span>() };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>) {<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="var">t</span>.<span class="fn">token</span>().<span class="fn">name</span>() };<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_equals</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_equals</span>) {<br/>
 <span class="in3"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in3"></span><span class="type">auto</span> <span class="var">value</span> { <span class="fn">parse</span>(<span class="var">t</span>, <span class="var">addr</span>) };<br/>
 <span class="in3"></span><span class="keyword">if</span> (! <span class="var">value</span>) {<br/>
@@ -2640,7 +2623,7 @@ if is a special binary expression
 <code>
 <span class="macro">@add(<span class="name">recognize</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (*<span class="var">_cur</span> == <span class="str">'*'</span>) {<br/>
-<span class="in2"></span><span class="var">_type</span> = <span class="type">Token_Type</span>::<span class="var">t_times</span>;<br/>
+<span class="in2"></span><span class="var">_token</span> = <span class="type">Token</span> { <span class="type">Token_Type</span>::<span class="var">t_times</span> };<br/>
 <span class="in2"></span>++<span class="var">_cur</span>;<br/>
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -2650,7 +2633,7 @@ if is a special binary expression
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">parse factor</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_times</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_times</span>) {<br/>
 <span class="in2"></span><span class="var">t</span>.<span class="fn">next</span>();<br/>
 <span class="in2"></span><span class="keyword">return</span> <span class="type">std</span>::<span class="var">make_unique</span>&lt;<span class="type">Number</span>&gt;(<span class="var">addr</span>);<br/>
 <span class="in1"></span>}<br/>
