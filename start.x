@@ -800,10 +800,11 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(needed by state)
-	Expression_Ptr parse(Tokenizer &t, int addr);
+	#include <vector>
+	Expression_Ptr parse(std::vector<Token>::iterator &cur, std::vector<Token>::iterator end, int addr);
 	@put(needed by parse factor);
 	Expression_Ptr parse_factor(
-		Tokenizer &t, int addr
+		std::vector<Token>::iterator &cur, std::vector<Token>::iterator end, int addr
 	) {
 		@put(parse factor);
 		return Expression_Ptr {};
@@ -906,10 +907,11 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(parse factor)
-	if (t.token().type() == Token_Type::ident) {
-		auto found { _symbols.find(t.token().name()) };
+	if (cur == end) { return Expression_Ptr { }; };
+	if (cur->type() == Token_Type::ident) {
+		auto found { _symbols.find(cur->name()) };
 		if (found != _symbols.end()) {
-			t.next();
+			++cur;
 			return found->second->clone();
 		}
 	}
@@ -920,9 +922,9 @@ These syntax trees are then transformed into machine code.
 ```
 @add(needed by state)
 	@put(needed by parse);
-	Expression_Ptr parse(Tokenizer &t, int addr) {
+	Expression_Ptr parse(std::vector<Token>::iterator &cur, std::vector<Token>::iterator end, int addr) {
 		@put(parse special);
-		auto dst = parse_factor(t, addr);
+		auto dst = parse_factor(cur, end, addr);
 		do {
 			@put(parse binary);
 		} while (false);
@@ -935,9 +937,10 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(parse binary)
-	if (t.token().type() == Token_Type::becomes) {
-		t.next();
-		auto src = parse(t, addr);
+	if (cur == end) { break; }
+	if (cur->type() == Token_Type::becomes) {
+		++cur;
+		auto src = parse(cur, end, addr);
 		if (! src) {
 			std::cerr << "no expression after <-\n";
 			return Expression_Ptr { };
@@ -949,9 +952,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::plus) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::plus) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after +\n";
 			return Expression_Ptr { };
@@ -970,9 +973,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::minus) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::minus) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after -\n";
 			return Expression_Ptr { };
@@ -1039,12 +1042,12 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse factor)
-	if (t.token().type() == Token_Type::number) {
+	if (cur->type() == Token_Type::number) {
 		auto res =
 			std::make_unique<Number>(
-				t.token().value()
+				cur->value()
 			);
-		t.next();
+		++cur;
 		return res;
 	}
 @end(parse factor)
@@ -1052,9 +1055,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse factor)
-	if (t.token().type() == Token_Type::minus) {
-		t.next();
-		auto res = parse_factor(t, addr);
+	if (cur->type() == Token_Type::minus) {
+		++cur;
+		auto res = parse_factor(cur, end, addr);
 		auto n = dynamic_cast<const Number *>(&*res);
 		if (n) {
 			return std::make_unique<Number>(
@@ -1069,7 +1072,13 @@ These syntax trees are then transformed into machine code.
 ```
 @def(add line)
 	Tokenizer t { line };
-	auto e = parse(t, code.size() * 4 + 0x20010000);
+	std::vector<Token> ts;
+	while (t.token().type() != Token_Type::end) {
+		ts.push_back(t.token());
+		t.next();
+	}
+	auto cur { ts.begin() };
+	auto e = parse(cur, ts.end(), code.size() * 4 + 0x20010000);
 	if (e) {
 		@put(parse expression);
 	}
@@ -1260,9 +1269,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::t_and) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::t_and) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after &\n";
 			return Expression_Ptr { };
@@ -1275,9 +1284,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::t_or) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::t_or) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after |\n";
 			return Expression_Ptr { };
@@ -1663,9 +1672,10 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(parse special)
-	if (t.token().type() == Token_Type::t_raw) {
-		t.next();
-		auto val { parse(t, addr) };
+	if (cur == end) { return Expression_Ptr { }; };
+	if (cur->type() == Token_Type::t_raw) {
+		++cur;
+		auto val { parse(cur, end, addr) };
 		if (! val) {
 			std::cerr << "no number after raw\n";
 			return Expression_Ptr { };
@@ -1677,19 +1687,19 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse special)
-	if (t.token().type() == Token_Type::t_if) {
-		t.next();
-		auto cond = parse(t, addr);
+	if (cur->type() == Token_Type::t_if) {
+		++cur;
+		auto cond = parse(cur, end, addr);
 		if (! cond) {
 			std::cerr << "no expression after if\n";
 			return Expression_Ptr { };
 		}
-		if (t.token().type() != Token_Type::t_colon) {
+		if (cur == end || cur->type() != Token_Type::t_colon) {
 			std::cerr << "expecting : after if expr\n";
 			return Expression_Ptr { };
 		}
-		t.next();
-		auto body = parse(t, addr);
+		++cur;
+		auto body = parse(cur, end, addr);
 		if (! body) {
 			std::cerr << "no if body\n";
 			return Expression_Ptr { };
@@ -1719,9 +1729,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::t_less) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::t_less) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after <\n";
 			return Expression_Ptr { };
@@ -1740,7 +1750,7 @@ These syntax trees are then transformed into machine code.
 		int reg2 { -1 };
 		int cond { -1 };
 		int offset { 0x7fffffff };
-		t.next();
+		++cur;
 		@put(parse if);
 	}
 @end(parse expression)
@@ -1919,9 +1929,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::t_equals) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::t_equals) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after =\n";
 			return Expression_Ptr { };
@@ -1934,9 +1944,9 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse binary)
-	if (t.token().type() == Token_Type::t_not_equals) {
-		t.next();
-		auto src = parse_factor(t, addr);
+	if (cur->type() == Token_Type::t_not_equals) {
+		++cur;
+		auto src = parse_factor(cur, end, addr);
 		if (! src) {
 			std::cerr << "no factor after !=\n";
 			return Expression_Ptr { };
@@ -2025,18 +2035,18 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse factor)
-	if (t.token().type() == Token_Type::t_open_bracket) {
-		t.next();
-		auto inner = parse(t, addr);
+	if (cur->type() == Token_Type::t_open_bracket) {
+		++cur;
+		auto inner = parse(cur, end, addr);
 		if (! inner) {
 			std::cerr << "no expr in memory access\n";
 			return Expression_Ptr { };
 		}
-		if (t.token().type() != Token_Type::t_close_bracket) {
+		if (cur == end || cur->type() != Token_Type::t_close_bracket) {
 			std::cerr << "expecting ]\n";
 			return Expression_Ptr { };
 		}
-		t.next();
+		++cur;
 		return std::make_unique<Access>(inner);
 	}
 @end(parse factor)
@@ -2230,18 +2240,18 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse factor)
-	if (t.token().type() == Token_Type::t_open_parenthesis) {
-		t.next();
-		auto inner = parse(t, addr);
+	if (cur->type() == Token_Type::t_open_parenthesis) {
+		++cur;
+		auto inner = parse(cur, end, addr);
 		if (! inner) {
 			std::cerr << "no expr in after (\n";
 			return Expression_Ptr { };
 		}
-		if (t.token().type() != Token_Type::t_close_parenthesis) {
-			std::cerr << "expecting )\n" << (int) t.token().type() << ", " << (int) Token_Type::t_close_parenthesis << "\n";
+		if (cur == end || cur->type() != Token_Type::t_close_parenthesis) {
+			std::cerr << "expecting )\n" << (int) cur->type() << ", " << (int) Token_Type::t_close_parenthesis << "\n";
 			return Expression_Ptr { };
 		}
-		t.next();
+		++cur;
 		return inner;
 	}
 @end(parse factor)
@@ -2249,12 +2259,12 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse factor)
-	if (t.token().type() == Token_Type::ident) {
-		std::string name { t.token().name() };
-		t.next();
-		if (t.token().type() == Token_Type::t_equals) {
-			t.next();
-			auto value { parse(t, addr) };
+	if (cur->type() == Token_Type::ident) {
+		std::string name { cur->name() };
+		++cur;
+		if (cur != end && cur->type() == Token_Type::t_equals) {
+			++cur;
+			auto value { parse(cur, end, addr) };
 			if (! value) {
 				std::cerr << "no value on assignment\n";
 				return Expression_Ptr { };
@@ -2286,8 +2296,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(parse factor)
-	if (t.token().type() == Token_Type::t_times) {
-		t.next();
+	if (cur->type() == Token_Type::t_times) {
+		++cur;
 		return std::make_unique<Number>(addr);
 	}
 @end(parse factor)
