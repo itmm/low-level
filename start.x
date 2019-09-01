@@ -186,6 +186,8 @@ the machine code.
 	State s;
 	s.add_line(line);
 	assert(s.code_size() == 1);
+	// std::cerr << "EXP " << std::hex << expected << "\n";
+	// std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
 	assert(s.get_code(0) == expected);
 @end(assert line)
 ```
@@ -950,7 +952,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
@@ -1011,7 +1013,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
@@ -1417,6 +1419,35 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(needed by clear symbols)
+	class U_Type_Item: public Item {
+		private:
+			int _immediate;
+			int _rd;
+			int _opcode;
+		public:
+			U_Type_Item(
+				int immediate,
+				int rd, int opcode
+			):
+				_immediate { immediate },
+				_rd { rd },
+				_opcode { opcode }
+			{ }
+			int immediate() const { return _immediate; }
+			int rd() const { return _rd; }
+			int opcode() const { return _opcode; }
+			Item *clone() const override {
+				return new U_Type_Item {
+					_immediate,
+					_rd, _opcode
+				};
+			}
+	};
+@end(needed by clear symbols)
+```
+
+```
 @def(expand)
 	std::vector<std::unique_ptr<Item>> items;
 	for (; cur != ts.end(); ++cur) {
@@ -1428,7 +1459,6 @@ These syntax trees are then transformed into machine code.
 		if (ti && ti->token().type() == Token_Type::ident) {
 			auto s = _symbols.find(ti->token().name());
 			if (s != _symbols.end()) {
-				std::cerr << "expanded " << ti->token().name() << "\n";
 				auto &ss { s->second };
 				items.erase(items.begin() + i, items.begin() + i + 1);
 				for (const auto &e : ss) {
@@ -1477,9 +1507,20 @@ These syntax trees are then transformed into machine code.
 				if (t3 && t3->token().type() == Token_Type::number) {
 					int v { t3->token().value() };
 					items.erase(items.begin() + i, items.begin() + i + 3);
-					if (v >= -2048 && v <= 2048) {
-						items.emplace(items.begin() + i, new I_Type_Item { v, 0, 0x0, reg, 0x13 });
+					if ((v & ~ 0xfff) != 0 && (v & ~ 0xfff) != ~ 0xfff) {
+						items.emplace(items.begin() + i, new U_Type_Item { v, reg, 0x37 });
+						++i;
 					}
+					if ((v >= -2048 && v <= 2048) | ((v & 0xfff) != 0 && (v & 0xfff) != 0xfff)) {
+						items.emplace(items.begin() + i, new I_Type_Item { v & 0xfff, 0, 0x0, reg, 0x13 });
+					}
+					i = 0; continue;
+				}
+				auto *c3 { dynamic_cast<Csr_Item *>(&*items[i + 2]) };
+				if (c3) {
+					int cv { c3->nr() };
+					items.erase(items.begin() + i, items.begin() + i + 3);
+					items.emplace(items.begin() + i, new I_Type_Item { cv, 0, 0x2, reg, 0x73 });
 					i = 0; continue;
 				}
 			}
@@ -1490,6 +1531,16 @@ These syntax trees are then transformed into machine code.
 			int result {
 				(ii->immediate() << 20) | (ii->rs1() << 15) |
 				(ii->func3() << 12) | (ii->rd() << 7) | ii->opcode()
+			};
+			items.erase(items.begin() + i, items.begin() + i + 1);
+			items.emplace(items.begin() + i, new Machine_Item { result });
+			i = 0; continue;
+		}
+
+		auto *ui { dynamic_cast<U_Type_Item *>(&*items[i]) };
+		if (ui) {
+			int result {
+				ui->immediate() | (ui->rd() << 7) | ui->opcode()
 			};
 			items.erase(items.begin() + i, items.begin() + i + 1);
 			items.emplace(items.begin() + i, new Machine_Item { result });

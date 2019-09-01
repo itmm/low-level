@@ -17,70 +17,70 @@
 	#include <string>
 	#include <vector>
 
-#line 206 "start.x"
+#line 208 "start.x"
 
 	
-#line 219 "start.x"
+#line 221 "start.x"
 
 	enum class Token_Type {
 		unknown,
 		
-#line 343 "start.x"
+#line 345 "start.x"
 
 	ident,
 
-#line 370 "start.x"
+#line 372 "start.x"
 
 	t_raw,
 
-#line 393 "start.x"
+#line 395 "start.x"
 
 	number,
 
-#line 437 "start.x"
+#line 439 "start.x"
 
 	becomes,
 	t_less,
 
-#line 498 "start.x"
+#line 500 "start.x"
 
 	plus, minus,
 
-#line 830 "start.x"
+#line 832 "start.x"
 
 	t_and,
 	t_or,
 
-#line 1022 "start.x"
+#line 1024 "start.x"
 
 	t_if,
 	t_colon,
 
-#line 1089 "start.x"
+#line 1091 "start.x"
 
 	t_equals,
 	t_not_equals,
 
-#line 1143 "start.x"
+#line 1145 "start.x"
 
 	t_open_bracket,
 	t_close_bracket,
 
-#line 1245 "start.x"
+#line 1247 "start.x"
 
 	t_open_parenthesis,
 	t_close_parenthesis,
 
-#line 1272 "start.x"
+#line 1274 "start.x"
 
 	t_times,
 
-#line 222 "start.x"
+#line 224 "start.x"
 
 		end
 	};
 
-#line 230 "start.x"
+#line 232 "start.x"
 
 	class Token {
 		private:
@@ -96,42 +96,42 @@
 			int value() const { return _value; }
 	};
 
-#line 321 "start.x"
+#line 323 "start.x"
 
 	#include <iostream>
 
-#line 560 "start.x"
+#line 562 "start.x"
 
 	#include <cctype>
 
-#line 207 "start.x"
+#line 209 "start.x"
 
 	class Tokenizer {
 			
-#line 248 "start.x"
+#line 250 "start.x"
 
 	Token _token { Token_Type::unknown };
 
-#line 264 "start.x"
+#line 266 "start.x"
 
 	std::string::const_iterator _cur;
 	std::string::const_iterator _end;
 
-#line 209 "start.x"
+#line 211 "start.x"
 ;
 		public:
 			
-#line 255 "start.x"
+#line 257 "start.x"
 
 	const Token &token() const {
 		return _token;
 	}
 
-#line 272 "start.x"
+#line 274 "start.x"
 
 	void next();
 
-#line 279 "start.x"
+#line 281 "start.x"
 
 	Tokenizer(const std::string &s):
 		_cur { s.begin() },
@@ -140,15 +140,15 @@
 		next();
 	}
 
-#line 211 "start.x"
+#line 213 "start.x"
 ;
 	};
 	
-#line 291 "start.x"
+#line 293 "start.x"
 
 	void Tokenizer::next() {
 		
-#line 300 "start.x"
+#line 302 "start.x"
 
 	while (
 		_cur != _end && *_cur <= ' '
@@ -156,18 +156,18 @@
 		++_cur;
 	}
 
-#line 311 "start.x"
+#line 313 "start.x"
 
 	if (_cur == _end) {
 		_token = Token { Token_Type::end };
 		return;
 	}
 
-#line 328 "start.x"
+#line 330 "start.x"
 
 	do {
 		
-#line 349 "start.x"
+#line 351 "start.x"
 
 	if (isalpha(*_cur) || *_cur == '%' || *_cur == '_') {
 		auto c = _cur;
@@ -180,13 +180,13 @@
 		}
 		Token_Type type { Token_Type::ident };
 		
-#line 376 "start.x"
+#line 378 "start.x"
 
 	if (name == "raw") {
 		type = Token_Type::t_raw;
 	}
 
-#line 1029 "start.x"
+#line 1031 "start.x"
 
 	if (name == "if") {
 		type = Token_Type::t_if;
@@ -198,21 +198,21 @@
 		type = Token_Type::t_or;
 	}
 
-#line 360 "start.x"
+#line 362 "start.x"
 ;
 		_token = Token { type, name };
 		_cur = c;
 		break;
 	}
 
-#line 384 "start.x"
+#line 386 "start.x"
 
 	if (*_cur == '#') {
 		_token = Token { Token_Type::end };
 		break;
 	}
 
-#line 399 "start.x"
+#line 401 "start.x"
 
 	if (isdigit(*_cur)) {
 		int value { 0 };
@@ -225,7 +225,7 @@
 		break;
 	}
 
-#line 414 "start.x"
+#line 416 "start.x"
 
 	if (*_cur == '$') {
 		int value { 0 };
@@ -246,7 +246,7 @@
 		break;
 	}
 
-#line 478 "start.x"
+#line 480 "start.x"
 
 	if (*_cur == '<') {
 		if (
@@ -263,7 +263,7 @@
 		}
 	}
 
-#line 513 "start.x"
+#line 515 "start.x"
 
 	if (*_cur == '+') {
 		_token = Token { Token_Type::plus };
@@ -276,7 +276,7 @@
 		break;
 	}
 
-#line 1043 "start.x"
+#line 1045 "start.x"
 
 	if (*_cur == ':') {
 		_token = Token { Token_Type::t_colon };
@@ -284,7 +284,7 @@
 		break;
 	}
 
-#line 1096 "start.x"
+#line 1098 "start.x"
 
 	if (*_cur == '=') {
 		_token = Token { Token_Type::t_equals };
@@ -292,7 +292,7 @@
 		break;
 	}
 
-#line 1106 "start.x"
+#line 1108 "start.x"
 
 	if (*_cur == '!' && _cur + 1 < _end && _cur[1] == '=') {
 		_token = Token { Token_Type::t_not_equals };
@@ -300,7 +300,7 @@
 		break;
 	}
 
-#line 1150 "start.x"
+#line 1152 "start.x"
 
 	if (*_cur == '[') {
 		_token = Token_Type::t_open_bracket;
@@ -308,7 +308,7 @@
 		break;
 	}
 
-#line 1160 "start.x"
+#line 1162 "start.x"
 
 	if (*_cur == ']') {
 		_token = Token_Type::t_close_bracket;
@@ -316,7 +316,7 @@
 		break;
 	}
 
-#line 1252 "start.x"
+#line 1254 "start.x"
 
 	if (*_cur == '(') {
 		_token = Token { Token_Type::t_open_parenthesis };
@@ -324,7 +324,7 @@
 		break;
 	}
 
-#line 1262 "start.x"
+#line 1264 "start.x"
 
 	if (*_cur == ')') {
 		_token = Token { Token_Type::t_close_parenthesis };
@@ -332,7 +332,7 @@
 		break;
 	}
 
-#line 1278 "start.x"
+#line 1280 "start.x"
 
 	if (*_cur == '*') {
 		_token = Token { Token_Type::t_times };
@@ -340,7 +340,7 @@
 		break;
 	}
 
-#line 330 "start.x"
+#line 332 "start.x"
 ;
 		_token = Token { Token_Type::unknown };
 		std::cerr <<
@@ -349,18 +349,18 @@
 		++_cur;
 	} while (false);
 
-#line 293 "start.x"
+#line 295 "start.x"
 ;
 	}
 
-#line 213 "start.x"
+#line 215 "start.x"
 ;
 
-#line 570 "start.x"
+#line 572 "start.x"
 
 	#include <memory>
 
-#line 719 "start.x"
+#line 721 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -372,7 +372,7 @@
 			opcode;
 	}
 
-#line 733 "start.x"
+#line 735 "start.x"
 
 	int build_i_cmd(
 		int imm, char src1, int funct3, char dst, int opcode
@@ -380,7 +380,7 @@
 		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
 	}
 
-#line 743 "start.x"
+#line 745 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -391,7 +391,7 @@
 		);
 	}
 
-#line 756 "start.x"
+#line 758 "start.x"
 
 	int build_add(
 		char dst, char src1, int imm
@@ -401,7 +401,7 @@
 		);
 	}
 
-#line 837 "start.x"
+#line 839 "start.x"
 
 	int build_and(
 		char dst, char src1, char src2
@@ -412,7 +412,7 @@
 		);
 	}
 
-#line 850 "start.x"
+#line 852 "start.x"
 
 	int build_and(
 		char dst, char src1, int imm
@@ -422,7 +422,7 @@
 		);
 	}
 
-#line 862 "start.x"
+#line 864 "start.x"
 
 	int build_or(
 		char dst, char src1, char src2
@@ -433,7 +433,7 @@
 		);
 	}
 
-#line 875 "start.x"
+#line 877 "start.x"
 
 	int build_or(
 		char dst, char src1, int imm
@@ -443,7 +443,7 @@
 		);
 	}
 
-#line 914 "start.x"
+#line 916 "start.x"
 
 	int build_u_cmd(
 		int imm, char dst, int opcode
@@ -451,7 +451,7 @@
 		return (imm & 0xfffff800) | (dst << 7) | opcode;
 	}
 
-#line 924 "start.x"
+#line 926 "start.x"
 
 	int build_lui(
 		char dst, int imm
@@ -459,7 +459,7 @@
 		return build_u_cmd(imm, dst, 0x37);
 	}
 
-#line 961 "start.x"
+#line 963 "start.x"
 
 	int build_auipc(
 		char dst, int imm
@@ -467,7 +467,7 @@
 		return build_u_cmd(imm, dst, 0x17);
 	}
 
-#line 980 "start.x"
+#line 982 "start.x"
 
 	int build_csrrw(
 		char dst, int csr, char src
@@ -477,7 +477,7 @@
 		);
 	}
 
-#line 1001 "start.x"
+#line 1003 "start.x"
 
 	int build_csrrs(
 		char dst, int csr, char src
@@ -487,7 +487,7 @@
 		);
 	}
 
-#line 1053 "start.x"
+#line 1055 "start.x"
 
 	int build_b_cmd(
 		int offset, int reg2, int reg1, int cond, int opcode
@@ -500,7 +500,7 @@
 			opcode;
 	}
 
-#line 1068 "start.x"
+#line 1070 "start.x"
 
 	int build_branch(
 		int cond, char reg1, char reg2, int offset
@@ -510,7 +510,7 @@
 		);
 	}
 
-#line 1170 "start.x"
+#line 1172 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -520,7 +520,7 @@
 		);
 	}
 
-#line 1200 "start.x"
+#line 1202 "start.x"
 
 	int build_s_cmd(
 		int imm, char rs2, char rs1, int type, int opcode
@@ -533,7 +533,7 @@
 			opcode;
 	}
 
-#line 1215 "start.x"
+#line 1217 "start.x"
 
 	int build_store(
 		char src, char dst, int imm
@@ -595,19 +595,19 @@
 #line 76 "start.x"
 
 	
-#line 587 "start.x"
+#line 589 "start.x"
 
 	#include <map>
 
-#line 593 "start.x"
+#line 595 "start.x"
 
 	class Item;
 	static std::map<std::string, std::vector<std::unique_ptr<Item>>> _symbols;
 
-#line 600 "start.x"
+#line 602 "start.x"
 
 	
-#line 1288 "start.x"
+#line 1290 "start.x"
 
 	class Item {
 		public:
@@ -615,7 +615,7 @@
 			virtual Item *clone() const = 0;
 	};
 
-#line 1298 "start.x"
+#line 1300 "start.x"
 
 	class Token_Item: public Item {
 		private:
@@ -632,7 +632,7 @@
 			}
 	};
 
-#line 1317 "start.x"
+#line 1319 "start.x"
 
 	class Pc_Item: public Item {
 		public:
@@ -641,7 +641,7 @@
 			}
 	};
 
-#line 1328 "start.x"
+#line 1330 "start.x"
 
 	class Register_Item: public Item {
 		private:
@@ -658,7 +658,7 @@
 			}
 	};
 
-#line 1347 "start.x"
+#line 1349 "start.x"
 
 	class Csr_Item: public Item {
 		private:
@@ -675,7 +675,7 @@
 			}
 	};
 
-#line 1366 "start.x"
+#line 1368 "start.x"
 
 	class Machine_Item: public Item {
 		private:
@@ -692,7 +692,7 @@
 			}
 	};
 
-#line 1385 "start.x"
+#line 1387 "start.x"
 
 	class I_Type_Item: public Item {
 		private:
@@ -725,12 +725,39 @@
 			}
 	};
 
-#line 601 "start.x"
+#line 1422 "start.x"
+
+	class U_Type_Item: public Item {
+		private:
+			int _immediate;
+			int _rd;
+			int _opcode;
+		public:
+			U_Type_Item(
+				int immediate,
+				int rd, int opcode
+			):
+				_immediate { immediate },
+				_rd { rd },
+				_opcode { opcode }
+			{ }
+			int immediate() const { return _immediate; }
+			int rd() const { return _rd; }
+			int opcode() const { return _opcode; }
+			Item *clone() const override {
+				return new U_Type_Item {
+					_immediate,
+					_rd, _opcode
+				};
+			}
+	};
+
+#line 603 "start.x"
 ;
 	void clear_symbols() {
 		_symbols.clear();
 		
-#line 622 "start.x"
+#line 624 "start.x"
 
 	{
 		auto &l { _symbols["%pc"] };
@@ -759,7 +786,7 @@
 		}
 	}
 
-#line 653 "start.x"
+#line 655 "start.x"
 
 	{
 		auto &l { _symbols["%zero"] };
@@ -823,7 +850,7 @@
 		}
 	}
 
-#line 604 "start.x"
+#line 606 "start.x"
 ;
 	}
 
@@ -833,7 +860,7 @@
 		const std::string &line
 	) {
 		
-#line 768 "start.x"
+#line 770 "start.x"
 
 	Tokenizer t { line };
 	std::vector<Token> ts;
@@ -843,7 +870,7 @@
 	}
 	auto cur { ts.begin() };
 	
-#line 1420 "start.x"
+#line 1451 "start.x"
 
 	std::vector<std::unique_ptr<Item>> items;
 	for (; cur != ts.end(); ++cur) {
@@ -855,7 +882,6 @@
 		if (ti && ti->token().type() == Token_Type::ident) {
 			auto s = _symbols.find(ti->token().name());
 			if (s != _symbols.end()) {
-				std::cerr << "expanded " << ti->token().name() << "\n";
 				auto &ss { s->second };
 				items.erase(items.begin() + i, items.begin() + i + 1);
 				for (const auto &e : ss) {
@@ -904,9 +930,20 @@
 				if (t3 && t3->token().type() == Token_Type::number) {
 					int v { t3->token().value() };
 					items.erase(items.begin() + i, items.begin() + i + 3);
-					if (v >= -2048 && v <= 2048) {
-						items.emplace(items.begin() + i, new I_Type_Item { v, 0, 0x0, reg, 0x13 });
+					if ((v & ~ 0xfff) != 0 && (v & ~ 0xfff) != ~ 0xfff) {
+						items.emplace(items.begin() + i, new U_Type_Item { v, reg, 0x37 });
+						++i;
 					}
+					if ((v >= -2048 && v <= 2048) | ((v & 0xfff) != 0 && (v & 0xfff) != 0xfff)) {
+						items.emplace(items.begin() + i, new I_Type_Item { v & 0xfff, 0, 0x0, reg, 0x13 });
+					}
+					i = 0; continue;
+				}
+				auto *c3 { dynamic_cast<Csr_Item *>(&*items[i + 2]) };
+				if (c3) {
+					int cv { c3->nr() };
+					items.erase(items.begin() + i, items.begin() + i + 3);
+					items.emplace(items.begin() + i, new I_Type_Item { cv, 0, 0x2, reg, 0x73 });
 					i = 0; continue;
 				}
 			}
@@ -917,6 +954,16 @@
 			int result {
 				(ii->immediate() << 20) | (ii->rs1() << 15) |
 				(ii->func3() << 12) | (ii->rd() << 7) | ii->opcode()
+			};
+			items.erase(items.begin() + i, items.begin() + i + 1);
+			items.emplace(items.begin() + i, new Machine_Item { result });
+			i = 0; continue;
+		}
+
+		auto *ui { dynamic_cast<U_Type_Item *>(&*items[i]) };
+		if (ui) {
+			int result {
+				ui->immediate() | (ui->rd() << 7) | ui->opcode()
 			};
 			items.erase(items.begin() + i, items.begin() + i + 1);
 			items.emplace(items.begin() + i, new Machine_Item { result });
@@ -934,7 +981,7 @@
 		std::cerr << "can expand fully [" << line << "]\n";
 	}
 
-#line 776 "start.x"
+#line 778 "start.x"
 ;
 
 #line 81 "start.x"
@@ -966,7 +1013,7 @@
 		int expected
 	) {
 		
-#line 610 "start.x"
+#line 612 "start.x"
 
 	clear_symbols();
 
@@ -978,45 +1025,47 @@
 	State s;
 	s.add_line(line);
 	assert(s.code_size() == 1);
+	// std::cerr << "EXP " << std::hex << expected << "\n";
+	// std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
 	assert(s.get_code(0) == expected);
 
 #line 162 "start.x"
 ;
 	}
 
-#line 445 "start.x"
+#line 447 "start.x"
 
 	void assert_token(
 		const char *line,
 		Token_Type token
 	) {
 		
-#line 466 "start.x"
+#line 468 "start.x"
 
 	
-#line 616 "start.x"
+#line 618 "start.x"
 
 	clear_symbols();
 
-#line 467 "start.x"
+#line 469 "start.x"
 ;
 	Tokenizer t(line);
 	assert(t.token().type() == token);
 	t.next();
 	assert(t.token().type() == Token_Type::end);
 
-#line 450 "start.x"
+#line 452 "start.x"
 ;
 	}
 
-#line 529 "start.x"
+#line 531 "start.x"
 
 	void assert_register(
 		const char *line,
 		const char *name
 	) {
 		
-#line 541 "start.x"
+#line 543 "start.x"
 
 	Tokenizer t(line);
 	assert(t.token().type() == Token_Type::ident);
@@ -1024,7 +1073,7 @@
 	t.next();
 	assert(t.token().type() == Token_Type::end);
 
-#line 534 "start.x"
+#line 536 "start.x"
 ;
 	}
 
@@ -1148,163 +1197,163 @@
 		"raw $87654321", 0x87654321
 	);
 
-#line 457 "start.x"
+#line 459 "start.x"
 
 	assert_token(
 		"<-", Token_Type::becomes
 	);
 
-#line 505 "start.x"
+#line 507 "start.x"
 
 	assert_token("+", Token_Type::plus);
 	assert_token("-", Token_Type::minus);
 
-#line 552 "start.x"
+#line 554 "start.x"
 
 	assert_register("%x10", "%x10");
 	assert_register("%pc", "%pc");
 
-#line 577 "start.x"
+#line 579 "start.x"
 
 	assert_line(
 		"%x4 <- %x2 + %x3",
 		0x00310233
 	);
 
-#line 781 "start.x"
+#line 783 "start.x"
 
 	assert_line(
 		"%pc <- %pc + 0",
 		0x0000006f
 	);
 
-#line 792 "start.x"
+#line 794 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -28",
 		0xfe5ff06f
 	);
 
-#line 802 "start.x"
+#line 804 "start.x"
 
 	assert_line(
 		"%pc <- %pc + -32",
 		0xfe1ff06f
 	);
 
-#line 887 "start.x"
+#line 889 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 896 "start.x"
+#line 898 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 905 "start.x"
+#line 907 "start.x"
 
 	assert_line(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 934 "start.x"
+#line 936 "start.x"
 
 	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 943 "start.x"
+#line 945 "start.x"
 
 	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 952 "start.x"
+#line 954 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 971 "start.x"
+#line 973 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 992 "start.x"
+#line 994 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 1013 "start.x"
+#line 1015 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 1080 "start.x"
+#line 1082 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 
-#line 1116 "start.x"
+#line 1118 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
 		0xfe028ae3
 	);
 
-#line 1125 "start.x"
+#line 1127 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc + -28",
 		0xfeb292e3
 	);
 
-#line 1134 "start.x"
+#line 1136 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 1182 "start.x"
+#line 1184 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 1191 "start.x"
+#line 1193 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 1227 "start.x"
+#line 1229 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 1236 "start.x"
+#line 1238 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
@@ -1317,10 +1366,10 @@
 #line 10 "start.x"
 
 		
-#line 812 "start.x"
+#line 814 "start.x"
 
 	
-#line 819 "start.x"
+#line 821 "start.x"
 
 	State s;
 	std::string l;
@@ -1329,7 +1378,7 @@
 		s.add_line(l);
 	}
 
-#line 813 "start.x"
+#line 815 "start.x"
 
 
 #line 16 "hex.x"
