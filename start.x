@@ -73,7 +73,6 @@ machine instructions.
 
 ```
 @def(state impl)
-	@put(needed by expand);
 	void State::add_line(
 		const std::string &line
 	) {
@@ -110,13 +109,6 @@ the machine code.
 @end(public state)
 ```
 * first a simple code storage mechanism will be used
-
-```
-@add(needed by state)
-	#include <vector>
-@end(needed by state)
-```
-* simple code storage needs `std::vector`
 
 ```
 @def(code storage impl)
@@ -820,17 +812,20 @@ These syntax trees are then transformed into machine code.
 ```
 @def(needed by parse factor)
 	#include <map>
+	#include <vector>
 @end(needed by parse factor)
 ```
 
 ```
 @add(needed by parse factor)
-	static std::map<std::string, Expression_Ptr> _symbols;
+	class Item;
+	static std::map<std::string, std::vector<std::unique_ptr<Item>>> _symbols;
 @end(needed by parse factor)
 ```
 
 ```
 @add(needed by parse factor)
+	@put(needed by clear symbols);
 	void clear_symbols() {
 		_symbols.clear();
 		@put(clear symbols);
@@ -851,60 +846,98 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(clear symbols) {
-	_symbols["%pc"] = std::move(std::make_unique<Pc_Register>());
-	_symbols["%mtvec"] = std::move(std::make_unique<Csr_Register>(0x305));
-	_symbols["%mhartid"] = std::move(std::make_unique<Csr_Register>(0xf14));
-	char name1[] = "%x#";
-	for (int i = 0; i < 10; ++i) {
-		name1[2] = '0' + i;
-		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i));
+@def(clear symbols)
+	{
+		auto &l { _symbols["%pc"] };
+		l.emplace_back(new Pc_Item { });
+	} {
+		auto &l { _symbols["%mtvec"] };
+		l.emplace_back(new Csr_Item { 0x305 });
+	} {
+		auto &l { _symbols["%mhartid"] };
+		l.emplace_back(new Csr_Item { 0xf14 });
+	} {
+		char name[] = "%x#";
+		for (int i = 0; i < 10; ++i) {
+			name[2] = '0' + i;
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i });
+		}
+
+	} {
+		char name[] = "%x##";
+		for (int i = 10; i < 32; ++i) {
+			name[2] = '0' + (i / 10);
+			name[3] = '0' + (i % 10);
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i });
+		}
 	}
-	char name2[] = "%x##";
-	for (int i = 10; i < 32; ++i) {
-		name2[2] = '0' + (i / 10);
-		name2[3] = '0' + (i % 10);
-		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i));
-	}
-} @end(clear symbols)
+@end(clear symbols)
 ```
 
 ```
 @add(clear symbols)
-	_symbols["%zero"] = _symbols["%x0"]->clone();
-	_symbols["%ra"] = _symbols["%x1"]->clone();
-	_symbols["%sp"] = _symbols["%x2"]->clone();
-	_symbols["%gp"] = _symbols["%x3"]->clone();
-	_symbols["%tp"] = _symbols["%x4"]->clone();
-	char name1[] = "%t#";
-	for (int i = 0; i < 3; ++i) {
-		name1[2] = '0' + i;
-		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i + 5));
-	}
-	char name2[] = "%s#";
-	for (int i = 0; i < 2; ++i) {
-		name2[2] = '0' + i;
-		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i + 8));
-	}
-	_symbols["%fp"] = _symbols["%x8"]->clone();
-	char name3[] = "%a#";
-	for (int i = 0; i < 8; ++i) {
-		name3[2] = '0' + i;
-		_symbols[name3] = std::move(std::make_unique<Gen_Register>(i + 10));
-	}
-	for (int i = 2; i < 10; ++i) {
-		name2[2] = '0' + i;
-		_symbols[name2] = std::move(std::make_unique<Gen_Register>(i + 16));
-	}
-	char name4[] = "%s##";
-	for (int i = 10; i < 12; ++i) {
-		name4[2] = '0' + (i / 10);
-		name4[3] = '0' + (i % 10);
-		_symbols[name4] = std::move(std::make_unique<Gen_Register>(i + 16));
-	}
-	for (int i = 3; i < 7; ++i) {
-		name1[2] = '0' + i;
-		_symbols[name1] = std::move(std::make_unique<Gen_Register>(i + 25));
+	{
+		auto &l { _symbols["%zero"] };
+		l.emplace_back(new Register_Item { 0 });
+	} {
+		auto &l { _symbols["%ra"] };
+		l.emplace_back(new Register_Item { 1 });
+	} {
+		auto &l { _symbols["%sp"] };
+		l.emplace_back(new Register_Item { 2 });
+	} {
+		auto &l { _symbols["%gp"] };
+		l.emplace_back(new Register_Item { 3 });
+	} {
+		auto &l { _symbols["%tp"] };
+		l.emplace_back(new Register_Item { 4 });
+	} {
+		char name[] = "%t#";
+		for (int i = 0; i < 3; ++i) {
+			name[2] = '0' + i;
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i + 5 });
+		}
+	} {
+		char name[] = "%s#";
+		for (int i = 0; i < 2; ++i) {
+			name[2] = '0' + i;
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i + 8 });
+		}
+	} {
+		auto &l { _symbols["%fp"] };
+		l.emplace_back(new Register_Item { 8 });
+	} {
+		char name[] = "%a#";
+		for (int i = 0; i < 8; ++i) {
+			name[2] = '0' + i;
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i + 10 });
+		}
+	} {
+		char name[] = "%s#";
+		for (int i = 2; i < 10; ++i) {
+			name[2] = '0' + i;
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i + 16 });
+		}
+	} {
+		char name[] = "%s1#";
+		for (int i = 10; i < 12; ++i) {
+			name[3] = '0' + (i % 10);
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i + 16 });
+		}
+	} {
+		char name[] = "%t#";
+		for (int i = 3; i < 7; ++i) {
+			name[2] = '0' + i;
+			auto &l { _symbols[name] };
+			l.emplace_back(new Register_Item { i + 25 });
+		}
 	}
 @end(clear symbols)
 ```
@@ -912,13 +945,6 @@ These syntax trees are then transformed into machine code.
 ```
 @def(parse factor)
 	if (cur == end) { return Expression_Ptr { }; };
-	if (cur->type() == Token_Type::ident) {
-		auto found { _symbols.find(cur->name()) };
-		if (found != _symbols.end()) {
-			++cur;
-			return found->second->clone();
-		}
-	}
 @end(parse factor)
 ```
 * registers are valid factors
@@ -1082,7 +1108,6 @@ These syntax trees are then transformed into machine code.
 		t.next();
 	}
 	auto cur { ts.begin() };
-	// unsigned addr { code.size() * 4 + 0x20010000 };
 	@put(expand);
 @end(add line)
 ```
@@ -1854,27 +1879,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(parse factor)
-	if (cur->type() == Token_Type::ident) {
-		std::string name { cur->name() };
-		++cur;
-		if (cur != end && cur->type() == Token_Type::t_equals) {
-			++cur;
-			auto value { parse(cur, end, addr) };
-			if (! value) {
-				std::cerr << "no value on assignment\n";
-				return Expression_Ptr { };
-			}
-			_symbols[name] = std::move(value->clone());
-			return Expression_Ptr { };
-		}
-		std::cerr << "no assignment after unknown ident\n";
-		return Expression_Ptr { };
-	}
-@end(parse factor)
-```
-
-```
 @add(token types)
 	t_times,
 @end(token types)
@@ -1900,16 +1904,17 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(needed by expand)
+@def(needed by clear symbols)
 	class Item {
 		public:
 			virtual ~Item() {};
+			virtual Item *clone() const = 0;
 	};
-@end(needed by expand)
+@end(needed by clear symbols)
 ```
 
 ```
-@add(needed by expand)
+@add(needed by clear symbols)
 	class Token_Item: public Item {
 		private:
 			Token _token;
@@ -1920,12 +1925,64 @@ These syntax trees are then transformed into machine code.
 			const Token &token() const {
 				return _token;
 			}
+			Item *clone() const override {
+				return new Token_Item { _token };
+			}
 	};
-@end(needed by expand)
+@end(needed by clear symbols)
 ```
 
 ```
-@add(needed by expand)
+@add(needed by clear symbols)
+	class Pc_Item: public Item {
+		public:
+			Item *clone() const override {
+				return new Pc_Item { };
+			}
+	};
+@end(needed by clear symbols)
+```
+
+```
+@add(needed by clear symbols)
+	class Register_Item: public Item {
+		private:
+			int _nr;
+		public:
+			Register_Item(int nr):
+				_nr { nr }
+			{ }
+			int nr() const {
+				return _nr;
+			}
+			Item *clone() const override {
+				return new Register_Item { _nr };
+			}
+	};
+@end(needed by clear symbols)
+```
+
+```
+@add(needed by clear symbols)
+	class Csr_Item: public Item {
+		private:
+			int _nr;
+		public:
+			Csr_Item(int nr):
+				_nr { nr }
+			{ }
+			int nr() const {
+				return _nr;
+			}
+			Item *clone() const override {
+				return new Csr_Item { _nr };
+			}
+	};
+@end(needed by clear symbols)
+```
+
+```
+@add(needed by clear symbols)
 	class Machine_Item: public Item {
 		private:
 			int _instruction;
@@ -1936,8 +1993,11 @@ These syntax trees are then transformed into machine code.
 			int instruction() const {
 				return _instruction;
 			}
+			Item *clone() const override {
+				return new Machine_Item { _instruction };
+			}
 	};
-@end(needed by expand)
+@end(needed by clear symbols)
 ```
 
 ```
@@ -1946,33 +2006,58 @@ These syntax trees are then transformed into machine code.
 	for (; cur != ts.end(); ++cur) {
 		items.emplace_back(new Token_Item { *cur });
 	}
-	bool modified;
-	do {
-		modified = false;
-		unsigned i = 0;
-		while (i < items.size()) {
-			auto *ti { dynamic_cast<Token_Item *>(&*items[i]) };
-			if (ti && ti->token().type() == Token_Type::t_raw) {
-				if (i < items.size() - 1) {
-					auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-					if (ta && ta->token().type() == Token_Type::number) {
-						int value = ta->token().value();
-						items.erase(items.begin() + i, items.begin() + i + 2);
-						items.emplace(items.begin() + i, new Machine_Item { value });
-						modified = true;
-						i = 0; continue;
+	unsigned i = 0;
+	while (i < items.size()) {
+		auto *ti { dynamic_cast<Token_Item *>(&*items[i]) };
+		if (ti && ti->token().type() == Token_Type::ident) {
+			auto s = _symbols.find(ti->token().name());
+			if (s != _symbols.end()) {
+				auto &ss { s->second };
+				items.erase(items.begin() + i, items.begin() + i + 1);
+				for (const auto &e : ss) {
+					items.emplace(items.begin() + i, e->clone());
+					++i;
+				}
+				i = 0; continue;
+			}
+		}
+		if (ti && ti->token().type() == Token_Type::ident) {
+			if (i < items.size() - 1) {
+				auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
+				if (ta && ta->token().type() == Token_Type::t_equals) {
+					auto &l { _symbols[ti->token().name()] };
+					for (unsigned j = i + 2; j < items.size(); ++j) {
+						l.push_back(std::move(items[j]));
 					}
+					items.erase(items.begin() + i, items.end());
+					i = 0; continue;
 				}
 			}
-			++i;
 		}
-		while (! items.empty() && dynamic_cast<Machine_Item *>(&**items.begin())) {
-			auto &mi { dynamic_cast<Machine_Item &>(**items.begin()) };
-			add_machine(mi.instruction());
-			items.erase(items.begin(), items.begin() + 1);
-			modified = true;
+		if (ti && ti->token().type() == Token_Type::t_raw) {
+			if (i < items.size() - 1) {
+				auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
+				if (ta && ta->token().type() == Token_Type::number) {
+					int value = ta->token().value();
+					items.erase(items.begin() + i, items.begin() + i + 2);
+					items.emplace(items.begin() + i, new Machine_Item { value });
+					i = 0; continue;
+				}
+			}
 		}
-	} while (! items.empty() && modified);
+		if (ti && ti->token().type() == Token_Type::t_times) {
+			items.erase(items.begin() + i, items.begin() + i + 1);
+			int addr = code.size() * 4 + 0x20010000;
+			items.emplace(items.begin() + i, new Token_Item({ Token_Type::number, addr }));
+			i = 0; continue;
+		}
+		++i;
+	}
+	while (! items.empty() && dynamic_cast<Machine_Item *>(&**items.begin())) {
+		auto &mi { dynamic_cast<Machine_Item &>(**items.begin()) };
+		add_machine(mi.instruction());
+		items.erase(items.begin(), items.begin() + 1);
+	}
 	
 	if (! items.empty()) {
 		std::cerr << "can expand fully [" << line << "]\n";
