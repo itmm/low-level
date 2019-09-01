@@ -4,7 +4,7 @@ raw $00000297
 raw $06828293	#		%t0 <- %pc + 104
 raw $30529073	#		%mtvec <- %t0
 raw $f14022f3	#		%t0 <- %mhartid
-					loop_hart = *
+loop_hart = *
 raw $00029063	#		if %t0 != 0: %pc <- %pc + (loop_hart + -*)
 
 # init UART
@@ -12,10 +12,10 @@ raw $00029063	#		if %t0 != 0: %pc <- %pc + (loop_hart + -*)
 						uart = %a0
 raw $10013537	#		uart <- $10013000
 raw $00852283	#		%t0 <- [uart + $08]
-						ch_cr = %a1
-raw $00d00593	#		ch_cr <- $0d
-						ch_nl = %a2
-raw $00a00613	#		ch_nl <- $0a
+	ch_cr = %a1
+	ch_cr <- $0d
+	ch_nl = %a2
+	ch_nl <- $0a
 raw $00c52303	#		%t1 <- [uart + $0c]
 raw	$0012e293	#		%t0 <- %t0 or $01
 raw $00136313	#		%t1 <- %t1 or $01

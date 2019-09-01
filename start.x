@@ -932,7 +932,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
@@ -941,7 +941,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
@@ -1382,6 +1382,41 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(needed by clear symbols)
+	class I_Type_Item: public Item {
+		private:
+			int _immediate;
+			int _rs1;
+			int _func3;
+			int _rd;
+			int _opcode;
+		public:
+			I_Type_Item(
+				int immediate, int rs1, int func3,
+				int rd, int opcode
+			):
+				_immediate { immediate },
+				_rs1 { rs1 },
+				_func3 { func3 },
+				_rd { rd },
+				_opcode { opcode }
+			{ }
+			int immediate() const { return _immediate; }
+			int rs1() const { return _rs1; }
+			int func3() const { return _func3; }
+			int rd() const { return _rd; }
+			int opcode() const { return _opcode; }
+			Item *clone() const override {
+				return new I_Type_Item {
+					_immediate, _rs1, _func3,
+					_rd, _opcode
+				};
+			}
+	};
+@end(needed by clear symbols)
+```
+
+```
 @def(expand)
 	std::vector<std::unique_ptr<Item>> items;
 	for (; cur != ts.end(); ++cur) {
@@ -1393,6 +1428,7 @@ These syntax trees are then transformed into machine code.
 		if (ti && ti->token().type() == Token_Type::ident) {
 			auto s = _symbols.find(ti->token().name());
 			if (s != _symbols.end()) {
+				std::cerr << "expanded " << ti->token().name() << "\n";
 				auto &ss { s->second };
 				items.erase(items.begin() + i, items.begin() + i + 1);
 				for (const auto &e : ss) {
@@ -1430,6 +1466,33 @@ These syntax trees are then transformed into machine code.
 			items.erase(items.begin() + i, items.begin() + i + 1);
 			int addr = code.size() * 4 + 0x20010000;
 			items.emplace(items.begin() + i, new Token_Item({ Token_Type::number, addr }));
+			i = 0; continue;
+		}
+		auto *ri { dynamic_cast<Register_Item *>(&*items[i]) };
+		if (ri && i < items.size() - 2) {
+			int reg { ri->nr() };
+			auto *t2 { dynamic_cast<Token_Item *>(&*items[i + 1]) };
+			if (t2 && t2->token().type() == Token_Type::becomes) {
+				auto *t3 { dynamic_cast<Token_Item *>(&*items[i + 2]) };
+				if (t3 && t3->token().type() == Token_Type::number) {
+					int v { t3->token().value() };
+					items.erase(items.begin() + i, items.begin() + i + 3);
+					if (v >= -2048 && v <= 2048) {
+						items.emplace(items.begin() + i, new I_Type_Item { v, 0, 0x0, reg, 0x13 });
+					}
+					i = 0; continue;
+				}
+			}
+		}
+	
+		auto *ii { dynamic_cast<I_Type_Item *>(&*items[i]) };
+		if (ii) {
+			int result {
+				(ii->immediate() << 20) | (ii->rs1() << 15) |
+				(ii->func3() << 12) | (ii->rd() << 7) | ii->opcode()
+			};
+			items.erase(items.begin() + i, items.begin() + i + 1);
+			items.emplace(items.begin() + i, new Machine_Item { result });
 			i = 0; continue;
 		}
 		++i;
