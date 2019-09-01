@@ -58,6 +58,7 @@ machine instructions.
 ```
 @def(needed by state)
 	#include <string>
+	#include <vector>
 @end(needed by state)
 ```
 * `@f(add_line)` needs `std::string`
@@ -73,6 +74,7 @@ machine instructions.
 
 ```
 @def(state impl)
+	@put(needed by add line)
 	void State::add_line(
 		const std::string &line
 	) {
@@ -572,27 +574,6 @@ These syntax trees are then transformed into machine code.
 * needs `unique_ptr`
 
 ```
-@add(needed by state)
-	class Expression {
-		public:
-			virtual ~Expression() {}
-			virtual std::unique_ptr<Expression> clone() {
-				return std::unique_ptr<Expression> {};
-			}
-	};
-@end(needed by state)
-```
-* a lot of structure is encoded in an expression
-
-```
-@add(needed by state)
-	using Expression_Ptr =
-		std::unique_ptr<Expression>;
-@end(needed by state)
-```
-* shortcut for expression pointer
-
-```
 @add(unit-tests)
 	assert_line(
 		"%x4 <- %x2 + %x3",
@@ -603,234 +584,26 @@ These syntax trees are then transformed into machine code.
 * the first test checks that a simple register add can be parsed
 
 ```
-@add(needed by state)
-	class BinaryExpression:
-		public Expression
-	{
-			Expression_Ptr _first;
-			Expression_Ptr _second;
-		public:
-			@put(bin expr methods);
-	};
-@end(needed by state)
-```
-* a binary expression has two operands
-
-```
-@def(bin expr methods)
-	BinaryExpression(
-		Expression_Ptr first,
-		Expression_Ptr second
-	):
-		_first { std::move(first) },
-		_second { std::move(second) }
-	{ }
-@end(bin expr methods)
-```
-* the constructor consumes the operands
-
-```
-@add(bin expr methods)
-	const Expression_Ptr &first() const {
-		return _first;
-	}
-	const Expression_Ptr &second() const {
-		return _second;
-	}
-@end(bin expr methods)
-```
-* accessors for the operands
-
-```
-@add(needed by state)
-	class Assignment:
-		public BinaryExpression
-	{
-		public:
-			Assignment(
-				Expression_Ptr dst,
-				Expression_Ptr src
-			): BinaryExpression(
-				std::move(dst),
-				std::move(src)
-			) { }
-	};
-@end(needed by state)
-```
-* assignment is a special binary expression
-
-```
-@add(needed by state)
-	class Addition:
-		public BinaryExpression
-	{
-		public:
-			Addition(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-			Expression_Ptr clone() override {
-				return std::make_unique<Addition>(
-					first()->clone(), second()->clone()
-				);
-			}
-	};
-@end(needed by state)
-```
-* addition is a special binary expression
-
-```
-@add(needed by state)
-	class Subtraction:
-		public BinaryExpression
-	{
-		public:
-			Subtraction(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-	};
-@end(needed by state)
-```
-* subtraction is a special binary expression
-
-```
-@add(needed by state)
-	class Gen_Register: public Expression {
-			@put(register privates);
-		public:
-			@put(register methods);
-	};
-@end(needed by state)
-```
-* register access is an expression
-
-
-```
-@def(register privates)
-	const int _nr;
-@end(register privates)
-```
-* register has a name
-* and a number if it is a general purpose register
-* otherwise `_nr` is negative
-
-
-```
-@def(register methods)
-	Gen_Register(int nr):
-		_nr { nr }
-	{ }
-@end(register methods)
-```
-* init with name and register number
-
-```
-@add(register methods)
-	int nr() const { return _nr; }
-	Expression_Ptr clone() override {
-		return std::make_unique<Gen_Register>(_nr);
-	}
-@end(register methods)
-```
-* accessors for attributes
-* and shortcut to decide if the register is a general purpose register
-
-```
-@add(needed by state)
-	class Pc_Register: public Expression {
-		public:
-			Pc_Register() {}
-			Expression_Ptr clone() override {
-				return std::make_unique<Pc_Register>();
-			}
-	};
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	class Csr_Register: public Expression {
-			int _addr;
-		public:
-			Csr_Register(int addr):
-				_addr { addr }
-			{ }
-			Expression_Ptr clone() override {
-				return std::make_unique<Csr_Register>(_addr);
-			}
-			int addr() const {
-				return _addr; 
-			}
-	};
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	class Number: public Expression {
-			const int _value;
-
-		public:
-			Number(int value):
-				_value { value }
-			{ }
-
-			Expression_Ptr clone() override {
-				return std::make_unique<Number>(_value);
-			}
-
-			int value() const {
-				return _value;
-			}
-	};
-@end(needed by state)
-```
-* number is a special expression
-
-```
-@add(needed by state)
-	#include <vector>
-	Expression_Ptr parse(std::vector<Token>::iterator &cur, std::vector<Token>::iterator end, int addr);
-	@put(needed by parse factor);
-	Expression_Ptr parse_factor(
-		std::vector<Token>::iterator &cur, std::vector<Token>::iterator end, int addr
-	) {
-		@put(parse factor);
-		return Expression_Ptr {};
-	}
-@end(needed by state)
-```
-* parses a arithmetic factor
-
-```
-@def(needed by parse factor)
+@def(needed by add line)
 	#include <map>
-	#include <vector>
-@end(needed by parse factor)
+@end(needed by add line)
 ```
 
 ```
-@add(needed by parse factor)
+@add(needed by add line)
 	class Item;
 	static std::map<std::string, std::vector<std::unique_ptr<Item>>> _symbols;
-@end(needed by parse factor)
+@end(needed by add line)
 ```
 
 ```
-@add(needed by parse factor)
+@add(needed by add line)
 	@put(needed by clear symbols);
 	void clear_symbols() {
 		_symbols.clear();
 		@put(clear symbols);
 	}
-@end(needed by parse factor)
+@end(needed by add line)
 ```
 
 ```
@@ -943,85 +716,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(parse factor)
-	if (cur == end) { return Expression_Ptr { }; };
-@end(parse factor)
-```
-* registers are valid factors
-
-```
-@add(needed by state)
-	@put(needed by parse);
-	Expression_Ptr parse(std::vector<Token>::iterator &cur, std::vector<Token>::iterator end, int addr) {
-		@put(parse special);
-		auto dst = parse_factor(cur, end, addr);
-		do {
-			@put(parse binary);
-		} while (false);
-		return dst;
-	}
-@end(needed by state)
-```
-* parses a factor that can be followed by a binary expression
-* otherwise returns the factor
-
-```
-@def(parse binary)
-	if (cur == end) { break; }
-	if (cur->type() == Token_Type::becomes) {
-		++cur;
-		auto src = parse(cur, end, addr);
-		if (! src) {
-			std::cerr << "no expression after <-\n";
-			return Expression_Ptr { };
-		}
-		return std::make_unique<Assignment>(std::move(dst), std::move(src));
-	}
-@end(parse binary)
-```
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::plus) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after +\n";
-			return Expression_Ptr { };
-		}
-		auto n1 = dynamic_cast<const Number *>(&*dst);
-		auto n2 = dynamic_cast<const Number *>(&*src);
-		if (n1 && n2) {
-			dst = std::make_unique<Number>(n1->value() + n2->value());
-		} else {
-			dst = std::make_unique<Addition>(std::move(dst), std::move(src));
-		}
-		continue;
-	}
-@end(parse binary);
-```
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::minus) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after -\n";
-			return Expression_Ptr { };
-		}
-		auto n = dynamic_cast<const Number *>(&*src);
-		if (n) {
-			dst = std::make_unique<Addition>(std::move(dst), std::make_unique<Number>(-n->value()));
-		} else {
-			dst = std::make_unique<Subtraction>(std::move(dst), std::move(src));
-		}
-		continue;
-	}
-@end(parse binary)
-```
-
-```
 @add(needed by state)
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -1068,35 +762,6 @@ These syntax trees are then transformed into machine code.
 		);
 	}
 @end(needed by state)
-```
-
-```
-@add(parse factor)
-	if (cur->type() == Token_Type::number) {
-		auto res =
-			std::make_unique<Number>(
-				cur->value()
-			);
-		++cur;
-		return res;
-	}
-@end(parse factor)
-```
-
-```
-@add(parse factor)
-	if (cur->type() == Token_Type::minus) {
-		++cur;
-		auto res = parse_factor(cur, end, addr);
-		auto n = dynamic_cast<const Number *>(&*res);
-		if (n) {
-			return std::make_unique<Number>(
-				-n->value()
-			);
-		}
-		std::cerr << "no number after -\n";
-	}
-@end(parse factor)
 ```
 
 ```
@@ -1166,72 +831,6 @@ These syntax trees are then transformed into machine code.
 	t_and,
 	t_or,
 @end(token types)
-```
-
-```
-@def(needed by parse)
-	class BinaryAnd:
-		public BinaryExpression
-	{
-		public:
-			BinaryAnd(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-	};
-@end(needed by parse)
-```
-* and is a special binary expression
-
-```
-@add(needed by parse)
-	class BinaryOr:
-		public BinaryExpression
-	{
-		public:
-			BinaryOr(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-	};
-@end(needed by parse)
-```
-* and is a special binary expression
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::t_and) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after &\n";
-			return Expression_Ptr { };
-		}
-		dst = std::make_unique<BinaryAnd>(std::move(dst), std::move(src));
-		continue;
-	}
-@end(parse binary);
-```
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::t_or) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after |\n";
-			return Expression_Ptr { };
-		}
-		dst = std::make_unique<BinaryOr>(std::move(dst), std::move(src));
-		continue;
-	}
-@end(parse binary);
 ```
 
 ```
@@ -1451,96 +1050,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(needed by parse)
-	class If:
-		public BinaryExpression
-	{
-		public:
-			If(
-				Expression_Ptr cond,
-				Expression_Ptr body
-			): BinaryExpression(
-				std::move(cond),
-				std::move(body)
-			) { }
-	};
-@end(needed by parse)
-```
-* if is a special binary expression
-
-```
-@def(parse special)
-	if (cur == end) { return Expression_Ptr { }; };
-	if (cur->type() == Token_Type::t_raw) {
-		++cur;
-		auto val { parse(cur, end, addr) };
-		if (! val) {
-			std::cerr << "no number after raw\n";
-			return Expression_Ptr { };
-		}
-		return val;
-	}
-@end(parse special)
-```
-
-```
-@add(parse special)
-	if (cur->type() == Token_Type::t_if) {
-		++cur;
-		auto cond = parse(cur, end, addr);
-		if (! cond) {
-			std::cerr << "no expression after if\n";
-			return Expression_Ptr { };
-		}
-		if (cur == end || cur->type() != Token_Type::t_colon) {
-			std::cerr << "expecting : after if expr\n";
-			return Expression_Ptr { };
-		}
-		++cur;
-		auto body = parse(cur, end, addr);
-		if (! body) {
-			std::cerr << "no if body\n";
-			return Expression_Ptr { };
-		}
-		return std::make_unique<If>(std::move(cond), std::move(body));
-	}
-@end(parse special);
-```
-
-```
-@add(needed by parse)
-	class Less:
-		public BinaryExpression
-	{
-		public:
-			Less(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-	};
-@end(needed by parse)
-```
-* if is a special binary expression
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::t_less) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after <\n";
-			return Expression_Ptr { };
-		}
-		dst = std::make_unique<Less>(std::move(dst), std::move(src));
-		continue;
-	}
-@end(parse binary);
-```
-
-```
 @add(needed by state)
 	int build_b_cmd(
 		int offset, int reg2, int reg1, int cond, int opcode
@@ -1604,70 +1113,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(needed by parse)
-	class Equals:
-		public BinaryExpression
-	{
-		public:
-			Equals(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-	};
-@end(needed by parse)
-```
-
-```
-@add(needed by parse)
-	class NotEquals:
-		public BinaryExpression
-	{
-		public:
-			NotEquals(
-				Expression_Ptr first,
-				Expression_Ptr second
-			): BinaryExpression(
-				std::move(first),
-				std::move(second)
-			) { }
-	};
-@end(needed by parse)
-```
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::t_equals) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after =\n";
-			return Expression_Ptr { };
-		}
-		dst = std::make_unique<Equals>(std::move(dst), std::move(src));
-		continue;
-	}
-@end(parse binary);
-```
-
-```
-@add(parse binary)
-	if (cur->type() == Token_Type::t_not_equals) {
-		++cur;
-		auto src = parse_factor(cur, end, addr);
-		if (! src) {
-			std::cerr << "no factor after !=\n";
-			return Expression_Ptr { };
-		}
-		dst = std::make_unique<NotEquals>(std::move(dst), std::move(src));
-		continue;
-	}
-@end(parse binary);
-```
-
-```
 @add(unit-tests)
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
@@ -1719,42 +1164,6 @@ These syntax trees are then transformed into machine code.
 		break;
 	}
 @end(recognize)
-```
-
-```
-@add(parse factor)
-	if (cur->type() == Token_Type::t_open_bracket) {
-		++cur;
-		auto inner = parse(cur, end, addr);
-		if (! inner) {
-			std::cerr << "no expr in memory access\n";
-			return Expression_Ptr { };
-		}
-		if (cur == end || cur->type() != Token_Type::t_close_bracket) {
-			std::cerr << "expecting ]\n";
-			return Expression_Ptr { };
-		}
-		++cur;
-		return std::make_unique<Access>(inner);
-	}
-@end(parse factor)
-```
-
-```
-@add(needed by parse factor)
-	class Access: public Expression {
-			const Expression_Ptr _inner;
-
-		public:
-			Access(Expression_Ptr &inner):
-				_inner { std::move(inner) }
-			{ }
-
-			Expression *inner() const {
-				return &*_inner;
-			}
-	};
-@end(needed by parse factor)
 ```
 
 ```
@@ -1860,25 +1269,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(parse factor)
-	if (cur->type() == Token_Type::t_open_parenthesis) {
-		++cur;
-		auto inner = parse(cur, end, addr);
-		if (! inner) {
-			std::cerr << "no expr in after (\n";
-			return Expression_Ptr { };
-		}
-		if (cur == end || cur->type() != Token_Type::t_close_parenthesis) {
-			std::cerr << "expecting )\n" << (int) cur->type() << ", " << (int) Token_Type::t_close_parenthesis << "\n";
-			return Expression_Ptr { };
-		}
-		++cur;
-		return inner;
-	}
-@end(parse factor)
-```
-
-```
 @add(token types)
 	t_times,
 @end(token types)
@@ -1892,15 +1282,6 @@ These syntax trees are then transformed into machine code.
 		break;
 	}
 @end(recognize)
-```
-
-```
-@add(parse factor)
-	if (cur->type() == Token_Type::t_times) {
-		++cur;
-		return std::make_unique<Number>(addr);
-	}
-@end(parse factor)
 ```
 
 ```
