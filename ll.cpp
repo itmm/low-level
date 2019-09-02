@@ -872,113 +872,344 @@
 	
 #line 1451 "start.x"
 
-	std::vector<std::unique_ptr<Item>> items;
+	std::vector<std::unique_ptr<Item>>
+		items;
+	
+#line 1470 "start.x"
+
 	for (; cur != ts.end(); ++cur) {
-		items.emplace_back(new Token_Item { *cur });
+		items.emplace_back(
+			new Token_Item { *cur }
+		);
 	}
+
+#line 1454 "start.x"
+;
 	unsigned i = 0;
 	while (i < items.size()) {
-		auto *ti { dynamic_cast<Token_Item *>(&*items[i]) };
-		if (ti && ti->token().type() == Token_Type::ident) {
-			auto s = _symbols.find(ti->token().name());
-			if (s != _symbols.end()) {
-				auto &ss { s->second };
-				items.erase(items.begin() + i, items.begin() + i + 1);
-				for (const auto &e : ss) {
-					items.emplace(items.begin() + i, e->clone());
-					++i;
-				}
-				i = 0; continue;
-			}
-		}
-		if (ti && ti->token().type() == Token_Type::ident) {
-			if (i < items.size() - 1) {
-				auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-				if (ta && ta->token().type() == Token_Type::t_equals) {
-					auto &l { _symbols[ti->token().name()] };
-					for (unsigned j = i + 2; j < items.size(); ++j) {
-						l.push_back(std::move(items[j]));
-					}
-					items.erase(items.begin() + i, items.end());
-					i = 0; continue;
-				}
-			}
-		}
-		if (ti && ti->token().type() == Token_Type::t_raw) {
-			if (i < items.size() - 1) {
-				auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-				if (ta && ta->token().type() == Token_Type::number) {
-					int value = ta->token().value();
-					items.erase(items.begin() + i, items.begin() + i + 2);
-					items.emplace(items.begin() + i, new Machine_Item { value });
-					i = 0; continue;
-				}
-			}
-		}
-		if (ti && ti->token().type() == Token_Type::t_times) {
-			items.erase(items.begin() + i, items.begin() + i + 1);
-			int addr = code.size() * 4 + 0x20010000;
-			items.emplace(items.begin() + i, new Token_Item({ Token_Type::number, addr }));
-			i = 0; continue;
-		}
-		auto *ri { dynamic_cast<Register_Item *>(&*items[i]) };
-		if (ri && i < items.size() - 2) {
-			int reg { ri->nr() };
-			auto *t2 { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-			if (t2 && t2->token().type() == Token_Type::becomes) {
-				auto *t3 { dynamic_cast<Token_Item *>(&*items[i + 2]) };
-				if (t3 && t3->token().type() == Token_Type::number) {
-					int v { t3->token().value() };
-					items.erase(items.begin() + i, items.begin() + i + 3);
-					if ((v & ~ 0xfff) != 0 && (v & ~ 0xfff) != ~ 0xfff) {
-						items.emplace(items.begin() + i, new U_Type_Item { v, reg, 0x37 });
-						++i;
-					}
-					if ((v >= -2048 && v <= 2048) | ((v & 0xfff) != 0 && (v & 0xfff) != 0xfff)) {
-						items.emplace(items.begin() + i, new I_Type_Item { v & 0xfff, 0, 0x0, reg, 0x13 });
-					}
-					i = 0; continue;
-				}
-				auto *c3 { dynamic_cast<Csr_Item *>(&*items[i + 2]) };
-				if (c3) {
-					int cv { c3->nr() };
-					items.erase(items.begin() + i, items.begin() + i + 3);
-					items.emplace(items.begin() + i, new I_Type_Item { cv, 0, 0x2, reg, 0x73 });
-					i = 0; continue;
-				}
-			}
-		}
-	
-		auto *ii { dynamic_cast<I_Type_Item *>(&*items[i]) };
-		if (ii) {
-			int result {
-				(ii->immediate() << 20) | (ii->rs1() << 15) |
-				(ii->func3() << 12) | (ii->rd() << 7) | ii->opcode()
-			};
-			items.erase(items.begin() + i, items.begin() + i + 1);
-			items.emplace(items.begin() + i, new Machine_Item { result });
-			i = 0; continue;
-		}
+		
+#line 1480 "start.x"
+ {
+	auto *ti {
+		dynamic_cast<Token_Item *>(
+			&*items[i]
+	) };
+	if (ti) {
+		
+#line 1492 "start.x"
 
-		auto *ui { dynamic_cast<U_Type_Item *>(&*items[i]) };
-		if (ui) {
-			int result {
-				ui->immediate() | (ui->rd() << 7) | ui->opcode()
-			};
-			items.erase(items.begin() + i, items.begin() + i + 1);
-			items.emplace(items.begin() + i, new Machine_Item { result });
-			i = 0; continue;
-		}
+	if (ti->token().type() ==
+		Token_Type::ident
+	) {
+		
+#line 1502 "start.x"
+
+	auto s {
+		_symbols.find(ti->token().name())
+	};
+	if (s != _symbols.end()) {
+		
+#line 1514 "start.x"
+
+	auto &ss { s->second };
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	for (const auto &e : ss) {
+		items.emplace(
+			items.begin() + i, e->clone()
+		);
 		++i;
 	}
-	while (! items.empty() && dynamic_cast<Machine_Item *>(&**items.begin())) {
-		auto &mi { dynamic_cast<Machine_Item &>(**items.begin()) };
-		add_machine(mi.instruction());
-		items.erase(items.begin(), items.begin() + 1);
+
+#line 1507 "start.x"
+;
+		i = 0; continue;
+	}
+
+#line 1529 "start.x"
+
+	if (i < items.size() - 1) {
+		auto *ta {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+		) };
+		if (ta && ta->token().type() ==
+			Token_Type::t_equals
+		) {
+			
+#line 1546 "start.x"
+
+	auto &l { _symbols[
+		ti->token().name()
+	] };
+	for (unsigned j = i + 2;
+		j < items.size(); ++j
+	) {
+		l.push_back(std::move(items[j]));
+	}
+	items.erase(
+		items.begin() + i, items.end()
+	);
+
+#line 1538 "start.x"
+;
+			i = 0; continue;
+		}
+	}
+
+#line 1496 "start.x"
+;
+	}
+
+#line 1562 "start.x"
+
+	if (ti->token().type() ==
+		Token_Type::t_raw
+	) {
+		
+#line 1572 "start.x"
+
+	if (i < items.size() - 1) {
+		auto *ta {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+		) };
+		if (ta && ta->token().type() ==
+			Token_Type::number
+		) {
+			
+#line 1589 "start.x"
+
+	int value { ta->token().value() };
+	items.erase( items.begin() + i,
+		items.begin() + i + 2
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { value }
+	);
+
+#line 1581 "start.x"
+;
+			i = 0; continue;
+		}
+	}
+
+#line 1566 "start.x"
+;
+	}
+
+#line 1601 "start.x"
+
+	if (ti->token().type() ==
+		Token_Type::t_times
+	) {
+		
+#line 1612 "start.x"
+
+	items.erase(items.begin() + i,
+		items.begin() + i + 1);
+	int addr = code.size() * 4 +
+		0x20010000;
+	items.emplace(items.begin() + i,
+		new Token_Item({
+			Token_Type::number, addr
+		})
+	);
+
+#line 1605 "start.x"
+;
+		i = 0; continue;
+	}
+
+#line 1486 "start.x"
+;
+	}
+} 
+#line 1626 "start.x"
+ {
+	auto *ri {
+		dynamic_cast<Register_Item *>(
+			&*items[i]
+	) };
+	if (ri) {
+		int rd { ri->nr() };
+		
+#line 1639 "start.x"
+
+	if (i < items.size() - 2) {
+		auto *t2 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+		) };
+		if (t2 && t2->token().type() ==
+			Token_Type::becomes
+		) {
+			
+#line 1655 "start.x"
+ {
+	auto *t3 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 2]
+	) };
+	if (t3 && t3->token().type() ==
+		Token_Type::number
+	) {
+		
+#line 1670 "start.x"
+
+	int v { t3->token().value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+
+#line 1679 "start.x"
+ {
+	int up { v & ~ 0xfff };
+	if (up != 0 && up != ~ 0xfff) {
+		items.emplace(items.begin() + i,
+			new U_Type_Item {
+				up, rd, 0x37
+		});
+		++i;
+	}
+} 
+#line 1692 "start.x"
+ {
+	int low { v & 0xfff };
+	if (
+		(low && (low != 0xfff)) || v == 0
+	) {
+		items.emplace(items.begin() + i,
+			new I_Type_Item {
+				low, 0, 0x0, rd, 0x13
+			}
+		);
+	}
+} 
+#line 1663 "start.x"
+;
+		i = 0; continue;
+	}
+} 
+#line 1707 "start.x"
+ {
+	auto *c3 {
+		dynamic_cast<Csr_Item *>(
+			&*items[i + 2]
+	) };
+	if (c3) {
+		
+#line 1720 "start.x"
+
+	int cv { c3->nr() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+	items.emplace(items.begin() + i,
+		new I_Type_Item {
+			cv, 0, 0x2, rd, 0x73
+		}
+	);
+
+#line 1713 "start.x"
+;
+		i = 0; continue;
+	}
+} 
+#line 1648 "start.x"
+;
+		}
+	}
+
+#line 1633 "start.x"
+;
+	}
+} 
+#line 1734 "start.x"
+ {
+	auto *ii {
+		dynamic_cast<I_Type_Item *>(
+			&*items[i]
+		)
+	};
+	if (ii) {
+		
+#line 1748 "start.x"
+
+	int result {
+		(ii->immediate() << 20) |
+		(ii->rs1() << 15) |
+		(ii->func3() << 12) |
+		(ii->rd() << 7) | ii->opcode()
+	};
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { result }
+	);
+
+#line 1741 "start.x"
+;
+		i = 0; continue;
+	}
+} 
+#line 1765 "start.x"
+ {
+	auto *ui {
+		dynamic_cast<U_Type_Item *>(
+			&*items[i]
+		)
+	};
+	if (ui) {
+		
+#line 1779 "start.x"
+
+	int result {
+		ui->immediate() |
+		(ui->rd() << 7) | ui->opcode()
+	};
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { result }
+	);
+
+#line 1772 "start.x"
+;
+		i = 0; continue;
+	}
+} 
+#line 1457 "start.x"
+;
+		++i;
 	}
 	
+#line 1794 "start.x"
+
+	while (! items.empty() &&
+		dynamic_cast<Machine_Item *>(
+			&**items.begin()
+	)) {
+		auto &mi {
+			dynamic_cast<Machine_Item &>(
+				**items.begin()
+		)};
+		add_machine(mi.instruction());
+		items.erase(
+			items.begin(),
+			items.begin() + 1
+		);
+	}
+
+#line 1460 "start.x"
+;
 	if (! items.empty()) {
-		std::cerr << "can expand fully [" << line << "]\n";
+		std::cerr <<
+			"can expand fully [" <<
+			line << "]\n";
 	}
 
 #line 778 "start.x"

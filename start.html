@@ -1693,115 +1693,389 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">expand</span>)</span><br/>
-<span class="in1"></span><span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">std</span>::<span class="var">unique_ptr</span>&lt;<span class="type">Item</span>&gt;&gt; <span class="var">items</span>;<br/>
-<span class="in1"></span><span class="keyword">for</span> (; <span class="var">cur</span> != <span class="var">ts</span>.<span class="fn">end</span>(); ++<span class="var">cur</span>) {<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Token_Item</span> { *<span class="var">cur</span> });<br/>
-<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">std</span>::<span class="var">unique_ptr</span>&lt;<span class="type">Item</span>&gt;&gt;<br/>
+<span class="in2"></span><span class="var">items</span>;<br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">build items</span>)</span>;<br/>
 <span class="in1"></span><span class="type">unsigned</span> <span class="var">i</span> = <span class="num">0</span>;<br/>
 <span class="in1"></span><span class="keyword">while</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>()) {<br/>
-<span class="in2"></span><span class="type">auto</span> *<span class="var">ti</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ti</span> &amp;&amp; <span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>) {<br/>
-<span class="in3"></span><span class="type">auto</span> <span class="var">s</span> = <span class="var">_symbols</span>.<span class="fn">find</span>(<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>());<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">s</span> != <span class="var">_symbols</span>.<span class="fn">end</span>()) {<br/>
-<span class="in4"></span><span class="type">auto</span> &amp;<span class="var">ss</span> { <span class="var">s</span>-&gt;<span class="var">second</span> };<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>);<br/>
-<span class="in4"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> : <span class="var">ss</span>) {<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>-&gt;<span class="fn">clone</span>());<br/>
-<span class="in5"></span>++<span class="var">i</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in4"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ti</span> &amp;&amp; <span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">ident</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
-<span class="in4"></span><span class="type">auto</span> *<span class="var">ta</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]) };<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">ta</span> &amp;&amp; <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_equals</span>) {<br/>
-<span class="in5"></span><span class="type">auto</span> &amp;<span class="var">l</span> { <span class="var">_symbols</span>[<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>()] };<br/>
-<span class="in5"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">2</span>; <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">j</span>) {<br/>
-<span class="in6"></span><span class="var">l</span>.<span class="fn">push_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">items</span>[<span class="var">j</span>]));<br/>
-<span class="in5"></span>}<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">end</span>());<br/>
-<span class="in5"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in3"></span>}<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ti</span> &amp;&amp; <span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_raw</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
-<span class="in4"></span><span class="type">auto</span> *<span class="var">ta</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]) };<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">ta</span> &amp;&amp; <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">number</span>) {<br/>
-<span class="in5"></span><span class="type">int</span> <span class="var">value</span> = <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>();<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span>);<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">value</span> });<br/>
-<span class="in5"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in3"></span>}<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ti</span> &amp;&amp; <span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">t_times</span>) {<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>);<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">code</span>.<span class="fn">size</span>() * <span class="num">4</span> + <span class="num">0x20010000</span>;<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="fn">Token_Item</span>({ <span class="type">Token_Type</span>::<span class="var">number</span>, <span class="var">addr</span> }));<br/>
-<span class="in3"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">auto</span> *<span class="var">ri</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Register_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ri</span> &amp;&amp; <span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">2</span>) {<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">reg</span> { <span class="var">ri</span>-&gt;<span class="fn">nr</span>() };<br/>
-<span class="in3"></span><span class="type">auto</span> *<span class="var">t2</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]) };<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">t2</span> &amp;&amp; <span class="var">t2</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">becomes</span>) {<br/>
-<span class="in4"></span><span class="type">auto</span> *<span class="var">t3</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]) };<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">t3</span> &amp;&amp; <span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() == <span class="type">Token_Type</span>::<span class="var">number</span>) {<br/>
-<span class="in5"></span><span class="type">int</span> <span class="var">v</span> { <span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>);<br/>
-<span class="in5"></span><span class="keyword">if</span> ((<span class="var">v</span> &amp; ~ <span class="num">0xfff</span>) != <span class="num">0</span> &amp;&amp; (<span class="var">v</span> &amp; ~ <span class="num">0xfff</span>) != ~ <span class="num">0xfff</span>) {<br/>
-<span class="in6"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="var">U_Type_Item</span> { <span class="var">v</span>, <span class="var">reg</span>, <span class="num">0x37</span> });<br/>
-<span class="in6"></span>++<span class="var">i</span>;<br/>
-<span class="in5"></span>}<br/>
-<span class="in5"></span><span class="keyword">if</span> ((<span class="var">v</span> &gt;= -<span class="num">2048</span> &amp;&amp; <span class="var">v</span> &lt;= <span class="num">2048</span>) | ((<span class="var">v</span> &amp; <span class="num">0xfff</span>) != <span class="num">0</span> &amp;&amp; (<span class="var">v</span> &amp; <span class="num">0xfff</span>) != <span class="num">0xfff</span>)) {<br/>
-<span class="in6"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="var">I_Type_Item</span> { <span class="var">v</span> &amp; <span class="num">0xfff</span>, <span class="num">0</span>, <span class="num">0x0</span>, <span class="var">reg</span>, <span class="num">0x13</span> });<br/>
-<span class="in5"></span>}<br/>
-<span class="in5"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in4"></span><span class="type">auto</span> *<span class="var">c3</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Csr_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]) };<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">c3</span>) {<br/>
-<span class="in5"></span><span class="type">int</span> <span class="var">cv</span> { <span class="var">c3</span>-&gt;<span class="fn">nr</span>() };<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>);<br/>
-<span class="in5"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="var">I_Type_Item</span> { <span class="var">cv</span>, <span class="num">0</span>, <span class="num">0x2</span>, <span class="var">reg</span>, <span class="num">0x73</span> });<br/>
-<span class="in5"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in3"></span>}<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span><br/>
-<span class="in2"></span><span class="type">auto</span> *<span class="var">ii</span> { <span class="var">dynamic_cast</span>&lt;<span class="var">I_Type_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ii</span>) {<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">result</span> {<br/>
-<span class="in4"></span>(<span class="var">ii</span>-&gt;<span class="fn">immediate</span>() &lt;&lt; <span class="num">20</span>) | (<span class="var">ii</span>-&gt;<span class="fn">rs1</span>() &lt;&lt; <span class="num">15</span>) |<br/>
-<span class="in4"></span>(<span class="var">ii</span>-&gt;<span class="fn">func3</span>() &lt;&lt; <span class="num">12</span>) | (<span class="var">ii</span>-&gt;<span class="fn">rd</span>() &lt;&lt; <span class="num">7</span>) | <span class="var">ii</span>-&gt;<span class="fn">opcode</span>()<br/>
-<span class="in3"></span>};<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>);<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> });<br/>
-<span class="in3"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in2"></span>}<br/>
-<br/>
-<span class="in2"></span><span class="type">auto</span> *<span class="var">ui</span> { <span class="var">dynamic_cast</span>&lt;<span class="var">U_Type_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ui</span>) {<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">result</span> {<br/>
-<span class="in4"></span><span class="var">ui</span>-&gt;<span class="fn">immediate</span>() | (<span class="var">ui</span>-&gt;<span class="fn">rd</span>() &lt;&lt; <span class="num">7</span>) | <span class="var">ui</span>-&gt;<span class="fn">opcode</span>()<br/>
-<span class="in3"></span>};<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>);<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> });<br/>
-<span class="in3"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform</span>)</span>;<br/>
 <span class="in2"></span>++<span class="var">i</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>() &amp;&amp; <span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> *&gt;(&amp;**<span class="var">items</span>.<span class="fn">begin</span>())) {<br/>
-<span class="in2"></span><span class="type">auto</span> &amp;<span class="var">mi</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> &amp;&gt;(**<span class="var">items</span>.<span class="fn">begin</span>()) };<br/>
-<span class="in2"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">instruction</span>());<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>(), <span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="in1"></span><br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">consume machine instrs</span>)</span>;<br/>
 <span class="in1"></span><span class="keyword">if</span> (! <span class="var">items</span>.<span class="fn">empty</span>()) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"can expand fully ["</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="str">"can expand fully ["</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">build items</span>)</span><br/>
+<span class="in1"></span><span class="keyword">for</span> (; <span class="var">cur</span> != <span class="var">ts</span>.<span class="fn">end</span>(); ++<span class="var">cur</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { *<span class="var">cur</span> }<br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">build items</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> *<span class="var">ti</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
+<span class="in1"></span>) };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform tok</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform tok</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">ident</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform tok ident</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform tok ident</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">s</span> {<br/>
+<span class="in2"></span><span class="var">_symbols</span>.<span class="fn">find</span>(<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>())<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">s</span> != <span class="var">_symbols</span>.<span class="fn">end</span>()) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform tok lookup</span>)</span>;<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok ident</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform tok lookup</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> &amp;<span class="var">ss</span> { <span class="var">s</span>-&gt;<span class="var">second</span> };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> : <span class="var">ss</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>-&gt;<span class="fn">clone</span>()<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok lookup</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform tok ident</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> *<span class="var">ta</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in2"></span>) };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">ta</span> &amp;&amp; <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">t_equals</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
+<span class="in3"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok ident</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform sym assign</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> &amp;<span class="var">l</span> { <span class="var">_symbols</span>[<br/>
+<span class="in2"></span><span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>()<br/>
+<span class="in1"></span>] };<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">2</span>;<br/>
+<span class="in2"></span><span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">j</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">l</span>.<span class="fn">push_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">items</span>[<span class="var">j</span>]));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">end</span>()<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform tok</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">t_raw</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform raw</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform raw</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> *<span class="var">ta</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in2"></span>) };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">ta</span> &amp;&amp; <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">do transform raw</span>)</span>;<br/>
+<span class="in3"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform raw</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">do transform raw</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>( <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">value</span> }<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">do transform raw</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform tok</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">t_times</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform cur addr</span>)</span>;<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform cur addr</span>)</span><br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>);<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">code</span>.<span class="fn">size</span>() * <span class="num">4</span> +<br/>
+<span class="in2"></span><span class="num">0x20010000</span>;<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="fn">Token_Item</span>({<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">number</span>, <span class="var">addr</span><br/>
+<span class="in2"></span>})<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform cur addr</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> *<span class="var">ri</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Register_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
+<span class="in1"></span>) };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ri</span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">rd</span> { <span class="var">ri</span>-&gt;<span class="fn">nr</span>() };<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform reg</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform reg</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">2</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> *<span class="var">t2</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in2"></span>) };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t2</span> &amp;&amp; <span class="var">t2</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">becomes</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform reg assign</span>)</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform reg</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform reg assign</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> *<span class="var">t3</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
+<span class="in1"></span>) };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t3</span> &amp;&amp; <span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform reg assign num</span>)</span>;<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform reg assign</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform reg assign num</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">v</span> { <span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform reg assign num</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform reg assign num</span>)</span> {<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">up</span> { <span class="var">v</span> &amp; ~ <span class="num">0xfff</span> };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">up</span> != <span class="num">0</span> &amp;&amp; <span class="var">up</span> != ~ <span class="num">0xfff</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="var">U_Type_Item</span> {<br/>
+<span class="in4"></span><span class="var">up</span>, <span class="var">rd</span>, <span class="num">0x37</span><br/>
+<span class="in2"></span>});<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform reg assign num</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform reg assign num</span>)</span> {<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">low</span> { <span class="var">v</span> &amp; <span class="num">0xfff</span> };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<br/>
+<span class="in2"></span>(<span class="var">low</span> &amp;&amp; (<span class="var">low</span> != <span class="num">0xfff</span>)) || <span class="var">v</span> == <span class="num">0</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="var">I_Type_Item</span> {<br/>
+<span class="in4"></span><span class="var">low</span>, <span class="num">0</span>, <span class="num">0x0</span>, <span class="var">rd</span>, <span class="num">0x13</span><br/>
+<span class="in3"></span>}<br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform reg assign num</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform reg assign</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> *<span class="var">c3</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Csr_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
+<span class="in1"></span>) };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">c3</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform reg assign csr</span>)</span>;<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform reg assign</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform reg assign csr</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">cv</span> { <span class="var">c3</span>-&gt;<span class="fn">nr</span>() };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="var">I_Type_Item</span> {<br/>
+<span class="in3"></span><span class="var">cv</span>, <span class="num">0</span>, <span class="num">0x2</span>, <span class="var">rd</span>, <span class="num">0x73</span><br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform reg assign csr</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> *<span class="var">ii</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="var">I_Type_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ii</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform i type</span>)</span>;<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform i type</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">result</span> {<br/>
+<span class="in2"></span>(<span class="var">ii</span>-&gt;<span class="fn">immediate</span>() &lt;&lt; <span class="num">20</span>) |<br/>
+<span class="in2"></span>(<span class="var">ii</span>-&gt;<span class="fn">rs1</span>() &lt;&lt; <span class="num">15</span>) |<br/>
+<span class="in2"></span>(<span class="var">ii</span>-&gt;<span class="fn">func3</span>() &lt;&lt; <span class="num">12</span>) |<br/>
+<span class="in2"></span>(<span class="var">ii</span>-&gt;<span class="fn">rd</span>() &lt;&lt; <span class="num">7</span>) | <span class="var">ii</span>-&gt;<span class="fn">opcode</span>()<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> }<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform i type</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> *<span class="var">ui</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="var">U_Type_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ui</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform u type</span>)</span>;<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform u type</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">result</span> {<br/>
+<span class="in2"></span><span class="var">ui</span>-&gt;<span class="fn">immediate</span>() |<br/>
+<span class="in2"></span>(<span class="var">ui</span>-&gt;<span class="fn">rd</span>() &lt;&lt; <span class="num">7</span>) | <span class="var">ui</span>-&gt;<span class="fn">opcode</span>()<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> }<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform u type</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">consume machine instrs</span>)</span><br/>
+<span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>() &amp;&amp;<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;**<span class="var">items</span>.<span class="fn">begin</span>()<br/>
+<span class="in1"></span>)) {<br/>
+<span class="in2"></span><span class="type">auto</span> &amp;<span class="var">mi</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> &amp;&gt;(<br/>
+<span class="in4"></span>**<span class="var">items</span>.<span class="fn">begin</span>()<br/>
+<span class="in2"></span>)};<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">instruction</span>());<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">consume machine instrs</span>)</span><br/>
 </code></div>
 </div>
 </body>

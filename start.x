@@ -1449,113 +1449,363 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(expand)
-	std::vector<std::unique_ptr<Item>> items;
-	for (; cur != ts.end(); ++cur) {
-		items.emplace_back(new Token_Item { *cur });
-	}
+	std::vector<std::unique_ptr<Item>>
+		items;
+	@put(build items);
 	unsigned i = 0;
 	while (i < items.size()) {
-		auto *ti { dynamic_cast<Token_Item *>(&*items[i]) };
-		if (ti && ti->token().type() == Token_Type::ident) {
-			auto s = _symbols.find(ti->token().name());
-			if (s != _symbols.end()) {
-				auto &ss { s->second };
-				items.erase(items.begin() + i, items.begin() + i + 1);
-				for (const auto &e : ss) {
-					items.emplace(items.begin() + i, e->clone());
-					++i;
-				}
-				i = 0; continue;
-			}
-		}
-		if (ti && ti->token().type() == Token_Type::ident) {
-			if (i < items.size() - 1) {
-				auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-				if (ta && ta->token().type() == Token_Type::t_equals) {
-					auto &l { _symbols[ti->token().name()] };
-					for (unsigned j = i + 2; j < items.size(); ++j) {
-						l.push_back(std::move(items[j]));
-					}
-					items.erase(items.begin() + i, items.end());
-					i = 0; continue;
-				}
-			}
-		}
-		if (ti && ti->token().type() == Token_Type::t_raw) {
-			if (i < items.size() - 1) {
-				auto *ta { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-				if (ta && ta->token().type() == Token_Type::number) {
-					int value = ta->token().value();
-					items.erase(items.begin() + i, items.begin() + i + 2);
-					items.emplace(items.begin() + i, new Machine_Item { value });
-					i = 0; continue;
-				}
-			}
-		}
-		if (ti && ti->token().type() == Token_Type::t_times) {
-			items.erase(items.begin() + i, items.begin() + i + 1);
-			int addr = code.size() * 4 + 0x20010000;
-			items.emplace(items.begin() + i, new Token_Item({ Token_Type::number, addr }));
-			i = 0; continue;
-		}
-		auto *ri { dynamic_cast<Register_Item *>(&*items[i]) };
-		if (ri && i < items.size() - 2) {
-			int reg { ri->nr() };
-			auto *t2 { dynamic_cast<Token_Item *>(&*items[i + 1]) };
-			if (t2 && t2->token().type() == Token_Type::becomes) {
-				auto *t3 { dynamic_cast<Token_Item *>(&*items[i + 2]) };
-				if (t3 && t3->token().type() == Token_Type::number) {
-					int v { t3->token().value() };
-					items.erase(items.begin() + i, items.begin() + i + 3);
-					if ((v & ~ 0xfff) != 0 && (v & ~ 0xfff) != ~ 0xfff) {
-						items.emplace(items.begin() + i, new U_Type_Item { v, reg, 0x37 });
-						++i;
-					}
-					if ((v >= -2048 && v <= 2048) | ((v & 0xfff) != 0 && (v & 0xfff) != 0xfff)) {
-						items.emplace(items.begin() + i, new I_Type_Item { v & 0xfff, 0, 0x0, reg, 0x13 });
-					}
-					i = 0; continue;
-				}
-				auto *c3 { dynamic_cast<Csr_Item *>(&*items[i + 2]) };
-				if (c3) {
-					int cv { c3->nr() };
-					items.erase(items.begin() + i, items.begin() + i + 3);
-					items.emplace(items.begin() + i, new I_Type_Item { cv, 0, 0x2, reg, 0x73 });
-					i = 0; continue;
-				}
-			}
-		}
-	
-		auto *ii { dynamic_cast<I_Type_Item *>(&*items[i]) };
-		if (ii) {
-			int result {
-				(ii->immediate() << 20) | (ii->rs1() << 15) |
-				(ii->func3() << 12) | (ii->rd() << 7) | ii->opcode()
-			};
-			items.erase(items.begin() + i, items.begin() + i + 1);
-			items.emplace(items.begin() + i, new Machine_Item { result });
-			i = 0; continue;
-		}
-
-		auto *ui { dynamic_cast<U_Type_Item *>(&*items[i]) };
-		if (ui) {
-			int result {
-				ui->immediate() | (ui->rd() << 7) | ui->opcode()
-			};
-			items.erase(items.begin() + i, items.begin() + i + 1);
-			items.emplace(items.begin() + i, new Machine_Item { result });
-			i = 0; continue;
-		}
+		@put(transform);
 		++i;
 	}
-	while (! items.empty() && dynamic_cast<Machine_Item *>(&**items.begin())) {
-		auto &mi { dynamic_cast<Machine_Item &>(**items.begin()) };
-		add_machine(mi.instruction());
-		items.erase(items.begin(), items.begin() + 1);
-	}
-	
+	@put(consume machine instrs);
 	if (! items.empty()) {
-		std::cerr << "can expand fully [" << line << "]\n";
+		std::cerr <<
+			"can expand fully [" <<
+			line << "]\n";
 	}
 @end(expand)
 ```
+
+```
+@def(build items)
+	for (; cur != ts.end(); ++cur) {
+		items.emplace_back(
+			new Token_Item { *cur }
+		);
+	}
+@end(build items)
+```
+
+```
+@def(transform) {
+	auto *ti {
+		dynamic_cast<Token_Item *>(
+			&*items[i]
+	) };
+	if (ti) {
+		@put(transform tok);
+	}
+} @end(transform)
+```
+
+```
+@def(transform tok)
+	if (ti->token().type() ==
+		Token_Type::ident
+	) {
+		@put(transform tok ident);
+	}
+@end(transform tok)
+```
+
+```
+@def(transform tok ident)
+	auto s {
+		_symbols.find(ti->token().name())
+	};
+	if (s != _symbols.end()) {
+		@put(transform tok lookup);
+		i = 0; continue;
+	}
+@end(transform tok ident)
+```
+
+```
+@def(transform tok lookup)
+	auto &ss { s->second };
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	for (const auto &e : ss) {
+		items.emplace(
+			items.begin() + i, e->clone()
+		);
+		++i;
+	}
+@end(transform tok lookup)
+```
+
+```
+@add(transform tok ident)
+	if (i < items.size() - 1) {
+		auto *ta {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+		) };
+		if (ta && ta->token().type() ==
+			Token_Type::t_equals
+		) {
+			@put(transform sym assign);
+			i = 0; continue;
+		}
+	}
+@end(transform tok ident)
+```
+
+```
+@def(transform sym assign)
+	auto &l { _symbols[
+		ti->token().name()
+	] };
+	for (unsigned j = i + 2;
+		j < items.size(); ++j
+	) {
+		l.push_back(std::move(items[j]));
+	}
+	items.erase(
+		items.begin() + i, items.end()
+	);
+@end(transform sym assign)
+```
+
+```
+@add(transform tok)
+	if (ti->token().type() ==
+		Token_Type::t_raw
+	) {
+		@put(transform raw);
+	}
+@end(transform tok)
+```
+
+```
+@def(transform raw)
+	if (i < items.size() - 1) {
+		auto *ta {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+		) };
+		if (ta && ta->token().type() ==
+			Token_Type::number
+		) {
+			@put(do transform raw);
+			i = 0; continue;
+		}
+	}
+@end(transform raw)
+```
+
+```
+@def(do transform raw)
+	int value { ta->token().value() };
+	items.erase( items.begin() + i,
+		items.begin() + i + 2
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { value }
+	);
+@end(do transform raw)
+```
+
+```
+@add(transform tok)
+	if (ti->token().type() ==
+		Token_Type::t_times
+	) {
+		@put(transform cur addr);
+		i = 0; continue;
+	}
+@end(transform tok)
+```
+
+```
+@def(transform cur addr)
+	items.erase(items.begin() + i,
+		items.begin() + i + 1);
+	int addr = code.size() * 4 +
+		0x20010000;
+	items.emplace(items.begin() + i,
+		new Token_Item({
+			Token_Type::number, addr
+		})
+	);
+@end(transform cur addr)
+```
+
+```
+@add(transform) {
+	auto *ri {
+		dynamic_cast<Register_Item *>(
+			&*items[i]
+	) };
+	if (ri) {
+		int rd { ri->nr() };
+		@put(transform reg);
+	}
+} @end(transform)
+```
+
+```
+@def(transform reg)
+	if (i < items.size() - 2) {
+		auto *t2 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+		) };
+		if (t2 && t2->token().type() ==
+			Token_Type::becomes
+		) {
+			@put(transform reg assign);
+		}
+	}
+@end(transform reg)
+```
+
+```
+@def(transform reg assign) {
+	auto *t3 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 2]
+	) };
+	if (t3 && t3->token().type() ==
+		Token_Type::number
+	) {
+		@put(transform reg assign num);
+		i = 0; continue;
+	}
+} @end(transform reg assign)
+```
+
+```
+@def(transform reg assign num)
+	int v { t3->token().value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+@end(transform reg assign num)
+```
+
+```
+@add(transform reg assign num) {
+	int up { v & ~ 0xfff };
+	if (up != 0 && up != ~ 0xfff) {
+		items.emplace(items.begin() + i,
+			new U_Type_Item {
+				up, rd, 0x37
+		});
+		++i;
+	}
+} @end(transform reg assign num)
+```
+
+```
+@add(transform reg assign num) {
+	int low { v & 0xfff };
+	if (
+		(low && (low != 0xfff)) || v == 0
+	) {
+		items.emplace(items.begin() + i,
+			new I_Type_Item {
+				low, 0, 0x0, rd, 0x13
+			}
+		);
+	}
+} @end(transform reg assign num)
+```
+
+```
+@add(transform reg assign) {
+	auto *c3 {
+		dynamic_cast<Csr_Item *>(
+			&*items[i + 2]
+	) };
+	if (c3) {
+		@put(transform reg assign csr);
+		i = 0; continue;
+	}
+} @end(transform reg assign)
+```
+
+```
+@def(transform reg assign csr)
+	int cv { c3->nr() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+	items.emplace(items.begin() + i,
+		new I_Type_Item {
+			cv, 0, 0x2, rd, 0x73
+		}
+	);
+@end(transform reg assign csr)
+```
+
+```
+@add(transform) {
+	auto *ii {
+		dynamic_cast<I_Type_Item *>(
+			&*items[i]
+		)
+	};
+	if (ii) {
+		@put(transform i type);
+		i = 0; continue;
+	}
+} @end(transform)
+```
+
+```
+@def(transform i type)
+	int result {
+		(ii->immediate() << 20) |
+		(ii->rs1() << 15) |
+		(ii->func3() << 12) |
+		(ii->rd() << 7) | ii->opcode()
+	};
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { result }
+	);
+@end(transform i type)
+```
+
+```
+@add(transform) {
+	auto *ui {
+		dynamic_cast<U_Type_Item *>(
+			&*items[i]
+		)
+	};
+	if (ui) {
+		@put(transform u type);
+		i = 0; continue;
+	}
+} @end(transform)
+```
+
+```
+@def(transform u type)
+	int result {
+		ui->immediate() |
+		(ui->rd() << 7) | ui->opcode()
+	};
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { result }
+	);
+@end(transform u type)
+```
+
+```
+@def(consume machine instrs)
+	while (! items.empty() &&
+		dynamic_cast<Machine_Item *>(
+			&**items.begin()
+	)) {
+		auto &mi {
+			dynamic_cast<Machine_Item &>(
+				**items.begin()
+		)};
+		add_machine(mi.instruction());
+		items.erase(
+			items.begin(),
+			items.begin() + 1
+		);
+	}
+@end(consume machine instrs)
+```
+
