@@ -359,7 +359,6 @@ These syntax trees are then transformed into machine code.
 			name += *c++;
 		}
 		Token_Type type { Token_Type::ident };
-		@put(recognize keywords);
 		_token = Token { type, name };
 		_cur = c;
 		break;
@@ -372,14 +371,6 @@ These syntax trees are then transformed into machine code.
 @add(token types)
 	t_raw,
 @end(token types)
-```
-
-```
-@def(recognize keywords)
-	if (name == "raw") {
-		type = Token_Type::t_raw;
-	}
-@end(recognize keywords)
 ```
 
 ```
@@ -623,6 +614,26 @@ These syntax trees are then transformed into machine code.
 ```
 @def(clear symbols)
 	{
+		auto &l { _symbols["raw"] };
+		l.emplace_back(new Token_Item { {
+			Token_Type::t_raw
+		} });
+	} {
+		auto &l { _symbols["if"] };
+		l.emplace_back(new Token_Item { {
+			Token_Type::t_if
+		} });
+	} {
+		auto &l { _symbols["and"] };
+		l.emplace_back(new Token_Item { {
+			Token_Type::t_and
+		} });
+	} {
+		auto &l { _symbols["or"] };
+		l.emplace_back(new Token_Item { {
+			Token_Type::t_or
+		} });
+	} {
 		auto &l { _symbols["%pc"] };
 		l.emplace_back(new Pc_Item { });
 	} {
@@ -836,56 +847,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(needed by state)
-	int build_and(
-		char dst, char src1, char src2
-	) {
-		return build_r_cmd(
-			0x00, src2, src1,
-			0x7, dst, 0x33
-		);
-	}
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	int build_and(
-		char dst, char src1, int imm
-	) {
-		return build_i_cmd(
-			imm, src1, 0x7, dst, 0x13
-		);
-	}
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	int build_or(
-		char dst, char src1, char src2
-	) {
-		return build_r_cmd(
-			0x00, src2, src1,
-			0x6, dst, 0x33
-		);
-	}
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	int build_or(
-		char dst, char src1, int imm
-	) {
-		return build_i_cmd(
-			imm, src1, 0x6, dst, 0x13
-		);
-	}
-@end(needed by state)
-```
-
-```
 @add(unit-tests)
 	assert_line_2(
 		"%x5 <- %x5 and $ff",
@@ -910,26 +871,6 @@ These syntax trees are then transformed into machine code.
 		0x00136313
 	);
 @end(unit-tests)
-```
-
-```
-@add(needed by state)
-	int build_u_cmd(
-		int imm, char dst, int opcode
-	) {
-		return (imm & 0xfffff800) | (dst << 7) | opcode;
-	}
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	int build_lui(
-		char dst, int imm
-	) {
-		return build_u_cmd(imm, dst, 0x37);
-	}
-@end(needed by state)
 ```
 
 ```
@@ -960,16 +901,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(needed by state)
-	int build_auipc(
-		char dst, int imm
-	) {
-		return build_u_cmd(imm, dst, 0x17);
-	}
-@end(needed by state)
-```
-
-```
 @add(unit-tests)
 	assert_line(
 		"%x5 <- %pc",
@@ -979,36 +910,12 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(needed by state)
-	int build_csrrw(
-		char dst, int csr, char src
-	) {
-		return build_i_cmd(
-			csr, src, 0x1, dst, 0x73
-		);
-	}
-@end(needed by state)
-```
-
-```
 @add(unit-tests)
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 @end(unit-tests)
-```
-
-```
-@add(needed by state)
-	int build_csrrs(
-		char dst, int csr, char src
-	) {
-		return build_i_cmd(
-			csr, src, 0x2, dst, 0x73
-		);
-	}
-@end(needed by state)
 ```
 
 ```
@@ -1028,20 +935,6 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(recognize keywords)
-	if (name == "if") {
-		type = Token_Type::t_if;
-	}
-	if (name == "and") {
-		type = Token_Type::t_and;
-	}
-	if (name == "or") {
-		type = Token_Type::t_or;
-	}
-@end(recognize keywords)
-```
-
-```
 @add(recognize)
 	if (*_cur == ':') {
 		_token = Token { Token_Type::t_colon };
@@ -1049,33 +942,6 @@ These syntax trees are then transformed into machine code.
 		break;
 	}
 @end(recognize)
-```
-
-```
-@add(needed by state)
-	int build_b_cmd(
-		int offset, int reg2, int reg1, int cond, int opcode
-	) {
-		return ((offset & 0x1000) << (31 - 12)) |
-			(offset & 0x07e0) << (25 - 5) |
-			(reg2 << 20) | (reg1 << 15) | (cond << 12) |
-			(offset & 0x1e) << (8 - 1) |
-			(offset & 0x0800) >> (11 - 7) |
-			opcode;
-	}
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	int build_branch(
-		int cond, char reg1, char reg2, int offset
-	) {
-		return build_b_cmd(
-			offset, reg2, reg1, cond, 0x63
-		);
-	}
-@end(needed by state)
 ```
 
 ```
@@ -1196,33 +1062,6 @@ These syntax trees are then transformed into machine code.
 		0x00452283
 	);
 @end(unit-tests)
-```
-
-```
-@add(needed by state)
-	int build_s_cmd(
-		int imm, char rs2, char rs1, int type, int opcode
-	) {
-		return
-			((imm & 0xfe0) << (25 - 5)) |
-			(rs2 << 20) | (rs1 << 15) |
-			(type << 12) |
-			((imm & 0x1f) << 7) |
-			opcode;
-	}
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	int build_store(
-		char src, char dst, int imm
-	) {
-		return build_s_cmd(
-			imm, src, dst, 0x2, 0x23
-		);
-	}
-@end(needed by state)
 ```
 
 ```
