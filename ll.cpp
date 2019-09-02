@@ -51,27 +51,27 @@
 	t_and,
 	t_or,
 
-#line 1035 "start.x"
+#line 931 "start.x"
 
 	t_if,
 	t_colon,
 
-#line 1088 "start.x"
+#line 957 "start.x"
 
 	t_equals,
 	t_not_equals,
 
-#line 1142 "start.x"
+#line 1011 "start.x"
 
 	t_open_bracket,
 	t_close_bracket,
 
-#line 1244 "start.x"
+#line 1086 "start.x"
 
 	t_open_parenthesis,
 	t_close_parenthesis,
 
-#line 1271 "start.x"
+#line 1113 "start.x"
 
 	t_times,
 
@@ -255,7 +255,7 @@
 		break;
 	}
 
-#line 1042 "start.x"
+#line 938 "start.x"
 
 	if (*_cur == ':') {
 		_token = Token { Token_Type::t_colon };
@@ -263,7 +263,7 @@
 		break;
 	}
 
-#line 1095 "start.x"
+#line 964 "start.x"
 
 	if (*_cur == '=') {
 		_token = Token { Token_Type::t_equals };
@@ -271,7 +271,7 @@
 		break;
 	}
 
-#line 1105 "start.x"
+#line 974 "start.x"
 
 	if (*_cur == '!' && _cur + 1 < _end && _cur[1] == '=') {
 		_token = Token { Token_Type::t_not_equals };
@@ -279,7 +279,7 @@
 		break;
 	}
 
-#line 1149 "start.x"
+#line 1018 "start.x"
 
 	if (*_cur == '[') {
 		_token = Token_Type::t_open_bracket;
@@ -287,7 +287,7 @@
 		break;
 	}
 
-#line 1159 "start.x"
+#line 1028 "start.x"
 
 	if (*_cur == ']') {
 		_token = Token_Type::t_close_bracket;
@@ -295,7 +295,7 @@
 		break;
 	}
 
-#line 1251 "start.x"
+#line 1093 "start.x"
 
 	if (*_cur == '(') {
 		_token = Token { Token_Type::t_open_parenthesis };
@@ -303,7 +303,7 @@
 		break;
 	}
 
-#line 1261 "start.x"
+#line 1103 "start.x"
 
 	if (*_cur == ')') {
 		_token = Token { Token_Type::t_close_parenthesis };
@@ -311,7 +311,7 @@
 		break;
 	}
 
-#line 1277 "start.x"
+#line 1119 "start.x"
 
 	if (*_cur == '*') {
 		_token = Token { Token_Type::t_times };
@@ -380,145 +380,13 @@
 		);
 	}
 
-#line 850 "start.x"
-
-	int build_and(
-		char dst, char src1, char src2
-	) {
-		return build_r_cmd(
-			0x00, src2, src1,
-			0x7, dst, 0x33
-		);
-	}
-
-#line 863 "start.x"
-
-	int build_and(
-		char dst, char src1, int imm
-	) {
-		return build_i_cmd(
-			imm, src1, 0x7, dst, 0x13
-		);
-	}
-
-#line 875 "start.x"
-
-	int build_or(
-		char dst, char src1, char src2
-	) {
-		return build_r_cmd(
-			0x00, src2, src1,
-			0x6, dst, 0x33
-		);
-	}
-
-#line 888 "start.x"
-
-	int build_or(
-		char dst, char src1, int imm
-	) {
-		return build_i_cmd(
-			imm, src1, 0x6, dst, 0x13
-		);
-	}
-
-#line 927 "start.x"
-
-	int build_u_cmd(
-		int imm, char dst, int opcode
-	) {
-		return (imm & 0xfffff800) | (dst << 7) | opcode;
-	}
-
-#line 937 "start.x"
-
-	int build_lui(
-		char dst, int imm
-	) {
-		return build_u_cmd(imm, dst, 0x37);
-	}
-
-#line 974 "start.x"
-
-	int build_auipc(
-		char dst, int imm
-	) {
-		return build_u_cmd(imm, dst, 0x17);
-	}
-
-#line 993 "start.x"
-
-	int build_csrrw(
-		char dst, int csr, char src
-	) {
-		return build_i_cmd(
-			csr, src, 0x1, dst, 0x73
-		);
-	}
-
-#line 1014 "start.x"
-
-	int build_csrrs(
-		char dst, int csr, char src
-	) {
-		return build_i_cmd(
-			csr, src, 0x2, dst, 0x73
-		);
-	}
-
-#line 1052 "start.x"
-
-	int build_b_cmd(
-		int offset, int reg2, int reg1, int cond, int opcode
-	) {
-		return ((offset & 0x1000) << (31 - 12)) |
-			(offset & 0x07e0) << (25 - 5) |
-			(reg2 << 20) | (reg1 << 15) | (cond << 12) |
-			(offset & 0x1e) << (8 - 1) |
-			(offset & 0x0800) >> (11 - 7) |
-			opcode;
-	}
-
-#line 1067 "start.x"
-
-	int build_branch(
-		int cond, char reg1, char reg2, int offset
-	) {
-		return build_b_cmd(
-			offset, reg2, reg1, cond, 0x63
-		);
-	}
-
-#line 1169 "start.x"
+#line 1038 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
 	) {
 		return build_i_cmd(
 			imm, src, 0x2, dst, 0x03
-		);
-	}
-
-#line 1199 "start.x"
-
-	int build_s_cmd(
-		int imm, char rs2, char rs1, int type, int opcode
-	) {
-		return
-			((imm & 0xfe0) << (25 - 5)) |
-			(rs2 << 20) | (rs1 << 15) |
-			(type << 12) |
-			((imm & 0x1f) << 7) |
-			opcode;
-	}
-
-#line 1214 "start.x"
-
-	int build_store(
-		char src, char dst, int imm
-	) {
-		return build_s_cmd(
-			imm, src, dst, 0x2, 0x23
 		);
 	}
 
@@ -586,7 +454,7 @@
 #line 593 "start.x"
 
 	
-#line 1287 "start.x"
+#line 1129 "start.x"
 
 	class Item {
 		public:
@@ -594,7 +462,7 @@
 			virtual Item *clone() const = 0;
 	};
 
-#line 1297 "start.x"
+#line 1139 "start.x"
 
 	class Token_Item: public Item {
 		private:
@@ -611,7 +479,7 @@
 			}
 	};
 
-#line 1316 "start.x"
+#line 1158 "start.x"
 
 	class Pc_Item: public Item {
 		public:
@@ -620,7 +488,7 @@
 			}
 	};
 
-#line 1327 "start.x"
+#line 1169 "start.x"
 
 	class Register_Item: public Item {
 		private:
@@ -637,7 +505,7 @@
 			}
 	};
 
-#line 1346 "start.x"
+#line 1188 "start.x"
 
 	class Csr_Item: public Item {
 		private:
@@ -654,7 +522,7 @@
 			}
 	};
 
-#line 1365 "start.x"
+#line 1207 "start.x"
 
 	class Machine_Item: public Item {
 		private:
@@ -671,7 +539,7 @@
 			}
 	};
 
-#line 1384 "start.x"
+#line 1226 "start.x"
 
 	class I_Type_Item: public Item {
 		private:
@@ -704,7 +572,7 @@
 			}
 	};
 
-#line 1419 "start.x"
+#line 1261 "start.x"
 
 	class U_Type_Item: public Item {
 		private:
@@ -725,6 +593,33 @@
 			int opcode() const { return _opcode; }
 			Item *clone() const override {
 				return new U_Type_Item {
+					_immediate,
+					_rd, _opcode
+				};
+			}
+	};
+
+#line 1717 "start.x"
+
+	class J_Type_Item: public Item {
+		private:
+			int _immediate;
+			int _rd;
+			int _opcode;
+		public:
+			J_Type_Item(
+				int immediate,
+				int rd, int opcode
+			):
+				_immediate { immediate },
+				_rd { rd },
+				_opcode { opcode }
+			{ }
+			int immediate() const { return _immediate; }
+			int rd() const { return _rd; }
+			int opcode() const { return _opcode; }
+			Item *clone() const override {
+				return new J_Type_Item {
 					_immediate,
 					_rd, _opcode
 				};
@@ -869,12 +764,12 @@
 	}
 	auto cur { ts.begin() };
 	
-#line 1448 "start.x"
+#line 1290 "start.x"
 
 	std::vector<std::unique_ptr<Item>>
 		items;
 	
-#line 1467 "start.x"
+#line 1310 "start.x"
 
 	for (; cur != ts.end(); ++cur) {
 		items.emplace_back(
@@ -882,12 +777,12 @@
 		);
 	}
 
-#line 1451 "start.x"
+#line 1293 "start.x"
 ;
 	unsigned i = 0;
 	while (i < items.size()) {
 		
-#line 1477 "start.x"
+#line 1320 "start.x"
  {
 	auto *ti {
 		dynamic_cast<Token_Item *>(
@@ -895,20 +790,20 @@
 	) };
 	if (ti) {
 		
-#line 1489 "start.x"
+#line 1332 "start.x"
 
 	if (ti->token().type() ==
 		Token_Type::ident
 	) {
 		
-#line 1499 "start.x"
+#line 1342 "start.x"
 
 	auto s {
 		_symbols.find(ti->token().name())
 	};
 	if (s != _symbols.end()) {
 		
-#line 1511 "start.x"
+#line 1354 "start.x"
 
 	auto &ss { s->second };
 	items.erase(items.begin() + i,
@@ -921,53 +816,22 @@
 		++i;
 	}
 
-#line 1504 "start.x"
+#line 1347 "start.x"
 ;
 		i = 0; continue;
 	}
 
-#line 1526 "start.x"
-
-	if (i < items.size() - 1) {
-		auto *ta {
-			dynamic_cast<Token_Item *>(
-				&*items[i + 1]
-		) };
-		if (ta && ta->token().type() ==
-			Token_Type::t_equals
-		) {
-			
-#line 1543 "start.x"
-
-	auto &l { _symbols[
-		ti->token().name()
-	] };
-	for (unsigned j = i + 2;
-		j < items.size(); ++j
-	) {
-		l.push_back(std::move(items[j]));
-	}
-	items.erase(
-		items.begin() + i, items.end()
-	);
-
-#line 1535 "start.x"
-;
-			i = 0; continue;
-		}
-	}
-
-#line 1493 "start.x"
+#line 1336 "start.x"
 ;
 	}
 
-#line 1559 "start.x"
+#line 1369 "start.x"
 
 	if (ti->token().type() ==
 		Token_Type::t_raw
 	) {
 		
-#line 1569 "start.x"
+#line 1379 "start.x"
 
 	if (i < items.size() - 1) {
 		auto *ta {
@@ -978,7 +842,7 @@
 			Token_Type::number
 		) {
 			
-#line 1586 "start.x"
+#line 1396 "start.x"
 
 	int value { ta->token().value() };
 	items.erase( items.begin() + i,
@@ -988,23 +852,23 @@
 		new Machine_Item { value }
 	);
 
-#line 1578 "start.x"
+#line 1388 "start.x"
 ;
 			i = 0; continue;
 		}
 	}
 
-#line 1563 "start.x"
+#line 1373 "start.x"
 ;
 	}
 
-#line 1598 "start.x"
+#line 1408 "start.x"
 
 	if (ti->token().type() ==
 		Token_Type::t_times
 	) {
 		
-#line 1609 "start.x"
+#line 1419 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -1016,16 +880,103 @@
 		})
 	);
 
-#line 1602 "start.x"
+#line 1412 "start.x"
 ;
 		i = 0; continue;
 	}
 
-#line 1483 "start.x"
+#line 1880 "start.x"
+
+	if (ti->token().type() ==
+		Token_Type::t_open_parenthesis
+	) {
+		if (i < items.size() - 4) {
+			
+#line 1892 "start.x"
+
+	auto t2 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 1]
+		)
+	};
+	if (t2 && t2->token().type() ==
+		Token_Type::number
+	) {
+		int v1 { t2->token().value() };
+		
+#line 1908 "start.x"
+
+	auto t3 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 2]
+		)
+	};
+	if (t3 && (
+		t3->token().type() ==
+			Token_Type::plus ||
+		t3->token().type() ==
+			Token_Type::minus
+	)) {
+		bool neg { t3->token().type() ==
+			Token_Type::minus };
+		
+#line 1928 "start.x"
+
+	auto t4 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 3]
+		)
+	};
+	if (t4 && t4->token().type() ==
+		Token_Type::number
+	) {
+		int v2 { t4->token().value() };
+		if (neg) { v2 = -v2; }
+		
+#line 1945 "start.x"
+
+	auto t5 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (t5 && t5->token().type() ==
+		Token_Type::t_close_parenthesis
+	) {
+		items.erase(items.begin() + i,
+			items.begin() + i + 5
+		);
+		items.emplace(items.begin() + i,
+			new Token_Item { {
+				Token_Type::number,
+				v1 + v2
+			} }
+		);
+		i = 0; continue;
+	}
+
+#line 1939 "start.x"
+;
+	}
+
+#line 1922 "start.x"
+;
+	}
+
+#line 1902 "start.x"
+;
+	}
+
+#line 1885 "start.x"
+;
+		}
+	}
+
+#line 1326 "start.x"
 ;
 	}
 } 
-#line 1623 "start.x"
+#line 1433 "start.x"
  {
 	auto *ri {
 		dynamic_cast<Register_Item *>(
@@ -1034,7 +985,7 @@
 	if (ri) {
 		int rd { ri->nr() };
 		
-#line 1636 "start.x"
+#line 1446 "start.x"
 
 	if (i < items.size() - 2) {
 		auto *t2 {
@@ -1045,7 +996,7 @@
 			Token_Type::becomes
 		) {
 			
-#line 1652 "start.x"
+#line 1462 "start.x"
  {
 	auto *t3 {
 		dynamic_cast<Token_Item *>(
@@ -1055,14 +1006,14 @@
 		Token_Type::number
 	) {
 		
-#line 1667 "start.x"
+#line 1477 "start.x"
 
 	int v { t3->token().value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 3
 	);
 
-#line 1676 "start.x"
+#line 1486 "start.x"
  {
 	int up { v & ~ 0xfff };
 	if (up != 0 && up != ~ 0xfff) {
@@ -1073,7 +1024,7 @@
 		++i;
 	}
 } 
-#line 1689 "start.x"
+#line 1499 "start.x"
  {
 	int low { v & 0xfff };
 	if (
@@ -1086,12 +1037,12 @@
 		);
 	}
 } 
-#line 1660 "start.x"
+#line 1470 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1704 "start.x"
+#line 1514 "start.x"
  {
 	auto c3 {
 		dynamic_cast<Csr_Item *>(
@@ -1099,7 +1050,7 @@
 	) };
 	if (c3) {
 		
-#line 1717 "start.x"
+#line 1527 "start.x"
 
 	int cv { c3->nr() };
 	items.erase(items.begin() + i,
@@ -1111,12 +1062,12 @@
 		}
 	);
 
-#line 1710 "start.x"
+#line 1520 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1731 "start.x"
+#line 1541 "start.x"
  {
 	auto rs1 {
 		dynamic_cast<Register_Item *>(
@@ -1126,7 +1077,7 @@
 	if (rs1) {
 		int rs1_nr { rs1->nr() };
 		
-#line 1745 "start.x"
+#line 1555 "start.x"
 
 	if (i < items.size() - 4) {
 		auto t3 {
@@ -1136,13 +1087,13 @@
 		};
 		if (t3) {
 			
-#line 1760 "start.x"
+#line 1570 "start.x"
 
 	if (t3->token().type() ==
 		Token_Type::t_or
 	) {
 		
-#line 1770 "start.x"
+#line 1580 "start.x"
  {
 	auto n4 {
 		dynamic_cast<Token_Item *>(
@@ -1153,7 +1104,7 @@
 		Token_Type::number
 	) {
 		
-#line 1785 "start.x"
+#line 1595 "start.x"
 
 	int imm { n4->token().value() };
 	items.erase(items.begin() + i,
@@ -1166,21 +1117,21 @@
 	);
 	i = 0; continue;
 
-#line 1779 "start.x"
+#line 1589 "start.x"
 ;
 	}
 } 
-#line 1764 "start.x"
+#line 1574 "start.x"
 ;
 	}
 
-#line 1800 "start.x"
+#line 1610 "start.x"
 
 	if (t3->token().type() ==
 		Token_Type::t_and
 	) {
 		
-#line 1810 "start.x"
+#line 1620 "start.x"
  {
 	auto n4 {
 		dynamic_cast<Token_Item *>(
@@ -1191,7 +1142,7 @@
 		Token_Type::number
 	) {
 		
-#line 1825 "start.x"
+#line 1635 "start.x"
 
 	int imm { n4->token().value() };
 	items.erase(items.begin() + i,
@@ -1204,42 +1155,148 @@
 	);
 	i = 0; continue;
 
-#line 1819 "start.x"
+#line 1629 "start.x"
 ;
 	}
 } 
-#line 1804 "start.x"
+#line 1614 "start.x"
 ;
 	}
 
-#line 1753 "start.x"
+#line 1563 "start.x"
 ;
 		}
 	}
 
-#line 1739 "start.x"
+#line 1549 "start.x"
 ;
 	}
 } 
-#line 1645 "start.x"
+#line 1455 "start.x"
 ;
 		}
 	}
 
-#line 1630 "start.x"
+#line 1440 "start.x"
 ;
 	}
 } 
-#line 1840 "start.x"
+#line 1650 "start.x"
  {
-	auto *ii {
+	auto pi {
+		dynamic_cast<Pc_Item *>(
+			&*items[i]
+		)
+	};
+	if (pi) {
+		
+#line 1663 "start.x"
+
+	if (i < items.size() - 2) {
+		auto t2 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+			)
+		};
+		if (t2 && t2->token().type() ==
+			Token_Type::becomes
+		) {
+			
+#line 1680 "start.x"
+
+	auto p3 {
+		dynamic_cast<Pc_Item *>(
+			&*items[i + 2]
+		)
+	};
+	if (p3) {
+		
+#line 1693 "start.x"
+
+	if (i < items.size() - 4) {
+		auto t4 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 3]
+			)
+		};
+		if (t4 && (
+			t4->token().type() ==
+				Token_Type::plus ||
+			t4->token().type() ==
+				Token_Type::minus
+		)) {
+			bool neg {
+				t4->token().type() ==
+					Token_Type::minus
+			};
+			
+#line 1746 "start.x"
+
+	auto t5 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (t5 && t5->token().type() ==
+		Token_Type::number
+	) {
+		int value { t5->token().value() };
+		if (neg) { value = -value; }
+		items.erase(items.begin() + i,
+			items.begin() + i + 5
+		);
+		items.emplace(items.begin() + i,
+			new J_Type_Item(
+				value, 0, 0x6f
+			)
+		);
+		i = 0; continue;
+	}
+
+#line 1710 "start.x"
+;
+		}
+	}
+
+#line 1771 "start.x"
+
+	if (items.begin() + i + 3 == items.end()) {
+		items.emplace(items.begin() + i + 3,
+			new Token_Item { {
+				Token_Type::plus
+			} }
+		);
+		items.emplace(items.begin() + i + 4,
+			new Token_Item { {
+				Token_Type::number, 0
+			} }
+		);
+		i = 0; continue;
+	}
+
+#line 1687 "start.x"
+;
+	}
+
+#line 1673 "start.x"
+;
+		}
+	}
+
+#line 1657 "start.x"
+;
+	}
+} 
+#line 1789 "start.x"
+ {
+	auto ii {
 		dynamic_cast<I_Type_Item *>(
 			&*items[i]
 		)
 	};
 	if (ii) {
 		
-#line 1853 "start.x"
+#line 1802 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -1255,11 +1312,11 @@
 	);
 	i = 0; continue;
 
-#line 1847 "start.x"
+#line 1796 "start.x"
 ;
 	}
 } 
-#line 1871 "start.x"
+#line 1820 "start.x"
  {
 	auto ui {
 		dynamic_cast<U_Type_Item *>(
@@ -1268,7 +1325,7 @@
 	};
 	if (ui) {
 		
-#line 1885 "start.x"
+#line 1834 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -1281,17 +1338,88 @@
 		new Machine_Item { result }
 	);
 
-#line 1878 "start.x"
+#line 1827 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1454 "start.x"
+#line 1849 "start.x"
+ {
+	auto ji {
+		dynamic_cast<J_Type_Item *>(
+			&*items[i]
+		)
+	};
+	if (ji) {
+		
+#line 1862 "start.x"
+
+	int imm { ji->immediate() };
+	int result = 
+		((imm << (31 - 20)) & 0x80000000) |
+		((imm << (21 - 1)) & 0x7fe00000) |
+		((imm << (20 - 11)) & 0x00100000) |
+		(imm & 0x000ff000) |
+		(ji->rd() << 7) | ji->opcode();
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { result }
+	);
+
+#line 1856 "start.x"
+;
+	}
+} 
+#line 1296 "start.x"
 ;
 		++i;
 	}
 	
-#line 1900 "start.x"
+#line 1988 "start.x"
+
+	if (items.size() >= 2) {
+		auto ii {
+			dynamic_cast<Token_Item *>(
+				&*items[0]
+			)
+		};
+		auto ai {
+			dynamic_cast<Token_Item *>(
+				&*items[1]
+			)
+		};
+		if (ii && ai &&
+			ii->token().type() ==
+				Token_Type::ident &&
+			ai->token().type() ==
+				Token_Type::t_equals
+		) {
+			
+#line 2013 "start.x"
+
+	auto &l { _symbols[
+		ii->token().name()
+	] };
+	for (unsigned j = 2;
+		j < items.size(); ++j
+	) {
+		l.push_back(std::move(items[j]));
+	}
+	items.erase(
+		items.begin(), items.end()
+	);
+
+#line 2006 "start.x"
+;
+		}
+	}
+
+#line 1299 "start.x"
+;
+	
+#line 1969 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(
@@ -1308,11 +1436,11 @@
 		);
 	}
 
-#line 1457 "start.x"
+#line 1300 "start.x"
 ;
 	if (! items.empty()) {
 		std::cerr <<
-			"can expand fully [" <<
+			"cant expand fully [" <<
 			line << "]\n";
 	}
 
@@ -1557,138 +1685,138 @@
 
 #line 794 "start.x"
 
-	assert_line(
-		"%pc <- %pc + 0",
+	assert_line_2(
+		"%pc <- %pc",
 		0x0000006f
 	);
 
 #line 805 "start.x"
 
-	assert_line(
-		"%pc <- %pc + -28",
+	assert_line_2(
+		"%pc <- %pc - 28",
 		0xfe5ff06f
 	);
 
 #line 815 "start.x"
 
-	assert_line(
-		"%pc <- %pc + -32",
+	assert_line_2(
+		"%pc <- %pc - 32",
 		0xfe1ff06f
 	);
 
-#line 900 "start.x"
+#line 850 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 909 "start.x"
+#line 859 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 918 "start.x"
+#line 868 "start.x"
 
 	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 947 "start.x"
+#line 877 "start.x"
 
 	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 956 "start.x"
+#line 886 "start.x"
 
 	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 965 "start.x"
+#line 895 "start.x"
 
 	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 984 "start.x"
+#line 904 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 1005 "start.x"
+#line 913 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 1026 "start.x"
+#line 922 "start.x"
 
 	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 1079 "start.x"
+#line 948 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 
-#line 1115 "start.x"
+#line 984 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
 		0xfe028ae3
 	);
 
-#line 1124 "start.x"
+#line 993 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc + -28",
 		0xfeb292e3
 	);
 
-#line 1133 "start.x"
+#line 1002 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 1181 "start.x"
+#line 1050 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 1190 "start.x"
+#line 1059 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 1226 "start.x"
+#line 1068 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 1235 "start.x"
+#line 1077 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",

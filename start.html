@@ -969,8 +969,8 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"%pc &lt;- %pc + 0"</span>,<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in2"></span><span class="str">"%pc &lt;- %pc"</span>,<br/>
 <span class="in2"></span><span class="num">0x0000006f</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
@@ -982,8 +982,8 @@ check for simple endless loop
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"%pc &lt;- %pc + -28"</span>,<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in2"></span><span class="str">"%pc &lt;- %pc - 28"</span>,<br/>
 <span class="in2"></span><span class="num">0xfe5ff06f</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
@@ -995,8 +995,8 @@ check for simple endless loop
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"%pc &lt;- %pc + -32"</span>,<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in2"></span><span class="str">"%pc &lt;- %pc - 32"</span>,<br/>
 <span class="in2"></span><span class="num">0xfe1ff06f</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
@@ -1037,60 +1037,6 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_and</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">char</span> <span class="var">src2</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_r_cmd</span>(<br/>
-<span class="in3"></span><span class="num">0x00</span>, <span class="var">src2</span>, <span class="var">src1</span>,<br/>
-<span class="in3"></span><span class="num">0x7</span>, <span class="var">dst</span>, <span class="num">0x33</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_and</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">int</span> <span class="var">imm</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
-<span class="in3"></span><span class="var">imm</span>, <span class="var">src1</span>, <span class="num">0x7</span>, <span class="var">dst</span>, <span class="num">0x13</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_or</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">char</span> <span class="var">src2</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_r_cmd</span>(<br/>
-<span class="in3"></span><span class="num">0x00</span>, <span class="var">src2</span>, <span class="var">src1</span>,<br/>
-<span class="in3"></span><span class="num">0x6</span>, <span class="var">dst</span>, <span class="num">0x33</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_or</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">char</span> <span class="var">src1</span>, <span class="type">int</span> <span class="var">imm</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
-<span class="in3"></span><span class="var">imm</span>, <span class="var">src1</span>, <span class="num">0x6</span>, <span class="var">dst</span>, <span class="num">0x13</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %x5 and $ff"</span>,<br/>
@@ -1117,28 +1063,6 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="num">0x00136313</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_u_cmd</span>(<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">imm</span>, <span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">opcode</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> (<span class="var">imm</span> &amp; <span class="num">0xfffff800</span>) | (<span class="var">dst</span> &lt;&lt; <span class="num">7</span>) | <span class="var">opcode</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_lui</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">imm</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_u_cmd</span>(<span class="var">imm</span>, <span class="var">dst</span>, <span class="num">0x37</span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1173,17 +1097,6 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_auipc</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">imm</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_u_cmd</span>(<span class="var">imm</span>, <span class="var">dst</span>, <span class="num">0x17</span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %pc"</span>,<br/>
@@ -1194,38 +1107,12 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_csrrw</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">csr</span>, <span class="type">char</span> <span class="var">src</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
-<span class="in3"></span><span class="var">csr</span>, <span class="var">src</span>, <span class="num">0x1</span>, <span class="var">dst</span>, <span class="num">0x73</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%mtvec &lt;- %x5"</span>,<br/>
 <span class="in2"></span><span class="num">0x30529073</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_csrrs</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">csr</span>, <span class="type">char</span> <span class="var">src</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_i_cmd</span>(<br/>
-<span class="in3"></span><span class="var">csr</span>, <span class="var">src</span>, <span class="num">0x2</span>, <span class="var">dst</span>, <span class="num">0x73</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1255,35 +1142,6 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">recognize</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_b_cmd</span>(<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">offset</span>, <span class="type">int</span> <span class="var">reg2</span>, <span class="type">int</span> <span class="var">reg1</span>, <span class="type">int</span> <span class="var">cond</span>, <span class="type">int</span> <span class="var">opcode</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> ((<span class="var">offset</span> &amp; <span class="num">0x1000</span>) &lt;&lt; (<span class="num">31</span> - <span class="num">12</span>)) |<br/>
-<span class="in3"></span>(<span class="var">offset</span> &amp; <span class="num">0x07e0</span>) &lt;&lt; (<span class="num">25</span> - <span class="num">5</span>) |<br/>
-<span class="in3"></span>(<span class="var">reg2</span> &lt;&lt; <span class="num">20</span>) | (<span class="var">reg1</span> &lt;&lt; <span class="num">15</span>) | (<span class="var">cond</span> &lt;&lt; <span class="num">12</span>) |<br/>
-<span class="in3"></span>(<span class="var">offset</span> &amp; <span class="num">0x1e</span>) &lt;&lt; (<span class="num">8</span> - <span class="num">1</span>) |<br/>
-<span class="in3"></span>(<span class="var">offset</span> &amp; <span class="num">0x0800</span>) &gt;&gt; (<span class="num">11</span> - <span class="num">7</span>) |<br/>
-<span class="in3"></span><span class="var">opcode</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_branch</span>(<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">cond</span>, <span class="type">char</span> <span class="var">reg1</span>, <span class="type">char</span> <span class="var">reg2</span>, <span class="type">int</span> <span class="var">offset</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_b_cmd</span>(<br/>
-<span class="in3"></span><span class="var">offset</span>, <span class="var">reg2</span>, <span class="var">reg1</span>, <span class="var">cond</span>, <span class="num">0x63</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1417,35 +1275,6 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="num">0x00452283</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_s_cmd</span>(<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">imm</span>, <span class="type">char</span> <span class="var">rs2</span>, <span class="type">char</span> <span class="var">rs1</span>, <span class="type">int</span> <span class="var">type</span>, <span class="type">int</span> <span class="var">opcode</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span><br/>
-<span class="in3"></span>((<span class="var">imm</span> &amp; <span class="num">0xfe0</span>) &lt;&lt; (<span class="num">25</span> - <span class="num">5</span>)) |<br/>
-<span class="in3"></span>(<span class="var">rs2</span> &lt;&lt; <span class="num">20</span>) | (<span class="var">rs1</span> &lt;&lt; <span class="num">15</span>) |<br/>
-<span class="in3"></span>(<span class="var">type</span> &lt;&lt; <span class="num">12</span>) |<br/>
-<span class="in3"></span>((<span class="var">imm</span> &amp; <span class="num">0x1f</span>) &lt;&lt; <span class="num">7</span>) |<br/>
-<span class="in3"></span><span class="var">opcode</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="fn">build_store</span>(<br/>
-<span class="in2"></span><span class="type">char</span> <span class="var">src</span>, <span class="type">char</span> <span class="var">dst</span>, <span class="type">int</span> <span class="var">imm</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="fn">build_s_cmd</span>(<br/>
-<span class="in3"></span><span class="var">imm</span>, <span class="var">src</span>, <span class="var">dst</span>, <span class="num">0x2</span>, <span class="num">0x23</span><br/>
-<span class="in2"></span>);<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1696,10 +1525,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="macro">@put(<span class="name">transform</span>)</span>;<br/>
 <span class="in2"></span>++<span class="var">i</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="in1"></span><span class="macro">@put(<span class="name">handle define</span>)</span>;<br/>
 <span class="in1"></span><span class="macro">@put(<span class="name">consume machine instrs</span>)</span>;<br/>
 <span class="in1"></span><span class="keyword">if</span> (! <span class="var">items</span>.<span class="fn">empty</span>()) {<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
-<span class="in3"></span><span class="str">"can expand fully ["</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="str">"cant expand fully ["</span> &lt;&lt;<br/>
 <span class="in3"></span><span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
@@ -1767,41 +1597,6 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span>++<span class="var">i</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform tok lookup</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">transform tok ident</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
-<span class="in2"></span><span class="type">auto</span> *<span class="var">ta</span> {<br/>
-<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
-<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
-<span class="in2"></span>) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">ta</span> &amp;&amp; <span class="var">ta</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
-<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">t_equals</span><br/>
-<span class="in2"></span>) {<br/>
-<span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
-<span class="in3"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">transform tok ident</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@def(<span class="name">transform sym assign</span>)</span><br/>
-<span class="in1"></span><span class="type">auto</span> &amp;<span class="var">l</span> { <span class="var">_symbols</span>[<br/>
-<span class="in2"></span><span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>()<br/>
-<span class="in1"></span>] };<br/>
-<span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">2</span>;<br/>
-<span class="in2"></span><span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">j</span><br/>
-<span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="var">l</span>.<span class="fn">push_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">items</span>[<span class="var">j</span>]));<br/>
-<span class="in1"></span>}<br/>
-<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">end</span>()<br/>
-<span class="in1"></span>);<br/>
-<span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -2109,7 +1904,153 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
-<span class="in1"></span><span class="type">auto</span> *<span class="var">ii</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">pi</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Pc_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">pi</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform pc</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform pc</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">2</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">t2</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in3"></span>)<br/>
+<span class="in2"></span>};<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t2</span> &amp;&amp; <span class="var">t2</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">becomes</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform pc assgn</span>)</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform pc</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform pc assgn</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">p3</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Pc_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">p3</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform pc assgn pc</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform pc assgn</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform pc assgn pc</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">4</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">t4</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">3</span>]<br/>
+<span class="in3"></span>)<br/>
+<span class="in2"></span>};<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">t4</span> &amp;&amp; (<br/>
+<span class="in3"></span><span class="var">t4</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">plus</span> ||<br/>
+<span class="in3"></span><span class="var">t4</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">minus</span><br/>
+<span class="in2"></span>)) {<br/>
+<span class="in3"></span><span class="type">bool</span> <span class="var">neg</span> {<br/>
+<span class="in4"></span><span class="var">t4</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in5"></span><span class="type">Token_Type</span>::<span class="var">minus</span><br/>
+<span class="in3"></span>};<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform pc pm</span>)</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform pc assgn pc</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by clear symbols</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="var">J_Type_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
+<span class="in2"></span><span class="keyword">private</span>:<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_immediate</span>;<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_rd</span>;<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_opcode</span>;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">J_Type_Item</span>(<br/>
+<span class="in4"></span><span class="type">int</span> <span class="var">immediate</span>,<br/>
+<span class="in4"></span><span class="type">int</span> <span class="var">rd</span>, <span class="type">int</span> <span class="var">opcode</span><br/>
+<span class="in3"></span>):<br/>
+<span class="in4"></span><span class="var">_immediate</span> { <span class="var">immediate</span> },<br/>
+<span class="in4"></span><span class="var">_rd</span> { <span class="var">rd</span> },<br/>
+<span class="in4"></span><span class="var">_opcode</span> { <span class="var">opcode</span> }<br/>
+<span class="in3"></span>{ }<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">immediate</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_immediate</span>; }<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">rd</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_rd</span>; }<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">opcode</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_opcode</span>; }<br/>
+<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="var">J_Type_Item</span> {<br/>
+<span class="in5"></span><span class="var">_immediate</span>,<br/>
+<span class="in5"></span><span class="var">_rd</span>, <span class="var">_opcode</span><br/>
+<span class="in4"></span>};<br/>
+<span class="in3"></span>}<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@end(<span class="name">needed by clear symbols</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform pc pm</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">t5</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">4</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t5</span> &amp;&amp; <span class="var">t5</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">t5</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">neg</span>) { <span class="var">value</span> = -<span class="var">value</span>; }<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">5</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="fn">J_Type_Item</span>(<br/>
+<span class="in4"></span><span class="var">value</span>, <span class="num">0</span>, <span class="num">0x6f</span><br/>
+<span class="in3"></span>)<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform pc pm</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform pc assgn pc</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span> == <span class="var">items</span>.<span class="fn">end</span>()) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">plus</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">4</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">number</span>, <span class="num">0</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform pc assgn pc</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">ii</span> {<br/>
 <span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="var">I_Type_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
 <span class="in2"></span>)<br/>
@@ -2172,6 +2113,133 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
+<span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">ji</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="var">J_Type_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ji</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform j type</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform j type</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">imm</span> { <span class="var">ji</span>-&gt;<span class="fn">immediate</span>() };<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">result</span> = <br/>
+<span class="in2"></span>((<span class="var">imm</span> &lt;&lt; (<span class="num">31</span> - <span class="num">20</span>)) &amp; <span class="num">0x80000000</span>) |<br/>
+<span class="in2"></span>((<span class="var">imm</span> &lt;&lt; (<span class="num">21</span> - <span class="num">1</span>)) &amp; <span class="num">0x7fe00000</span>) |<br/>
+<span class="in2"></span>((<span class="var">imm</span> &lt;&lt; (<span class="num">20</span> - <span class="num">11</span>)) &amp; <span class="num">0x00100000</span>) |<br/>
+<span class="in2"></span>(<span class="var">imm</span> &amp; <span class="num">0x000ff000</span>) |<br/>
+<span class="in2"></span>(<span class="var">ji</span>-&gt;<span class="fn">rd</span>() &lt;&lt; <span class="num">7</span>) | <span class="var">ji</span>-&gt;<span class="fn">opcode</span>();<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> }<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform j type</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform tok</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">t_open_parenthesis</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">4</span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform lp</span>)</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform lp</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">t2</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t2</span> &amp;&amp; <span class="var">t2</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">v1</span> { <span class="var">t2</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform lp num</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform lp</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform lp num</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">t3</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t3</span> &amp;&amp; (<br/>
+<span class="in2"></span><span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">plus</span> ||<br/>
+<span class="in2"></span><span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">minus</span><br/>
+<span class="in1"></span>)) {<br/>
+<span class="in2"></span><span class="type">bool</span> <span class="var">neg</span> { <span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">minus</span> };<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform lp num pm</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform lp num</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform lp num pm</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">t4</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">3</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t4</span> &amp;&amp; <span class="var">t4</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">v2</span> { <span class="var">t4</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">neg</span>) { <span class="var">v2</span> = -<span class="var">v2</span>; }<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform lp num pm num</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform lp num pm</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform lp num pm num</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">t5</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">4</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t5</span> &amp;&amp; <span class="var">t5</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">5</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">number</span>,<br/>
+<span class="in4"></span><span class="var">v1</span> + <span class="var">v2</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform lp num pm num</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
 <span class="macro">@def(<span class="name">consume machine instrs</span>)</span><br/>
 <span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>() &amp;&amp;<br/>
 <span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> *&gt;(<br/>
@@ -2188,6 +2256,49 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span>);<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">consume machine instrs</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">handle define</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">items</span>.<span class="fn">size</span>() &gt;= <span class="num">2</span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">ii</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="num">0</span>]<br/>
+<span class="in3"></span>)<br/>
+<span class="in2"></span>};<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">ai</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="num">1</span>]<br/>
+<span class="in3"></span>)<br/>
+<span class="in2"></span>};<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">ii</span> &amp;&amp; <span class="var">ai</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">ii</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">ident</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">ai</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">t_equals</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">handle define</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform sym assign</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> &amp;<span class="var">l</span> { <span class="var">_symbols</span>[<br/>
+<span class="in2"></span><span class="var">ii</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>()<br/>
+<span class="in1"></span>] };<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="num">2</span>;<br/>
+<span class="in2"></span><span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">j</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">l</span>.<span class="fn">push_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">items</span>[<span class="var">j</span>]));<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>(), <span class="var">items</span>.<span class="fn">end</span>()<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
 </div>
 </body>

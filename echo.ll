@@ -43,8 +43,9 @@ can_write_nl = *
 raw $00052283	#		%t0 <- [uart_wr]
 raw $fe02cee3	#		if %t0 < 0: %pc <- %pc + (can_write_nl - *)
 raw $00c52023	#		[uart_wr] <- ch_nl
-raw $fd5ff06f	#		%pc <- %pc + (read - *)
+	%pc <- %pc + (read - *)
 
 # dummy interrupt handler
+
 _dummy_irq = *
-raw $0000006f	#		%pc <- %pc + (_dummy_irq - *) 
+	%pc <- %pc + (_dummy_irq - *) 

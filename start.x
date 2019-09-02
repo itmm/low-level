@@ -792,8 +792,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
-		"%pc <- %pc + 0",
+	assert_line_2(
+		"%pc <- %pc",
 		0x0000006f
 	);
 @end(unit-tests)
@@ -803,8 +803,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
-		"%pc <- %pc + -28",
+	assert_line_2(
+		"%pc <- %pc - 28",
 		0xfe5ff06f
 	);
 @end(unit-tests)
@@ -813,8 +813,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
-		"%pc <- %pc + -32",
+	assert_line_2(
+		"%pc <- %pc - 32",
 		0xfe1ff06f
 	);
 @end(unit-tests)
@@ -1296,10 +1296,11 @@ These syntax trees are then transformed into machine code.
 		@put(transform);
 		++i;
 	}
+	@put(handle define);
 	@put(consume machine instrs);
 	if (! items.empty()) {
 		std::cerr <<
-			"can expand fully [" <<
+			"cant expand fully [" <<
 			line << "]\n";
 	}
 @end(expand)
@@ -1362,39 +1363,6 @@ These syntax trees are then transformed into machine code.
 		++i;
 	}
 @end(transform tok lookup)
-```
-
-```
-@add(transform tok ident)
-	if (i < items.size() - 1) {
-		auto *ta {
-			dynamic_cast<Token_Item *>(
-				&*items[i + 1]
-		) };
-		if (ta && ta->token().type() ==
-			Token_Type::t_equals
-		) {
-			@put(transform sym assign);
-			i = 0; continue;
-		}
-	}
-@end(transform tok ident)
-```
-
-```
-@def(transform sym assign)
-	auto &l { _symbols[
-		ti->token().name()
-	] };
-	for (unsigned j = i + 2;
-		j < items.size(); ++j
-	) {
-		l.push_back(std::move(items[j]));
-	}
-	items.erase(
-		items.begin() + i, items.end()
-	);
-@end(transform sym assign)
 ```
 
 ```
@@ -1680,7 +1648,146 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(transform) {
-	auto *ii {
+	auto pi {
+		dynamic_cast<Pc_Item *>(
+			&*items[i]
+		)
+	};
+	if (pi) {
+		@put(transform pc);
+	}
+} @end(transform)
+```
+
+```
+@def(transform pc)
+	if (i < items.size() - 2) {
+		auto t2 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+			)
+		};
+		if (t2 && t2->token().type() ==
+			Token_Type::becomes
+		) {
+			@put(transform pc assgn);
+		}
+	}
+@end(transform pc)
+```
+
+```
+@def(transform pc assgn)
+	auto p3 {
+		dynamic_cast<Pc_Item *>(
+			&*items[i + 2]
+		)
+	};
+	if (p3) {
+		@put(transform pc assgn pc);
+	}
+@end(transform pc assgn)
+```
+
+```
+@def(transform pc assgn pc)
+	if (i < items.size() - 4) {
+		auto t4 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 3]
+			)
+		};
+		if (t4 && (
+			t4->token().type() ==
+				Token_Type::plus ||
+			t4->token().type() ==
+				Token_Type::minus
+		)) {
+			bool neg {
+				t4->token().type() ==
+					Token_Type::minus
+			};
+			@put(transform pc pm);
+		}
+	}
+@end(transform pc assgn pc)
+```
+
+```
+@add(needed by clear symbols)
+	class J_Type_Item: public Item {
+		private:
+			int _immediate;
+			int _rd;
+			int _opcode;
+		public:
+			J_Type_Item(
+				int immediate,
+				int rd, int opcode
+			):
+				_immediate { immediate },
+				_rd { rd },
+				_opcode { opcode }
+			{ }
+			int immediate() const { return _immediate; }
+			int rd() const { return _rd; }
+			int opcode() const { return _opcode; }
+			Item *clone() const override {
+				return new J_Type_Item {
+					_immediate,
+					_rd, _opcode
+				};
+			}
+	};
+@end(needed by clear symbols)
+```
+
+```
+@def(transform pc pm)
+	auto t5 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (t5 && t5->token().type() ==
+		Token_Type::number
+	) {
+		int value { t5->token().value() };
+		if (neg) { value = -value; }
+		items.erase(items.begin() + i,
+			items.begin() + i + 5
+		);
+		items.emplace(items.begin() + i,
+			new J_Type_Item(
+				value, 0, 0x6f
+			)
+		);
+		i = 0; continue;
+	}
+@end(transform pc pm)
+```
+
+```
+@add(transform pc assgn pc)
+	if (items.begin() + i + 3 == items.end()) {
+		items.emplace(items.begin() + i + 3,
+			new Token_Item { {
+				Token_Type::plus
+			} }
+		);
+		items.emplace(items.begin() + i + 4,
+			new Token_Item { {
+				Token_Type::number, 0
+			} }
+		);
+		i = 0; continue;
+	}
+@end(transform pc assgn pc)
+```
+
+```
+@add(transform) {
+	auto ii {
 		dynamic_cast<I_Type_Item *>(
 			&*items[i]
 		)
@@ -1739,6 +1846,126 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(transform) {
+	auto ji {
+		dynamic_cast<J_Type_Item *>(
+			&*items[i]
+		)
+	};
+	if (ji) {
+		@put(transform j type);
+	}
+} @end(transform)
+```
+
+```
+@def(transform j type)
+	int imm { ji->immediate() };
+	int result = 
+		((imm << (31 - 20)) & 0x80000000) |
+		((imm << (21 - 1)) & 0x7fe00000) |
+		((imm << (20 - 11)) & 0x00100000) |
+		(imm & 0x000ff000) |
+		(ji->rd() << 7) | ji->opcode();
+	items.erase(items.begin() + i,
+		items.begin() + i + 1
+	);
+	items.emplace(items.begin() + i,
+		new Machine_Item { result }
+	);
+@end(transform j type)
+```
+
+```
+@add(transform tok)
+	if (ti->token().type() ==
+		Token_Type::t_open_parenthesis
+	) {
+		if (i < items.size() - 4) {
+			@put(transform lp);
+		}
+	}
+@end(transform tok)
+```
+
+```
+@def(transform lp)
+	auto t2 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 1]
+		)
+	};
+	if (t2 && t2->token().type() ==
+		Token_Type::number
+	) {
+		int v1 { t2->token().value() };
+		@put(transform lp num);
+	}
+@end(transform lp)
+```
+
+```
+@def(transform lp num)
+	auto t3 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 2]
+		)
+	};
+	if (t3 && (
+		t3->token().type() ==
+			Token_Type::plus ||
+		t3->token().type() ==
+			Token_Type::minus
+	)) {
+		bool neg { t3->token().type() ==
+			Token_Type::minus };
+		@put(transform lp num pm);
+	}
+@end(transform lp num)
+```
+
+```
+@def(transform lp num pm)
+	auto t4 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 3]
+		)
+	};
+	if (t4 && t4->token().type() ==
+		Token_Type::number
+	) {
+		int v2 { t4->token().value() };
+		if (neg) { v2 = -v2; }
+		@put(transform lp num pm num);
+	}
+@end(transform lp num pm)
+```
+
+```
+@def(transform lp num pm num)
+	auto t5 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (t5 && t5->token().type() ==
+		Token_Type::t_close_parenthesis
+	) {
+		items.erase(items.begin() + i,
+			items.begin() + i + 5
+		);
+		items.emplace(items.begin() + i,
+			new Token_Item { {
+				Token_Type::number,
+				v1 + v2
+			} }
+		);
+		i = 0; continue;
+	}
+@end(transform lp num pm num)
+```
+
+```
 @def(consume machine instrs)
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(
@@ -1755,5 +1982,46 @@ These syntax trees are then transformed into machine code.
 		);
 	}
 @end(consume machine instrs)
+```
+
+```
+@def(handle define)
+	if (items.size() >= 2) {
+		auto ii {
+			dynamic_cast<Token_Item *>(
+				&*items[0]
+			)
+		};
+		auto ai {
+			dynamic_cast<Token_Item *>(
+				&*items[1]
+			)
+		};
+		if (ii && ai &&
+			ii->token().type() ==
+				Token_Type::ident &&
+			ai->token().type() ==
+				Token_Type::t_equals
+		) {
+			@put(transform sym assign);
+		}
+	}
+@end(handle define)
+```
+
+```
+@def(transform sym assign)
+	auto &l { _symbols[
+		ii->token().name()
+	] };
+	for (unsigned j = 2;
+		j < items.size(); ++j
+	) {
+		l.push_back(std::move(items[j]));
+	}
+	items.erase(
+		items.begin(), items.end()
+	);
+@end(transform sym assign)
 ```
 
