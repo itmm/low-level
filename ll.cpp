@@ -1175,6 +1175,44 @@
 ;
 	}
 
+#line 1803 "start.x"
+
+	if (t3->token().type() ==
+		Token_Type::t_and
+	) {
+		
+#line 1813 "start.x"
+ {
+	auto n4 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (n4 && n4->token().type() ==
+		Token_Type::number
+	) {
+		
+#line 1828 "start.x"
+
+	int imm { n4->token().value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 5
+	);
+	items.emplace(items.begin() + i,
+		new I_Type_Item {
+			imm, rs1_nr, 0x7, rd, 0x13
+		}
+	);
+	i = 0; continue;
+
+#line 1822 "start.x"
+;
+	}
+} 
+#line 1807 "start.x"
+;
+	}
+
 #line 1756 "start.x"
 ;
 		}
@@ -1193,7 +1231,7 @@
 ;
 	}
 } 
-#line 1803 "start.x"
+#line 1843 "start.x"
  {
 	auto *ii {
 		dynamic_cast<I_Type_Item *>(
@@ -1202,7 +1240,7 @@
 	};
 	if (ii) {
 		
-#line 1816 "start.x"
+#line 1856 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -1218,11 +1256,11 @@
 	);
 	i = 0; continue;
 
-#line 1810 "start.x"
+#line 1850 "start.x"
 ;
 	}
 } 
-#line 1834 "start.x"
+#line 1874 "start.x"
  {
 	auto ui {
 		dynamic_cast<U_Type_Item *>(
@@ -1231,7 +1269,7 @@
 	};
 	if (ui) {
 		
-#line 1848 "start.x"
+#line 1888 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -1244,7 +1282,7 @@
 		new Machine_Item { result }
 	);
 
-#line 1841 "start.x"
+#line 1881 "start.x"
 ;
 		i = 0; continue;
 	}
@@ -1254,7 +1292,7 @@
 		++i;
 	}
 	
-#line 1863 "start.x"
+#line 1903 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(
@@ -1541,7 +1579,7 @@
 
 #line 889 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);

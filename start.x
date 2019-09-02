@@ -887,7 +887,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
@@ -1797,6 +1797,46 @@ These syntax trees are then transformed into machine code.
 	);
 	i = 0; continue;
 @end(transform or imm)
+```
+
+```
+@add(transform reg assign op)
+	if (t3->token().type() ==
+		Token_Type::t_and
+	) {
+		@put(transform and);
+	}
+@end(transform reg assign op)
+```
+
+```
+@def(transform and) {
+	auto n4 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (n4 && n4->token().type() ==
+		Token_Type::number
+	) {
+		@put(transform and imm);
+	}
+} @end(transform and)
+```
+
+```
+@def(transform and imm)
+	int imm { n4->token().value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 5
+	);
+	items.emplace(items.begin() + i,
+		new I_Type_Item {
+			imm, rs1_nr, 0x7, rd, 0x13
+		}
+	);
+	i = 0; continue;
+@end(transform and imm)
 ```
 
 ```

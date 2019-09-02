@@ -1082,7 +1082,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %x5 and $ff"</span>,<br/>
 <span class="in2"></span><span class="num">0x0ff2f293</span><br/>
 <span class="in1"></span>);<br/>
@@ -2066,6 +2066,49 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
 <span class="macro">@end(<span class="name">transform or imm</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform reg assign op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t3</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">t_and</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform and</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform reg assign op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform and</span>)</span> {<br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">n4</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">4</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span> &amp;&amp; <span class="var">n4</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform and imm</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform and</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform and imm</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">imm</span> { <span class="var">n4</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>() };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">5</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="var">I_Type_Item</span> {<br/>
+<span class="in3"></span><span class="var">imm</span>, <span class="var">rs1_nr</span>, <span class="num">0x7</span>, <span class="var">rd</span>, <span class="num">0x13</span><br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="macro">@end(<span class="name">transform and imm</span>)</span><br/>
 </code></div>
 </div>
 <div><div>

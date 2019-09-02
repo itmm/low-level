@@ -29,7 +29,7 @@ raw $00652623	#		[uart + $0c] <- %t1
 read = *
 raw $00452283	#		%t0 <- [uart_rd]
 raw $fe02cee3	#		if %t0 < 0: %pc <- %pc + (read - *)
-raw $0ff2f293	#		%t0 <- %t0 and $ff
+	%t0 <- %t0 and $ff
 raw $fe028ae3	#		if %t0 = 0: %pc <- %pc + (read - *)
 can_write = *
 raw $00052303	#		%t1 <- [uart_wr]
