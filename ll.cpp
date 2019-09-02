@@ -1094,7 +1094,7 @@
 } 
 #line 1707 "start.x"
  {
-	auto *c3 {
+	auto c3 {
 		dynamic_cast<Csr_Item *>(
 			&*items[i + 2]
 	) };
@@ -1117,6 +1117,73 @@
 		i = 0; continue;
 	}
 } 
+#line 1734 "start.x"
+ {
+	auto rs1 {
+		dynamic_cast<Register_Item *>(
+			&*items[i + 2]
+		)
+	};
+	if (rs1) {
+		int rs1_nr { rs1->nr() };
+		
+#line 1748 "start.x"
+
+	if (i < items.size() - 4) {
+		auto t3 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 3]
+			)
+		};
+		if (t3) {
+			
+#line 1763 "start.x"
+
+	if (t3->token().type() ==
+		Token_Type::t_or
+	) {
+		
+#line 1773 "start.x"
+ {
+	auto n4 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (n4 && n4->token().type() ==
+		Token_Type::number
+	) {
+		
+#line 1788 "start.x"
+
+	int imm { n4->token().value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 5
+	);
+	items.emplace(items.begin() + i,
+		new I_Type_Item {
+			imm, rs1_nr, 0x6, rd, 0x13
+		}
+	);
+	i = 0; continue;
+
+#line 1782 "start.x"
+;
+	}
+} 
+#line 1767 "start.x"
+;
+	}
+
+#line 1756 "start.x"
+;
+		}
+	}
+
+#line 1742 "start.x"
+;
+	}
+} 
 #line 1648 "start.x"
 ;
 		}
@@ -1126,7 +1193,7 @@
 ;
 	}
 } 
-#line 1734 "start.x"
+#line 1803 "start.x"
  {
 	auto *ii {
 		dynamic_cast<I_Type_Item *>(
@@ -1135,7 +1202,7 @@
 	};
 	if (ii) {
 		
-#line 1748 "start.x"
+#line 1816 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -1149,22 +1216,22 @@
 	items.emplace(items.begin() + i,
 		new Machine_Item { result }
 	);
+	i = 0; continue;
 
-#line 1741 "start.x"
+#line 1810 "start.x"
 ;
-		i = 0; continue;
 	}
 } 
-#line 1765 "start.x"
+#line 1834 "start.x"
  {
-	auto *ui {
+	auto ui {
 		dynamic_cast<U_Type_Item *>(
 			&*items[i]
 		)
 	};
 	if (ui) {
 		
-#line 1779 "start.x"
+#line 1848 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -1177,7 +1244,7 @@
 		new Machine_Item { result }
 	);
 
-#line 1772 "start.x"
+#line 1841 "start.x"
 ;
 		i = 0; continue;
 	}
@@ -1187,7 +1254,7 @@
 		++i;
 	}
 	
-#line 1794 "start.x"
+#line 1863 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(
@@ -1481,14 +1548,14 @@
 
 #line 898 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
 #line 907 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);

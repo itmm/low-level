@@ -896,7 +896,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
@@ -905,7 +905,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
@@ -1705,7 +1705,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(transform reg assign) {
-	auto *c3 {
+	auto c3 {
 		dynamic_cast<Csr_Item *>(
 			&*items[i + 2]
 	) };
@@ -1731,6 +1731,75 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(transform reg assign) {
+	auto rs1 {
+		dynamic_cast<Register_Item *>(
+			&*items[i + 2]
+		)
+	};
+	if (rs1) {
+		int rs1_nr { rs1->nr() };
+		@put(transform reg assign reg);
+	}
+} @end(transform reg assign)
+```
+
+```
+@def(transform reg assign reg)
+	if (i < items.size() - 4) {
+		auto t3 {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 3]
+			)
+		};
+		if (t3) {
+			@put(transform reg assign op);
+		}
+	}
+@end(transform reg assign reg)
+```
+
+```
+@def(transform reg assign op)
+	if (t3->token().type() ==
+		Token_Type::t_or
+	) {
+		@put(transform or);
+	}
+@end(transform reg assign op)
+```
+
+```
+@def(transform or) {
+	auto n4 {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 4]
+		)
+	};
+	if (n4 && n4->token().type() ==
+		Token_Type::number
+	) {
+		@put(transform or imm);
+	}
+} @end(transform or)
+```
+
+```
+@def(transform or imm)
+	int imm { n4->token().value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 5
+	);
+	items.emplace(items.begin() + i,
+		new I_Type_Item {
+			imm, rs1_nr, 0x6, rd, 0x13
+		}
+	);
+	i = 0; continue;
+@end(transform or imm)
+```
+
+```
 @add(transform) {
 	auto *ii {
 		dynamic_cast<I_Type_Item *>(
@@ -1739,7 +1808,6 @@ These syntax trees are then transformed into machine code.
 	};
 	if (ii) {
 		@put(transform i type);
-		i = 0; continue;
 	}
 } @end(transform)
 ```
@@ -1758,12 +1826,13 @@ These syntax trees are then transformed into machine code.
 	items.emplace(items.begin() + i,
 		new Machine_Item { result }
 	);
+	i = 0; continue;
 @end(transform i type)
 ```
 
 ```
 @add(transform) {
-	auto *ui {
+	auto ui {
 		dynamic_cast<U_Type_Item *>(
 			&*items[i]
 		)

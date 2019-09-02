@@ -17,8 +17,8 @@ raw $00852283	#		%t0 <- [uart + $08]
 	ch_nl = %a2
 	ch_nl <- $0a
 raw $00c52303	#		%t1 <- [uart + $0c]
-raw	$0012e293	#		%t0 <- %t0 or $01
-raw $00136313	#		%t1 <- %t1 or $01
+	%t0 <- %t0 or $01
+	%t1 <- %t1 or $01
 raw $00552423	#		[uart + $08] <- %t0
 raw $00652623	#		[uart + $0c] <- %t1
 	uart_rd = uart + $04
@@ -37,7 +37,7 @@ raw $fe034ee3	#		if %t1 < 0: %pc <- %pc + (can_write - *)
 raw $00552023	#		[uart_wr] <- %t0
 raw $feb292e3	#		if %t0 != ch_cr: %pc <- %pc + (read - *)
 
-#write additional NL after CR
+# write additional NL after CR
 
 can_write_nl = *
 raw $00052283	#		%t0 <- [uart_wr]
