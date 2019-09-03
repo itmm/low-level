@@ -2240,6 +2240,126 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
+<span class="macro">@add(<span class="name">transform tok</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">ident</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>() == <span class="str">"goto"</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform goto</span>)</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform goto</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">tt</span> {<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in2"></span>)<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">tt</span> &amp;&amp; <span class="var">tt</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">number</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">target</span> {<br/>
+<span class="in3"></span><span class="var">tt</span>-&gt;<span class="fn">token</span>().<span class="fn">value</span>()<br/>
+<span class="in2"></span>};<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Pc_Item</span> { }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">becomes</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Pc_Item</span> { }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">plus</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">4</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">t_open_parenthesis</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">5</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">number</span>, <span class="var">target</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">6</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">minus</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">7</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">t_times</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">8</span>,<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in4"></span><span class="type">Token_Type</span>::<span class="var">t_close_parenthesis</span><br/>
+<span class="in3"></span>} }<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform goto</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform tok</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in2"></span><span class="type">Token_Type</span>::<span class="var">ident</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="type">auto</span> <span class="var">ci</span> {<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Token_Item</span> *&gt;(<br/>
+<span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
+<span class="in3"></span>)<br/>
+<span class="in2"></span>};<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">ci</span> &amp;&amp; <span class="var">ci</span>-&gt;<span class="fn">token</span>().<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Token_Type</span>::<span class="var">t_colon</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> {<br/>
+<span class="in4"></span><span class="var">ti</span>-&gt;<span class="fn">token</span>().<span class="fn">name</span>()<br/>
+<span class="in3"></span>};<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span><br/>
+<span class="in3"></span>);<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in4"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in5"></span><span class="type">Token_Type</span>::<span class="var">ident</span>,<br/>
+<span class="in5"></span><span class="var">name</span><br/>
+<span class="in4"></span>} }<br/>
+<span class="in3"></span>);<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span>,<br/>
+<span class="in4"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in5"></span><span class="type">Token_Type</span>::<span class="var">t_equals</span><br/>
+<span class="in4"></span>} }<br/>
+<span class="in3"></span>);<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span>,<br/>
+<span class="in4"></span><span class="keyword">new</span> <span class="type">Token_Item</span> { {<br/>
+<span class="in5"></span><span class="type">Token_Type</span>::<span class="var">t_times</span><br/>
+<span class="in4"></span>} }<br/>
+<span class="in3"></span>);<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform tok</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
 <span class="macro">@def(<span class="name">consume machine instrs</span>)</span><br/>
 <span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>() &amp;&amp;<br/>
 <span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> *&gt;(<br/>

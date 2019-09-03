@@ -1966,6 +1966,123 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(transform tok)
+	if (ti->token().type() ==
+		Token_Type::ident &&
+			ti->token().name() == "goto"
+	) {
+		if (i < items.size() - 1) {
+			@put(transform goto);
+		}
+	}
+@end(transform tok)
+```
+
+```
+@def(transform goto)
+	auto tt {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 1]
+		)
+	};
+	if (tt && tt->token().type() ==
+		Token_Type::number
+	) {
+		int target {
+			tt->token().value()
+		};
+		items.erase(items.begin() + i,
+			items.begin() + i + 2
+		);
+		items.emplace(items.begin() + i,
+			new Pc_Item { }
+		);
+		items.emplace(items.begin() + i + 1,
+			new Token_Item { {
+				Token_Type::becomes
+			} }
+		);
+		items.emplace(items.begin() + i + 2,
+			new Pc_Item { }
+		);
+		items.emplace(items.begin() + i + 3,
+			new Token_Item { {
+				Token_Type::plus
+			} }
+		);
+		items.emplace(items.begin() + i + 4,
+			new Token_Item { {
+				Token_Type::t_open_parenthesis
+			} }
+		);
+		items.emplace(items.begin() + i + 5,
+			new Token_Item { {
+				Token_Type::number, target
+			} }
+		);
+		items.emplace(items.begin() + i + 6,
+			new Token_Item { {
+				Token_Type::minus
+			} }
+		);
+		items.emplace(items.begin() + i + 7,
+			new Token_Item { {
+				Token_Type::t_times
+			} }
+		);
+		items.emplace(items.begin() + i + 8,
+			new Token_Item { {
+				Token_Type::t_close_parenthesis
+			} }
+		);
+		i = 0; continue;
+	}
+@end(transform goto)
+```
+
+```
+@add(transform tok)
+	if (ti->token().type() ==
+		Token_Type::ident &&
+			i < items.size() - 1
+	) {
+		auto ci {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+			)
+		};
+		if (ci && ci->token().type() ==
+			Token_Type::t_colon
+		) {
+			std::string name {
+				ti->token().name()
+			};
+			items.erase(
+				items.begin() + i,
+				items.begin() + i + 2
+			);
+			items.emplace(items.begin() + i,
+				new Token_Item { {
+					Token_Type::ident,
+					name
+				} }
+			);
+			items.emplace(items.begin() + i + 1,
+				new Token_Item { {
+					Token_Type::t_equals
+				} }
+			);
+			items.emplace(items.begin() + i + 2,
+				new Token_Item { {
+					Token_Type::t_times
+				} }
+			);
+		}
+	}
+@end(transform tok)
+```
+
+```
 @def(consume machine instrs)
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(

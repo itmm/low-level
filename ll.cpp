@@ -972,6 +972,119 @@
 		}
 	}
 
+#line 1969 "start.x"
+
+	if (ti->token().type() ==
+		Token_Type::ident &&
+			ti->token().name() == "goto"
+	) {
+		if (i < items.size() - 1) {
+			
+#line 1982 "start.x"
+
+	auto tt {
+		dynamic_cast<Token_Item *>(
+			&*items[i + 1]
+		)
+	};
+	if (tt && tt->token().type() ==
+		Token_Type::number
+	) {
+		int target {
+			tt->token().value()
+		};
+		items.erase(items.begin() + i,
+			items.begin() + i + 2
+		);
+		items.emplace(items.begin() + i,
+			new Pc_Item { }
+		);
+		items.emplace(items.begin() + i + 1,
+			new Token_Item { {
+				Token_Type::becomes
+			} }
+		);
+		items.emplace(items.begin() + i + 2,
+			new Pc_Item { }
+		);
+		items.emplace(items.begin() + i + 3,
+			new Token_Item { {
+				Token_Type::plus
+			} }
+		);
+		items.emplace(items.begin() + i + 4,
+			new Token_Item { {
+				Token_Type::t_open_parenthesis
+			} }
+		);
+		items.emplace(items.begin() + i + 5,
+			new Token_Item { {
+				Token_Type::number, target
+			} }
+		);
+		items.emplace(items.begin() + i + 6,
+			new Token_Item { {
+				Token_Type::minus
+			} }
+		);
+		items.emplace(items.begin() + i + 7,
+			new Token_Item { {
+				Token_Type::t_times
+			} }
+		);
+		items.emplace(items.begin() + i + 8,
+			new Token_Item { {
+				Token_Type::t_close_parenthesis
+			} }
+		);
+		i = 0; continue;
+	}
+
+#line 1975 "start.x"
+;
+		}
+	}
+
+#line 2044 "start.x"
+
+	if (ti->token().type() ==
+		Token_Type::ident &&
+			i < items.size() - 1
+	) {
+		auto ci {
+			dynamic_cast<Token_Item *>(
+				&*items[i + 1]
+			)
+		};
+		if (ci && ci->token().type() ==
+			Token_Type::t_colon
+		) {
+			std::string name {
+				ti->token().name()
+			};
+			items.erase(
+				items.begin() + i,
+				items.begin() + i + 2
+			);
+			items.emplace(items.begin() + i,
+				new Token_Item { {
+					Token_Type::ident,
+					name
+				} }
+			);
+			items.emplace(items.begin() + i + 1,
+				new Token_Item { {
+					Token_Type::t_equals
+				} }
+			);
+			items.emplace(items.begin() + i + 2,
+				new Token_Item { {
+					Token_Type::t_times
+				} }
+			);
+		}
+	}
+
 #line 1326 "start.x"
 ;
 	}
@@ -1377,7 +1490,7 @@
 		++i;
 	}
 	
-#line 1988 "start.x"
+#line 2105 "start.x"
 
 	if (items.size() >= 2) {
 		auto ii {
@@ -1397,7 +1510,7 @@
 				Token_Type::t_equals
 		) {
 			
-#line 2013 "start.x"
+#line 2130 "start.x"
 
 	auto &l { _symbols[
 		ii->token().name()
@@ -1411,7 +1524,7 @@
 		items.begin(), items.end()
 	);
 
-#line 2006 "start.x"
+#line 2123 "start.x"
 ;
 		}
 	}
@@ -1419,7 +1532,7 @@
 #line 1299 "start.x"
 ;
 	
-#line 1969 "start.x"
+#line 2086 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(

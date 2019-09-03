@@ -4,7 +4,7 @@ raw $00000297
 raw $06828293	#		%t0 <- %pc + 104
 raw $30529073	#		%mtvec <- %t0
 	%t0 <- %mhartid
-loop_hart = *
+loop_hart:
 raw $00029063	#		if %t0 != 0: %pc <- %pc + (loop_hart - *)
 
 # init UART
@@ -26,12 +26,12 @@ raw $00652623	#		[uart + $0c] <- %t1
 
 # read loop
 
-read = *
+read:
 raw $00452283	#		%t0 <- [uart_rd]
 raw $fe02cee3	#		if %t0 < 0: %pc <- %pc + (read - *)
 	%t0 <- %t0 and $ff
 raw $fe028ae3	#		if %t0 = 0: %pc <- %pc + (read - *)
-can_write = *
+can_write:
 raw $00052303	#		%t1 <- [uart_wr]
 raw $fe034ee3	#		if %t1 < 0: %pc <- %pc + (can_write - *)
 raw $00552023	#		[uart_wr] <- %t0
@@ -43,9 +43,9 @@ can_write_nl = *
 raw $00052283	#		%t0 <- [uart_wr]
 raw $fe02cee3	#		if %t0 < 0: %pc <- %pc + (can_write_nl - *)
 raw $00c52023	#		[uart_wr] <- ch_nl
-	%pc <- %pc + (read - *)
+	goto read
 
 # dummy interrupt handler
 
-_dummy_irq = *
-	%pc <- %pc + (_dummy_irq - *) 
+_dummy_irq:
+	goto _dummy_irq
