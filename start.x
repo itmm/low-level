@@ -184,7 +184,6 @@ the machine code.
 ```
 @def(assert line)
 	State s;
-	clear_symbols(s);
 	s.add_line(line);
 	assert(s.code_size() == 1);
 	// std::cerr << "EXP " << std::hex << expected << "\n";
@@ -239,7 +238,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(needed by add line)
+@add(needed by state)
 	class Item;
 	
 	using Item_Ptr = std::unique_ptr<Item>;
@@ -263,22 +262,32 @@ These syntax trees are then transformed into machine code.
 				return _replacement;
 			}
 	};
-	static std::vector<Macro> _macros;
-@end(needed by add line)
+@end(needed by state)
 ```
 
 ```
-@add(needed by add line)
-	@put(needed by clear symbols);
-	void clear_symbols(State &state) {
-		_macros.clear();
-		@put(clear symbols);
+@add(private state)
+	std::vector<Macro> _macros;
+	void setup_symbols();
+@end(private state)
+```
+
+```
+@add(state impl)
+	void State::setup_symbols() {
+		@put(setup symbols);
 	}
-@end(needed by add line)
+@end(state impl)
 ```
 
 ```
-@def(clear symbols)
+@add(public state)
+	State() { setup_symbols(); }
+@end(public state)
+```
+
+```
+@def(setup symbols)
 	{
 		Items p; p.emplace_back(new Named_Item { "%mtvec" });
 		Items e; e.emplace_back(new Csr_Item { 0x305 });
@@ -305,46 +314,46 @@ These syntax trees are then transformed into machine code.
 			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	}
-@end(clear symbols)
+@end(setup symbols)
 ```
 
 ```
-@add(clear symbols)
-	state.add_line("%zero = %x0");
-	state.add_line("%ra = %x1");
-	state.add_line("%sp = %x2");
-	state.add_line("%gp = %x3");
-	state.add_line("%tp = %x4");
-	state.add_line("%t0 = %x5");
-	state.add_line("%t1 = %x6");
-	state.add_line("%t2 = %x7");
-	state.add_line("%s0 = %x8");
-	state.add_line("%s1 = %x9");
-	state.add_line("%fp = %x8");
-	state.add_line("%a0 = %x10");
-	state.add_line("%a1 = %x11");
-	state.add_line("%a2 = %x12");
-	state.add_line("%a3 = %x13");
-	state.add_line("%a4 = %x14");
-	state.add_line("%a5 = %x15");
-	state.add_line("%a6 = %x16");
-	state.add_line("%a7 = %x17");
-	state.add_line("%s2 = %x18");
-	state.add_line("%s3 = %x19");
-	state.add_line("%s4 = %x20");
-	state.add_line("%s5 = %x21");
-	state.add_line("%s6 = %x22");
-	state.add_line("%s7 = %x23");
-	state.add_line("%s8 = %x24");
-	state.add_line("%s9 = %x25");
-	state.add_line("%s10 = %x26");
-	state.add_line("%s11 = %x27");
-	state.add_line("%t3 = %x28");
-	state.add_line("%t4 = %x29");
-	state.add_line("%t5 = %x30");
-	state.add_line("%t6 = %x31");
-	state.add_line("*) = * )");
-@end(clear symbols)
+@add(setup symbols)
+	add_line("%zero = %x0");
+	add_line("%ra = %x1");
+	add_line("%sp = %x2");
+	add_line("%gp = %x3");
+	add_line("%tp = %x4");
+	add_line("%t0 = %x5");
+	add_line("%t1 = %x6");
+	add_line("%t2 = %x7");
+	add_line("%s0 = %x8");
+	add_line("%s1 = %x9");
+	add_line("%fp = %x8");
+	add_line("%a0 = %x10");
+	add_line("%a1 = %x11");
+	add_line("%a2 = %x12");
+	add_line("%a3 = %x13");
+	add_line("%a4 = %x14");
+	add_line("%a5 = %x15");
+	add_line("%a6 = %x16");
+	add_line("%a7 = %x17");
+	add_line("%s2 = %x18");
+	add_line("%s3 = %x19");
+	add_line("%s4 = %x20");
+	add_line("%s5 = %x21");
+	add_line("%s6 = %x22");
+	add_line("%s7 = %x23");
+	add_line("%s8 = %x24");
+	add_line("%s9 = %x25");
+	add_line("%s10 = %x26");
+	add_line("%s11 = %x27");
+	add_line("%t3 = %x28");
+	add_line("%t4 = %x29");
+	add_line("%t5 = %x30");
+	add_line("%t6 = %x31");
+	add_line("*) = * )");
+@end(setup symbols)
 ```
 
 ```
@@ -663,7 +672,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(needed by clear symbols)
+@add(needed by state)
 	class Item {
 		public:
 			virtual ~Item() {};
@@ -674,11 +683,11 @@ These syntax trees are then transformed into machine code.
 		item.write(out);
 		return out;
 	}
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class Named_Item: public Item {
 		private:
 			std::string _name;
@@ -705,11 +714,11 @@ These syntax trees are then transformed into machine code.
 				out << '$' << std::hex << _value << std::dec;
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class Register_Item: public Item {
 		private:
 			int _nr;
@@ -727,11 +736,11 @@ These syntax trees are then transformed into machine code.
 				out << "%x" << _nr;
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class Csr_Item: public Item {
 		private:
 			int _nr;
@@ -749,11 +758,11 @@ These syntax trees are then transformed into machine code.
 				out << "#csr.$" << std::hex << _nr << std::dec;
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class Machine_Item: public Item {
 		private:
 			int _instruction;
@@ -771,11 +780,11 @@ These syntax trees are then transformed into machine code.
 				out << "#raw.$" << std::hex << _instruction << std::dec;
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class I_Type_Item: public Item {
 		private:
 			int _immediate;
@@ -811,11 +820,11 @@ These syntax trees are then transformed into machine code.
 					_opcode << ')';
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class U_Type_Item: public Item {
 		private:
 			int _immediate;
@@ -843,7 +852,7 @@ These syntax trees are then transformed into machine code.
 				out << "#u_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
@@ -1230,7 +1239,7 @@ restart:
 ```
 
 ```
-@add(needed by clear symbols)
+@add(needed by state)
 	class J_Type_Item: public Item {
 		private:
 			int _immediate;
@@ -1258,7 +1267,7 @@ restart:
 				out << "#j_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
 			}
 	};
-@end(needed by clear symbols)
+@end(needed by state)
 ```
 
 ```
