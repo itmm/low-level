@@ -1,4 +1,4 @@
-CXXFLAGS += -Wall
+CXXFLAGS += -Wall -g
 
 .PHONY: all clean tests
 

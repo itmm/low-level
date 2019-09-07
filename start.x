@@ -3,6 +3,7 @@
 
 ```
 @Def(file: ll.cpp)
+	#include <iostream>
 	@Put(needed by main);
 	int main(
 		int argc, const char *argv[]
@@ -26,9 +27,9 @@
 * group local additions into a fragment
 
 ```
-@def(needed by main)
+@def(needed by add line)
 	#include <cassert>
-@end(needed by main)
+@end(needed by add line)
 ```
 * the unit-tests need the `@f(assert)`-macro
 
@@ -41,7 +42,7 @@ The parsing is part of a `State` object that contains all generated
 machine instructions.
 
 ```
-@add(needed by main)
+@def(needed by main)
 	@put(needed by state);
 	class State {
 			@put(private state)
@@ -205,354 +206,9 @@ These syntax trees are then transformed into machine code.
 * split the input line into token
 
 ```
-@add(needed by state)
-	@put(needed by tokenizer)
-	class Tokenizer {
-			@put(tokenizer attributes);
-		public:
-			@put(tokenizer methods);
-	};
-	@put(tokenizer impl);
-@end(needed by state)
-```
-* defines class for tokenizer
-
-```
-@def(needed by tokenizer)
-	enum class Token_Type {
-		unknown,
-		@put(token types)
-		end
-	};
-@end(needed by tokenizer)
-```
-* type of parsed token
-
-```
-@add(needed by tokenizer)
-	class Token {
-		private:
-			Token_Type _type;
-			std::string _name = { };
-			int _value = { } ;
-		public:
-			Token(Token_Type type): _type { type } { }
-			Token(Token_Type type, std::string &name): _type { type }, _name { name } { }
-			Token(Token_Type type, int value): _type { type }, _value { value } { }
-			Token_Type type() const { return _type; }
-			const std::string &name() const { return _name; }
-			int value() const { return _value; }
-	};
-@end(needed by tokenizer)
-```
-
-```
-@def(tokenizer attributes)
-	Token _token { Token_Type::unknown };
-@end(tokenizer attributes)
-```
-* stores type of parsed token
-
-```
-@def(tokenizer methods)
-	const Token &token() const {
-		return _token;
-	}
-@end(tokenizer methods)
-```
-* get type of parsed token
-
-```
-@add(tokenizer attributes)
-	std::string::const_iterator _cur;
-	std::string::const_iterator _end;
-@end(tokenizer attributes)
-```
-* chars not yet parsed
-
-```
-@add(tokenizer methods)
-	void next();
-@end(tokenizer methods)
-```
-* advances to next token
-
-```
-@add(tokenizer methods)
-	Tokenizer(const std::string &s):
-		_cur { s.begin() },
-		_end { s.end() } 
-	{
-		next();
-	}
-@end(tokenizer methods)
-```
-* initialize chars and read first token
-
-```
-@def(tokenizer impl)
-	void Tokenizer::next() {
-		@put(next);
-	}
-@end(tokenizer impl)
-```
-* implementation of `@f(next)`
-
-```
-@def(next)
-	while (
-		_cur != _end && *_cur <= ' '
-	) {
-		++_cur;
-	}
-@end(next)
-```
-* skip spaces
-
-```
-@add(next)
-	if (_cur == _end) {
-		_token = Token { Token_Type::end };
-		return;
-	}
-@end(next)
-```
-* end is reached
-
-```
-@add(needed by tokenizer)
-	#include <iostream>
-@end(needed by tokenizer)
-```
-* needs `cerr`
-
-```
-@add(next)
-	do {
-		@put(recognize);
-		_token = Token { Token_Type::unknown };
-		std::cerr <<
-			"unrecognized char [" <<
-			*_cur << "] == " << (int) *_cur << '\n';
-		++_cur;
-	} while (false);
-@end(next)
-```
-* recognize individual tokens
-* write warning when not recognizing token
-
-```
-@def(token types)
-	ident,
-@end(token types)
-```
-
-```
-@def(recognize)
-	if (isalpha(*_cur) || *_cur == '%' || *_cur == '_') {
-		auto c = _cur;
-		std::string name {};
-		while (c != _end && (
-			isalnum(*c) || *c == '_' ||
-			*c == '%'
-		)) {
-			name += *c++;
-		}
-		Token_Type type { Token_Type::ident };
-		_token = Token { type, name };
-		_cur = c;
-		break;
-	}
-@end(recognize)
-```
-* recognize register
-
-```
-@add(token types)
-	t_raw,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (*_cur == '#') {
-		_token = Token { Token_Type::end };
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(token types)
-	number,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (isdigit(*_cur)) {
-		int value { 0 };
-		while (isdigit(*_cur)) {
-			value = value * 10 +
-				(*_cur - '0');
-			++_cur;
-		}
-		_token = Token { Token_Type::number, value };
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(recognize)
-	if (*_cur == '$') {
-		int value { 0 };
-		++_cur;
-		while (isxdigit(*_cur)) {
-			int digit;
-			if (*_cur <= '9') {
-				digit = *_cur - '0';
-			} else if (*_cur <= 'F') {
-				digit = *_cur - 'A' + 10;
-			} else {
-				digit = *_cur - 'a' + 10;
-			}
-			value = (value << 4) + digit;
-			++_cur;
-		}
-		_token = Token { Token_Type::number, value };
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(token types)
-	becomes,
-	t_less,
-@end(token types)
-```
-* add token for assignment
-
-```
-@add(needed by main)
-	void assert_token(
-		const char *line,
-		Token_Type token
-	) {
-		@put(assert token);
-	}
-@end(needed by main)
-```
-* check for a single token
-
-```
-@add(unit-tests)
-	assert_token(
-		"<-", Token_Type::becomes
-	);
-@end(unit-tests)
-```
-* try to recognize assignment
-
-```
-@def(assert token)
-	@put(init assert token);
-	Tokenizer t(line);
-	assert(t.token().type() == token);
-	t.next();
-	assert(t.token().type() == Token_Type::end);
-@end(assert token)
-```
-* initialize tokenizer and verify that it only contains the one expected
-  token
-
-```
-@add(recognize)
-	if (*_cur == '<') {
-		if (
-			_cur  + 1 != _end &&
-				_cur[1] == '-'
-		) {
-			_token = Token { Token_Type::becomes };
-			_cur += 2;
-			break;
-		} else {
-			_token = Token { Token_Type::t_less };
-			++_cur;
-			break;
-		}
-	}
-@end(recognize)
-```
-* recognize assignment
-
-```
-@add(token types)
-	plus, minus,
-@end(token types)
-```
-* add token for addition
-
-```
-@add(unit-tests)
-	assert_token("+", Token_Type::plus);
-	assert_token("-", Token_Type::minus);
-@end(unit-tests)
-```
-* try to recognize addition
-
-```
-@add(recognize)
-	if (*_cur == '+') {
-		_token = Token { Token_Type::plus };
-		++_cur;
-		break;
-	}
-	if (*_cur == '-') {
-		_token = Token { Token_Type::minus };
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-* recognize addition
-
-```
-@add(needed by main)
-	void assert_register(
-		const char *line,
-		const char *name
-	) {
-		@put(assert register);
-	}
-@end(needed by main)
-```
-* check for a register token
-
-```
-@def(assert register)
-	Tokenizer t(line);
-	assert(t.token().type() == Token_Type::ident);
-	assert(t.token().name() == name);
-	t.next();
-	assert(t.token().type() == Token_Type::end);
-@end(assert register)
-```
-* check for a register token with specific name
-
-```
-@add(unit-tests)
-	assert_register("%x10", "%x10");
-	assert_register("%pc", "%pc");
-@end(unit-tests)
-```
-* verify some register names
-
-```
-@add(needed by tokenizer)
+@add(needed by add line)
 	#include <cctype>
-@end(needed by tokenizer)
+@end(needed by add line)
 ```
 * needs `@f(isalnum)` and `@f(isdigit)`
 
@@ -577,7 +233,7 @@ These syntax trees are then transformed into machine code.
 * the first test checks that a simple register add can be parsed
 
 ```
-@def(needed by add line)
+@add(needed by add line)
 	#include <map>
 @end(needed by add line)
 ```
@@ -585,7 +241,29 @@ These syntax trees are then transformed into machine code.
 ```
 @add(needed by add line)
 	class Item;
-	static std::map<std::string, std::vector<std::unique_ptr<Item>>> _symbols;
+	
+	using Item_Ptr = std::unique_ptr<Item>;
+	using Items = std::vector<Item_Ptr>;
+	class Macro {
+		private:
+			Items _pattern;
+			Items _replacement;
+		public:
+			Macro(
+				Items &&pattern,
+				Items &&replacement
+			):
+				_pattern { std::move(pattern) },
+				_replacement { std::move(replacement) }
+			{ }
+			const Items &pattern() const {
+				return _pattern;
+			}
+			const Items &replacement() const {
+				return _replacement;
+			}
+	};
+	static std::vector<Macro> _macros;
 @end(needed by add line)
 ```
 
@@ -593,7 +271,7 @@ These syntax trees are then transformed into machine code.
 @add(needed by add line)
 	@put(needed by clear symbols);
 	void clear_symbols() {
-		_symbols.clear();
+		_macros.clear();
 		@put(clear symbols);
 	}
 @end(needed by add line)
@@ -606,57 +284,35 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(init assert token)
-	clear_symbols();
-@end(init assert token)
-```
-
-```
 @def(clear symbols)
 	{
-		auto &l { _symbols["raw"] };
-		l.emplace_back(new Token_Item { {
-			Token_Type::t_raw
-		} });
+		Items p; p.emplace_back(new Named_Item { "%pc" });
+		Items e; e.emplace_back(new Pc_Item { });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["if"] };
-		l.emplace_back(new Token_Item { {
-			Token_Type::t_if
-		} });
+		Items p; p.emplace_back(new Named_Item { "%mtvec" });
+		Items e; e.emplace_back(new Csr_Item { 0x305 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["and"] };
-		l.emplace_back(new Token_Item { {
-			Token_Type::t_and
-		} });
+		Items p; p.emplace_back(new Named_Item { "%mhartid" });
+		Items e; e.emplace_back(new Csr_Item { 0xf14 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["or"] };
-		l.emplace_back(new Token_Item { {
-			Token_Type::t_or
-		} });
-	} {
-		auto &l { _symbols["%pc"] };
-		l.emplace_back(new Pc_Item { });
-	} {
-		auto &l { _symbols["%mtvec"] };
-		l.emplace_back(new Csr_Item { 0x305 });
-	} {
-		auto &l { _symbols["%mhartid"] };
-		l.emplace_back(new Csr_Item { 0xf14 });
-	} {
-		char name[] = "%x#";
+		std::string name { "%x#" };
 		for (int i = 0; i < 10; ++i) {
 			name[2] = '0' + i;
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
-
 	} {
-		char name[] = "%x##";
+		std::string name { "%x##" };
 		for (int i = 10; i < 32; ++i) {
 			name[2] = '0' + (i / 10);
 			name[3] = '0' + (i % 10);
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	}
 @end(clear symbols)
@@ -665,65 +321,82 @@ These syntax trees are then transformed into machine code.
 ```
 @add(clear symbols)
 	{
-		auto &l { _symbols["%zero"] };
-		l.emplace_back(new Register_Item { 0 });
+		Items p; p.emplace_back(new Named_Item { "%zero" });
+		Items e; e.emplace_back(new Register_Item { 0 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["%ra"] };
-		l.emplace_back(new Register_Item { 1 });
+		Items p; p.emplace_back(new Named_Item { "%ra" });
+		Items e; e.emplace_back(new Register_Item { 1 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["%sp"] };
-		l.emplace_back(new Register_Item { 2 });
+		Items p; p.emplace_back(new Named_Item { "%sp" });
+		Items e; e.emplace_back(new Register_Item { 1 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["%gp"] };
-		l.emplace_back(new Register_Item { 3 });
+		Items p; p.emplace_back(new Named_Item { "%gp"});
+		Items e; e.emplace_back(new Register_Item { 3 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		auto &l { _symbols["%tp"] };
-		l.emplace_back(new Register_Item { 4 });
+		Items p; p.emplace_back(new Named_Item { "%tp" });
+		Items e; e.emplace_back(new Register_Item { 4 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		char name[] = "%t#";
+		std::string name { "%t#" };
 		for (int i = 0; i < 3; ++i) {
 			name[2] = '0' + i;
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i + 5 });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i + 5 });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	} {
-		char name[] = "%s#";
+		std::string name { "%s#" };
 		for (int i = 0; i < 2; ++i) {
 			name[2] = '0' + i;
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i + 8 });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i + 8 });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	} {
-		auto &l { _symbols["%fp"] };
-		l.emplace_back(new Register_Item { 8 });
+		Items p; p.emplace_back(new Named_Item { "%fp" });
+		Items e; e.emplace_back(new Register_Item { 8 });
+		_macros.emplace_back(std::move(p), std::move(e));
 	} {
-		char name[] = "%a#";
+		std::string name { "%a#" };
 		for (int i = 0; i < 8; ++i) {
 			name[2] = '0' + i;
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i + 10 });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i + 10 });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	} {
-		char name[] = "%s#";
+		std::string name { "%s#" };
 		for (int i = 2; i < 10; ++i) {
 			name[2] = '0' + i;
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i + 16 });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i + 16 });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	} {
-		char name[] = "%s1#";
+		std::string name { "%s1#" };
 		for (int i = 10; i < 12; ++i) {
 			name[3] = '0' + (i % 10);
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i + 16 });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i + 16 });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
 	} {
-		char name[] = "%t#";
+		std::string name { "%t#" };
 		for (int i = 3; i < 7; ++i) {
 			name[2] = '0' + i;
-			auto &l { _symbols[name] };
-			l.emplace_back(new Register_Item { i + 25 });
+			Items p; p.emplace_back(new Named_Item { name });
+			Items e; e.emplace_back(new Register_Item { i + 25 });
+			_macros.emplace_back(std::move(p), std::move(e));
 		}
+	} {
+		Items p; p.emplace_back(new Named_Item { "*)" });
+		Items e; e.emplace_back(new Named_Item { "*" });
+		e.emplace_back(new Named_Item { ")" });
+		_macros.emplace_back(std::move(p), std::move(e));
 	}
 @end(clear symbols)
 ```
@@ -779,13 +452,52 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(add line)
-	Tokenizer t { line };
-	std::vector<Token> ts;
-	while (t.token().type() != Token_Type::end) {
-		ts.push_back(t.token());
-		t.next();
+	std::vector<std::unique_ptr<Item>> items;
+	auto end { line.end() };
+	auto cur { line.begin() };
+	for (;;) {
+		while (cur < end && *cur <= ' ') {
+			++cur;
+		}
+		if (cur == end) { break; }
+
+		auto begin { cur };
+		if (isalpha(*cur) || *cur == '_' || *cur == '%') {
+			while (cur < end && (isalnum(*cur) || *cur == '_' || *cur == '%')) {
+				++cur;
+			}
+			items.emplace_back(new Named_Item { { begin, cur } } );
+		} else if (isdigit(*cur)) {
+			int value { 0 };
+			while (cur < end && isdigit(*cur)) {
+				value = value * 10 + (*cur++ - '0');
+			}
+			items.emplace_back(new Number_Item { value });
+		} else if (*cur == '#') {
+			break;
+		} else if (*cur == '$') {
+			++cur;
+			int value { 0 };
+			while (cur < end && isxdigit(*cur)) {
+				int digit;
+				if (isdigit(*cur)) {
+					digit = *cur - '0';
+				} else if (*cur <= 'F') {
+					digit = *cur - 'A' + 10;
+				} else {
+					digit = *cur - 'a' + 10;
+				}
+				value = value * 16 + digit;
+				++cur;
+			}
+			items.emplace_back(new Number_Item { value });
+		} else if (ispunct(*cur)) {
+			while (cur < end && ispunct(*cur)) {
+				++cur;
+			}
+			items.emplace_back(new Named_Item { { begin, cur } });
+		}
 	}
-	auto cur { ts.begin() };
 	@put(expand);
 @end(add line)
 ```
@@ -837,13 +549,6 @@ These syntax trees are then transformed into machine code.
 		s.add_line(l);
 	}
 @end(read stdin)
-```
-
-```
-@add(token types)
-	t_and,
-	t_or,
-@end(token types)
 ```
 
 ```
@@ -928,56 +633,12 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(token types)
-	t_if,
-	t_colon,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (*_cur == ':') {
-		_token = Token { Token_Type::t_colon };
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
 @add(unit-tests)
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 @end(unit-tests)
-```
-
-```
-@add(token types)
-	t_equals,
-	t_not_equals,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (*_cur == '=') {
-		_token = Token { Token_Type::t_equals };
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(recognize)
-	if (*_cur == '!' && _cur + 1 < _end && _cur[1] == '=') {
-		_token = Token { Token_Type::t_not_equals };
-		_cur += 2;
-		break;
-	}
-@end(recognize)
 ```
 
 ```
@@ -1005,33 +666,6 @@ These syntax trees are then transformed into machine code.
 		0x00029063
 	);
 @end(unit-tests)
-```
-
-```
-@add(token types)
-	t_open_bracket,
-	t_close_bracket,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (*_cur == '[') {
-		_token = Token_Type::t_open_bracket;
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(recognize)
-	if (*_cur == ']') {
-		_token = Token_Type::t_close_bracket;
-		++_cur;
-		break;
-	}
-@end(recognize)
 ```
 
 ```
@@ -1083,72 +717,46 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(token types)
-	t_open_parenthesis,
-	t_close_parenthesis,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (*_cur == '(') {
-		_token = Token { Token_Type::t_open_parenthesis };
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(recognize)
-	if (*_cur == ')') {
-		_token = Token { Token_Type::t_close_parenthesis };
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
-@add(token types)
-	t_times,
-@end(token types)
-```
-
-```
-@add(recognize)
-	if (*_cur == '*') {
-		_token = Token { Token_Type::t_times };
-		++_cur;
-		break;
-	}
-@end(recognize)
-```
-
-```
 @def(needed by clear symbols)
 	class Item {
 		public:
 			virtual ~Item() {};
 			virtual Item *clone() const = 0;
+			virtual void write(std::ostream &out) const = 0;
 	};
+	std::ostream &operator<<(std::ostream &out, const Item &item) {
+		item.write(out);
+		return out;
+	}
 @end(needed by clear symbols)
 ```
 
 ```
 @add(needed by clear symbols)
-	class Token_Item: public Item {
+	class Named_Item: public Item {
 		private:
-			Token _token;
+			std::string _name;
 		public:
-			Token_Item(const Token &t):
-				_token { t }
-			{ }
-			const Token &token() const {
-				return _token;
-			}
+			Named_Item(const std::string &name): _name { name } { }
+			const std::string &name() const { return _name; }
 			Item *clone() const override {
-				return new Token_Item { _token };
+				return new Named_Item { _name };
+			}
+			void write(std::ostream &out) const override {
+				out << _name;
+			}
+	};
+	class Number_Item: public Item {
+		private:
+			int _value;
+		public:
+			Number_Item(int value): _value { value } { }
+			int value() const { return _value; }
+			Item *clone() const override {
+				return new Number_Item { _value };
+			}
+			void write(std::ostream &out) const override {
+				out << '$' << std::hex << _value << std::dec;
 			}
 	};
 @end(needed by clear symbols)
@@ -1160,6 +768,9 @@ These syntax trees are then transformed into machine code.
 		public:
 			Item *clone() const override {
 				return new Pc_Item { };
+			}
+			void write(std::ostream &out) const override {
+				out << "%pc";
 			}
 	};
 @end(needed by clear symbols)
@@ -1180,6 +791,9 @@ These syntax trees are then transformed into machine code.
 			Item *clone() const override {
 				return new Register_Item { _nr };
 			}
+			void write(std::ostream &out) const override {
+				out << "%x" << _nr;
+			}
 	};
 @end(needed by clear symbols)
 ```
@@ -1199,6 +813,9 @@ These syntax trees are then transformed into machine code.
 			Item *clone() const override {
 				return new Csr_Item { _nr };
 			}
+			void write(std::ostream &out) const override {
+				out << "#csr.$" << std::hex << _nr << std::dec;
+			}
 	};
 @end(needed by clear symbols)
 ```
@@ -1217,6 +834,9 @@ These syntax trees are then transformed into machine code.
 			}
 			Item *clone() const override {
 				return new Machine_Item { _instruction };
+			}
+			void write(std::ostream &out) const override {
+				out << "#raw.$" << std::hex << _instruction << std::dec;
 			}
 	};
 @end(needed by clear symbols)
@@ -1253,6 +873,11 @@ These syntax trees are then transformed into machine code.
 					_rd, _opcode
 				};
 			}
+			void write(std::ostream &out) const override {
+				out << "#i_type(" << _immediate << ", " << _rs1 <<
+					", " << _func3 << ", " << _rd << ", " <<
+					_opcode << ')';
+			}
 	};
 @end(needed by clear symbols)
 ```
@@ -1282,22 +907,29 @@ These syntax trees are then transformed into machine code.
 					_rd, _opcode
 				};
 			}
+			void write(std::ostream &out) const override {
+				out << "#u_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
+			}
 	};
 @end(needed by clear symbols)
 ```
 
 ```
 @def(expand)
-	std::vector<std::unique_ptr<Item>>
-		items;
-	@put(build items);
-	unsigned i = 0;
-	while (i < items.size()) {
-		@put(transform);
-		++i;
+restart:
+	if (items.size()) {
+		auto macro { _macros.begin() };
+		while (macro != _macros.end()) {
+			unsigned i = 0;
+			while (i <= items.size() - macro->pattern().size()) {
+				@put(transform);
+				++i;
+			}
+			++macro;
+		}
+		@put(handle define);
+		@put(consume machine instrs);
 	}
-	@put(handle define);
-	@put(consume machine instrs);
 	if (! items.empty()) {
 		std::cerr <<
 			"cant expand fully [" <<
@@ -1307,86 +939,57 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@def(build items)
-	for (; cur != ts.end(); ++cur) {
-		items.emplace_back(
-			new Token_Item { *cur }
-		);
-	}
-@end(build items)
-```
-
-```
 @def(transform) {
-	auto *ti {
-		dynamic_cast<Token_Item *>(
+	auto *ni {
+		dynamic_cast<Named_Item *>(
 			&*items[i]
 	) };
-	if (ti) {
-		@put(transform tok);
+	if (ni) {
+		@put(transform named);
 	}
 } @end(transform)
 ```
 
 ```
-@def(transform tok)
-	if (ti->token().type() ==
-		Token_Type::ident
-	) {
-		@put(transform tok ident);
+@def(transform named)
+	if (ni->name() == dynamic_cast<Named_Item *>(&**macro->pattern().begin())->name()) {
+		@put(transform named lookup);
+		goto restart;
 	}
-@end(transform tok)
+@end(transform named)
 ```
 
 ```
-@def(transform tok ident)
-	auto s {
-		_symbols.find(ti->token().name())
-	};
-	if (s != _symbols.end()) {
-		@put(transform tok lookup);
-		i = 0; continue;
-	}
-@end(transform tok ident)
-```
-
-```
-@def(transform tok lookup)
-	auto &ss { s->second };
+@def(transform named lookup)
 	items.erase(items.begin() + i,
 		items.begin() + i + 1
 	);
-	for (const auto &e : ss) {
+	for (const auto &e : macro->replacement()) {
 		items.emplace(
 			items.begin() + i, e->clone()
 		);
 		++i;
 	}
-@end(transform tok lookup)
+@end(transform named lookup)
 ```
 
 ```
-@add(transform tok)
-	if (ti->token().type() ==
-		Token_Type::t_raw
-	) {
+@add(transform named)
+	if (ni->name() == "raw") {
 		@put(transform raw);
 	}
-@end(transform tok)
+@end(transform named)
 ```
 
 ```
 @def(transform raw)
 	if (i < items.size() - 1) {
-		auto *ta {
-			dynamic_cast<Token_Item *>(
+		auto *n2 {
+			dynamic_cast<Number_Item *>(
 				&*items[i + 1]
 		) };
-		if (ta && ta->token().type() ==
-			Token_Type::number
-		) {
+		if (n2) {
 			@put(do transform raw);
-			i = 0; continue;
 		}
 	}
 @end(transform raw)
@@ -1394,25 +997,23 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(do transform raw)
-	int value { ta->token().value() };
+	int value { n2->value() };
 	items.erase( items.begin() + i,
 		items.begin() + i + 2
 	);
 	items.emplace(items.begin() + i,
 		new Machine_Item { value }
 	);
+	goto restart;
 @end(do transform raw)
 ```
 
 ```
-@add(transform tok)
-	if (ti->token().type() ==
-		Token_Type::t_times
-	) {
+@add(transform named)
+	if (ni->name() == "*") {
 		@put(transform cur addr);
-		i = 0; continue;
 	}
-@end(transform tok)
+@end(transform named)
 ```
 
 ```
@@ -1422,10 +1023,9 @@ These syntax trees are then transformed into machine code.
 	int addr = code.size() * 4 +
 		0x20010000;
 	items.emplace(items.begin() + i,
-		new Token_Item({
-			Token_Type::number, addr
-		})
+		new Number_Item { addr }
 	);
+	goto restart;
 @end(transform cur addr)
 ```
 
@@ -1446,12 +1046,10 @@ These syntax trees are then transformed into machine code.
 @def(transform reg)
 	if (i < items.size() - 2) {
 		auto *t2 {
-			dynamic_cast<Token_Item *>(
+			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
 		) };
-		if (t2 && t2->token().type() ==
-			Token_Type::becomes
-		) {
+		if (t2 && t2->name() == "<-") {
 			@put(transform reg assign);
 		}
 	}
@@ -1460,13 +1058,11 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform reg assign) {
-	auto *t3 {
-		dynamic_cast<Token_Item *>(
+	auto *n3 {
+		dynamic_cast<Number_Item *>(
 			&*items[i + 2]
 	) };
-	if (t3 && t3->token().type() ==
-		Token_Type::number
-	) {
+	if (n3) {
 		@put(transform reg assign num);
 		i = 0; continue;
 	}
@@ -1475,7 +1071,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform reg assign num)
-	int v { t3->token().value() };
+	int v { n3->value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 3
 	);
@@ -1507,6 +1103,7 @@ These syntax trees are then transformed into machine code.
 			}
 		);
 	}
+	goto restart;
 } @end(transform reg assign num)
 ```
 
@@ -1518,7 +1115,6 @@ These syntax trees are then transformed into machine code.
 	) };
 	if (c3) {
 		@put(transform reg assign csr);
-		i = 0; continue;
 	}
 } @end(transform reg assign)
 ```
@@ -1534,6 +1130,7 @@ These syntax trees are then transformed into machine code.
 			cv, 0, 0x2, rd, 0x73
 		}
 	);
+	goto restart;
 @end(transform reg assign csr)
 ```
 
@@ -1554,12 +1151,12 @@ These syntax trees are then transformed into machine code.
 ```
 @def(transform reg assign reg)
 	if (i < items.size() - 4) {
-		auto t3 {
-			dynamic_cast<Token_Item *>(
+		auto n3 {
+			dynamic_cast<Named_Item *>(
 				&*items[i + 3]
 			)
 		};
-		if (t3) {
+		if (n3) {
 			@put(transform reg assign op);
 		}
 	}
@@ -1568,9 +1165,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform reg assign op)
-	if (t3->token().type() ==
-		Token_Type::t_or
-	) {
+	if (n3->name() == "or") {
 		@put(transform or);
 	}
 @end(transform reg assign op)
@@ -1579,13 +1174,11 @@ These syntax trees are then transformed into machine code.
 ```
 @def(transform or) {
 	auto n4 {
-		dynamic_cast<Token_Item *>(
+		dynamic_cast<Number_Item *>(
 			&*items[i + 4]
 		)
 	};
-	if (n4 && n4->token().type() ==
-		Token_Type::number
-	) {
+	if (n4) {
 		@put(transform or imm);
 	}
 } @end(transform or)
@@ -1593,7 +1186,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform or imm)
-	int imm { n4->token().value() };
+	int imm { n4->value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 5
 	);
@@ -1602,15 +1195,13 @@ These syntax trees are then transformed into machine code.
 			imm, rs1_nr, 0x6, rd, 0x13
 		}
 	);
-	i = 0; continue;
+	goto restart;
 @end(transform or imm)
 ```
 
 ```
 @add(transform reg assign op)
-	if (t3->token().type() ==
-		Token_Type::t_and
-	) {
+	if (n3->name() == "and") {
 		@put(transform and);
 	}
 @end(transform reg assign op)
@@ -1619,13 +1210,11 @@ These syntax trees are then transformed into machine code.
 ```
 @def(transform and) {
 	auto n4 {
-		dynamic_cast<Token_Item *>(
+		dynamic_cast<Number_Item *>(
 			&*items[i + 4]
 		)
 	};
-	if (n4 && n4->token().type() ==
-		Token_Type::number
-	) {
+	if (n4) {
 		@put(transform and imm);
 	}
 } @end(transform and)
@@ -1633,7 +1222,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform and imm)
-	int imm { n4->token().value() };
+	int imm { n4->value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 5
 	);
@@ -1642,7 +1231,7 @@ These syntax trees are then transformed into machine code.
 			imm, rs1_nr, 0x7, rd, 0x13
 		}
 	);
-	i = 0; continue;
+	goto restart;
 @end(transform and imm)
 ```
 
@@ -1662,14 +1251,12 @@ These syntax trees are then transformed into machine code.
 ```
 @def(transform pc)
 	if (i < items.size() - 2) {
-		auto t2 {
-			dynamic_cast<Token_Item *>(
+		auto n2 {
+			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
 			)
 		};
-		if (t2 && t2->token().type() ==
-			Token_Type::becomes
-		) {
+		if (n2 && n2->name() == "<-") {
 			@put(transform pc assgn);
 		}
 	}
@@ -1692,20 +1279,17 @@ These syntax trees are then transformed into machine code.
 ```
 @def(transform pc assgn pc)
 	if (i < items.size() - 4) {
-		auto t4 {
-			dynamic_cast<Token_Item *>(
+		auto n4 {
+			dynamic_cast<Named_Item *>(
 				&*items[i + 3]
 			)
 		};
-		if (t4 && (
-			t4->token().type() ==
-				Token_Type::plus ||
-			t4->token().type() ==
-				Token_Type::minus
+		if (n4 && (
+			n4->name() == "+" ||
+			n4->name() == "-"
 		)) {
 			bool neg {
-				t4->token().type() ==
-					Token_Type::minus
+				n4->name() == "-"
 			};
 			@put(transform pc pm);
 		}
@@ -1738,21 +1322,22 @@ These syntax trees are then transformed into machine code.
 					_rd, _opcode
 				};
 			}
+			void write(std::ostream &out) const override {
+				out << "#j_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
+			}
 	};
 @end(needed by clear symbols)
 ```
 
 ```
 @def(transform pc pm)
-	auto t5 {
-		dynamic_cast<Token_Item *>(
+	auto n5 {
+		dynamic_cast<Number_Item *>(
 			&*items[i + 4]
 		)
 	};
-	if (t5 && t5->token().type() ==
-		Token_Type::number
-	) {
-		int value { t5->token().value() };
+	if (n5) {
+		int value { n5->value() };
 		if (neg) { value = -value; }
 		items.erase(items.begin() + i,
 			items.begin() + i + 5
@@ -1762,7 +1347,7 @@ These syntax trees are then transformed into machine code.
 				value, 0, 0x6f
 			)
 		);
-		i = 0; continue;
+		goto restart;
 	}
 @end(transform pc pm)
 ```
@@ -1771,16 +1356,12 @@ These syntax trees are then transformed into machine code.
 @add(transform pc assgn pc)
 	if (items.begin() + i + 3 == items.end()) {
 		items.emplace(items.begin() + i + 3,
-			new Token_Item { {
-				Token_Type::plus
-			} }
+			new Named_Item { "+" }
 		);
 		items.emplace(items.begin() + i + 4,
-			new Token_Item { {
-				Token_Type::number, 0
-			} }
+			new Number_Item { 0 }
 		);
-		i = 0; continue;
+		goto restart;
 	}
 @end(transform pc assgn pc)
 ```
@@ -1877,28 +1458,24 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@add(transform tok)
-	if (ti->token().type() ==
-		Token_Type::t_open_parenthesis
-	) {
+@add(transform named)
+	if (ni->name() == "(") {
 		if (i < items.size() - 4) {
 			@put(transform lp);
 		}
 	}
-@end(transform tok)
+@end(transform named)
 ```
 
 ```
 @def(transform lp)
-	auto t2 {
-		dynamic_cast<Token_Item *>(
+	auto n2 {
+		dynamic_cast<Number_Item *>(
 			&*items[i + 1]
 		)
 	};
-	if (t2 && t2->token().type() ==
-		Token_Type::number
-	) {
-		int v1 { t2->token().value() };
+	if (n2) {
+		int v1 { n2->value() };
 		@put(transform lp num);
 	}
 @end(transform lp)
@@ -1906,19 +1483,16 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform lp num)
-	auto t3 {
-		dynamic_cast<Token_Item *>(
+	auto n3 {
+		dynamic_cast<Named_Item *>(
 			&*items[i + 2]
 		)
 	};
-	if (t3 && (
-		t3->token().type() ==
-			Token_Type::plus ||
-		t3->token().type() ==
-			Token_Type::minus
+	if (n3 && (
+		n3->name() == "+" ||
+		n3->name() == "-"
 	)) {
-		bool neg { t3->token().type() ==
-			Token_Type::minus };
+		bool neg { n3->name() == "-" };
 		@put(transform lp num pm);
 	}
 @end(transform lp num)
@@ -1926,15 +1500,13 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform lp num pm)
-	auto t4 {
-		dynamic_cast<Token_Item *>(
+	auto n4 {
+		dynamic_cast<Number_Item *>(
 			&*items[i + 3]
 		)
 	};
-	if (t4 && t4->token().type() ==
-		Token_Type::number
-	) {
-		int v2 { t4->token().value() };
+	if (n4) {
+		int v2 { n4->value() };
 		if (neg) { v2 = -v2; }
 		@put(transform lp num pm num);
 	}
@@ -1943,53 +1515,43 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform lp num pm num)
-	auto t5 {
-		dynamic_cast<Token_Item *>(
+	auto n5 {
+		dynamic_cast<Named_Item *>(
 			&*items[i + 4]
 		)
 	};
-	if (t5 && t5->token().type() ==
-		Token_Type::t_close_parenthesis
-	) {
+	if (n5 && n5->name() == ")") {
 		items.erase(items.begin() + i,
 			items.begin() + i + 5
 		);
 		items.emplace(items.begin() + i,
-			new Token_Item { {
-				Token_Type::number,
-				v1 + v2
-			} }
+			new Number_Item { v1 + v2 }
 		);
-		i = 0; continue;
+		goto restart;
 	}
 @end(transform lp num pm num)
 ```
 
 ```
-@add(transform tok)
-	if (ti->token().type() ==
-		Token_Type::ident &&
-			ti->token().name() == "goto"
-	) {
+@add(transform named)
+	if (ni->name() == "goto") {
 		if (i < items.size() - 1) {
 			@put(transform goto);
 		}
 	}
-@end(transform tok)
+@end(transform named)
 ```
 
 ```
 @def(transform goto)
-	auto tt {
-		dynamic_cast<Token_Item *>(
+	auto n2 {
+		dynamic_cast<Number_Item *>(
 			&*items[i + 1]
 		)
 	};
-	if (tt && tt->token().type() ==
-		Token_Type::number
-	) {
+	if (n2) {
 		int target {
-			tt->token().value()
+			n2->value()
 		};
 		items.erase(items.begin() + i,
 			items.begin() + i + 2
@@ -1998,88 +1560,62 @@ These syntax trees are then transformed into machine code.
 			new Pc_Item { }
 		);
 		items.emplace(items.begin() + i + 1,
-			new Token_Item { {
-				Token_Type::becomes
-			} }
+			new Named_Item { "<-" }
 		);
 		items.emplace(items.begin() + i + 2,
 			new Pc_Item { }
 		);
 		items.emplace(items.begin() + i + 3,
-			new Token_Item { {
-				Token_Type::plus
-			} }
+			new Named_Item { "+" }
 		);
 		items.emplace(items.begin() + i + 4,
-			new Token_Item { {
-				Token_Type::t_open_parenthesis
-			} }
+			new Named_Item { "(" }
 		);
 		items.emplace(items.begin() + i + 5,
-			new Token_Item { {
-				Token_Type::number, target
-			} }
+			new Number_Item { target }
 		);
 		items.emplace(items.begin() + i + 6,
-			new Token_Item { {
-				Token_Type::minus
-			} }
+			new Named_Item { "-" }
 		);
 		items.emplace(items.begin() + i + 7,
-			new Token_Item { {
-				Token_Type::t_times
-			} }
+			new Named_Item { "*" }
 		);
 		items.emplace(items.begin() + i + 8,
-			new Token_Item { {
-				Token_Type::t_close_parenthesis
-			} }
+			new Named_Item { ")" }
 		);
-		i = 0; continue;
+		goto restart;
 	}
 @end(transform goto)
 ```
 
 ```
-@add(transform tok)
-	if (ti->token().type() ==
-		Token_Type::ident &&
-			i < items.size() - 1
-	) {
+@add(transform named)
+	if (i < items.size() - 1) {
 		auto ci {
-			dynamic_cast<Token_Item *>(
+			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
 			)
 		};
-		if (ci && ci->token().type() ==
-			Token_Type::t_colon
-		) {
+		if (ci && ci->name() == ":") {
 			std::string name {
-				ti->token().name()
+				ni->name()
 			};
 			items.erase(
 				items.begin() + i,
 				items.begin() + i + 2
 			);
 			items.emplace(items.begin() + i,
-				new Token_Item { {
-					Token_Type::ident,
-					name
-				} }
+				new Named_Item { name }
 			);
 			items.emplace(items.begin() + i + 1,
-				new Token_Item { {
-					Token_Type::t_equals
-				} }
+				new Named_Item { "=" }
 			);
 			items.emplace(items.begin() + i + 2,
-				new Token_Item { {
-					Token_Type::t_times
-				} }
+				new Named_Item { "*" }
 			);
 		}
 	}
-@end(transform tok)
+@end(transform named)
 ```
 
 ```
@@ -2105,21 +1641,16 @@ These syntax trees are then transformed into machine code.
 @def(handle define)
 	if (items.size() >= 2) {
 		auto ii {
-			dynamic_cast<Token_Item *>(
+			dynamic_cast<Named_Item *>(
 				&*items[0]
 			)
 		};
 		auto ai {
-			dynamic_cast<Token_Item *>(
+			dynamic_cast<Named_Item *>(
 				&*items[1]
 			)
 		};
-		if (ii && ai &&
-			ii->token().type() ==
-				Token_Type::ident &&
-			ai->token().type() ==
-				Token_Type::t_equals
-		) {
+		if (ii && ai && ai->name() == "=") {
 			@put(transform sym assign);
 		}
 	}
@@ -2128,14 +1659,15 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(transform sym assign)
-	auto &l { _symbols[
-		ii->token().name()
-	] };
+	Items value;
 	for (unsigned j = 2;
 		j < items.size(); ++j
 	) {
-		l.push_back(std::move(items[j]));
+		value.push_back(std::move(items[j]));
 	}
+	Items p;
+	p.emplace_back(new Named_Item { ii->name() });
+	_macros.emplace_back(std::move(p), std::move(value));
 	items.erase(
 		items.begin(), items.end()
 	);
