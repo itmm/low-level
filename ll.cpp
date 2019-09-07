@@ -18,7 +18,7 @@
 
 	#include <memory>
 
-#line 355 "start.x"
+#line 351 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -30,7 +30,7 @@
 			opcode;
 	}
 
-#line 369 "start.x"
+#line 365 "start.x"
 
 	int build_i_cmd(
 		int imm, char src1, int funct3, char dst, int opcode
@@ -38,7 +38,7 @@
 		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
 	}
 
-#line 379 "start.x"
+#line 375 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -49,7 +49,7 @@
 		);
 	}
 
-#line 392 "start.x"
+#line 388 "start.x"
 
 	int build_add(
 		char dst, char src1, int imm
@@ -59,7 +59,7 @@
 		);
 	}
 
-#line 622 "start.x"
+#line 618 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -163,7 +163,7 @@
 #line 271 "start.x"
 
 	
-#line 670 "start.x"
+#line 666 "start.x"
 
 	class Item {
 		public:
@@ -176,7 +176,7 @@
 		return out;
 	}
 
-#line 685 "start.x"
+#line 681 "start.x"
 
 	class Named_Item: public Item {
 		private:
@@ -205,19 +205,7 @@
 			}
 	};
 
-#line 716 "start.x"
-
-	class Pc_Item: public Item {
-		public:
-			Item *clone() const override {
-				return new Pc_Item { };
-			}
-			void write(std::ostream &out) const override {
-				out << "%pc";
-			}
-	};
-
-#line 730 "start.x"
+#line 712 "start.x"
 
 	class Register_Item: public Item {
 		private:
@@ -237,7 +225,7 @@
 			}
 	};
 
-#line 752 "start.x"
+#line 734 "start.x"
 
 	class Csr_Item: public Item {
 		private:
@@ -257,7 +245,7 @@
 			}
 	};
 
-#line 774 "start.x"
+#line 756 "start.x"
 
 	class Machine_Item: public Item {
 		private:
@@ -277,7 +265,7 @@
 			}
 	};
 
-#line 796 "start.x"
+#line 778 "start.x"
 
 	class I_Type_Item: public Item {
 		private:
@@ -315,7 +303,7 @@
 			}
 	};
 
-#line 836 "start.x"
+#line 818 "start.x"
 
 	class U_Type_Item: public Item {
 		private:
@@ -345,7 +333,7 @@
 			}
 	};
 
-#line 1251 "start.x"
+#line 1233 "start.x"
 
 	class J_Type_Item: public Item {
 		private:
@@ -383,10 +371,6 @@
 #line 281 "start.x"
 
 	{
-		Items p; p.emplace_back(new Named_Item { "%pc" });
-		Items e; e.emplace_back(new Pc_Item { });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
 		Items p; p.emplace_back(new Named_Item { "%mtvec" });
 		Items e; e.emplace_back(new Csr_Item { 0x305 });
 		_macros.emplace_back(std::move(p), std::move(e));
@@ -413,7 +397,7 @@
 		}
 	}
 
-#line 316 "start.x"
+#line 312 "start.x"
 
 	state.add_line("%zero = %x0");
 	state.add_line("%ra = %x1");
@@ -460,7 +444,7 @@
 		const std::string &line
 	) {
 		
-#line 404 "start.x"
+#line 400 "start.x"
 
 	std::vector<std::unique_ptr<Item>> items;
 	auto end { line.end() };
@@ -509,7 +493,7 @@
 		}
 	}
 	
-#line 868 "start.x"
+#line 850 "start.x"
 
 restart:
 	if (items.size()) {
@@ -518,7 +502,7 @@ restart:
 			unsigned i = 0;
 			while (i <= items.size() - macro->pattern().size()) {
 				
-#line 892 "start.x"
+#line 874 "start.x"
  {
 	auto *ni {
 		dynamic_cast<Named_Item *>(
@@ -526,11 +510,11 @@ restart:
 	) };
 	if (ni) {
 		
-#line 904 "start.x"
+#line 886 "start.x"
 
 	if (ni->name() == dynamic_cast<Named_Item *>(&**macro->pattern().begin())->name()) {
 		
-#line 913 "start.x"
+#line 895 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1
@@ -542,16 +526,16 @@ restart:
 		++i;
 	}
 
-#line 906 "start.x"
+#line 888 "start.x"
 ;
 		goto restart;
 	}
 
-#line 927 "start.x"
+#line 909 "start.x"
 
 	if (ni->name() == "raw") {
 		
-#line 935 "start.x"
+#line 917 "start.x"
 
 	if (i < items.size() - 1) {
 		auto *n2 {
@@ -560,7 +544,7 @@ restart:
 		) };
 		if (n2) {
 			
-#line 949 "start.x"
+#line 931 "start.x"
 
 	int value { n2->value() };
 	items.erase( items.begin() + i,
@@ -571,20 +555,20 @@ restart:
 	);
 	goto restart;
 
-#line 942 "start.x"
+#line 924 "start.x"
 ;
 		}
 	}
 
-#line 929 "start.x"
+#line 911 "start.x"
 ;
 	}
 
-#line 962 "start.x"
+#line 944 "start.x"
 
 	if (ni->name() == "*") {
 		
-#line 970 "start.x"
+#line 952 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -595,16 +579,16 @@ restart:
 	);
 	goto restart;
 
-#line 964 "start.x"
+#line 946 "start.x"
 ;
 	}
 
-#line 1411 "start.x"
+#line 1393 "start.x"
 
 	if (ni->name() == "(") {
 		if (i < items.size() - 4) {
 			
-#line 1421 "start.x"
+#line 1403 "start.x"
 
 	auto n2 {
 		dynamic_cast<Number_Item *>(
@@ -614,7 +598,7 @@ restart:
 	if (n2) {
 		int v1 { n2->value() };
 		
-#line 1435 "start.x"
+#line 1417 "start.x"
 
 	auto n3 {
 		dynamic_cast<Named_Item *>(
@@ -627,7 +611,7 @@ restart:
 	)) {
 		bool neg { n3->name() == "-" };
 		
-#line 1452 "start.x"
+#line 1434 "start.x"
 
 	auto n4 {
 		dynamic_cast<Number_Item *>(
@@ -638,7 +622,7 @@ restart:
 		int v2 { n4->value() };
 		if (neg) { v2 = -v2; }
 		
-#line 1467 "start.x"
+#line 1449 "start.x"
 
 	auto n5 {
 		dynamic_cast<Named_Item *>(
@@ -655,29 +639,29 @@ restart:
 		goto restart;
 	}
 
-#line 1461 "start.x"
+#line 1443 "start.x"
 ;
 	}
 
-#line 1446 "start.x"
+#line 1428 "start.x"
 ;
 	}
 
-#line 1429 "start.x"
+#line 1411 "start.x"
 ;
 	}
 
-#line 1414 "start.x"
+#line 1396 "start.x"
 ;
 		}
 	}
 
-#line 1486 "start.x"
+#line 1468 "start.x"
 
 	if (ni->name() == "goto") {
 		if (i < items.size() - 1) {
 			
-#line 1496 "start.x"
+#line 1478 "start.x"
 
 	auto n2 {
 		dynamic_cast<Number_Item *>(
@@ -692,13 +676,13 @@ restart:
 			items.begin() + i + 2
 		);
 		items.emplace(items.begin() + i,
-			new Pc_Item { }
+			new Named_Item { "%pc" }
 		);
 		items.emplace(items.begin() + i + 1,
 			new Named_Item { "<-" }
 		);
 		items.emplace(items.begin() + i + 2,
-			new Pc_Item { }
+			new Named_Item { "%pc" }
 		);
 		items.emplace(items.begin() + i + 3,
 			new Named_Item { "+" }
@@ -721,12 +705,12 @@ restart:
 		goto restart;
 	}
 
-#line 1489 "start.x"
+#line 1471 "start.x"
 ;
 		}
 	}
 
-#line 1542 "start.x"
+#line 1524 "start.x"
 
 	if (i < items.size() - 1) {
 		auto ci {
@@ -754,11 +738,11 @@ restart:
 		}
 	}
 
-#line 898 "start.x"
+#line 880 "start.x"
 ;
 	}
 } 
-#line 983 "start.x"
+#line 965 "start.x"
  {
 	auto *ri {
 		dynamic_cast<Register_Item *>(
@@ -767,7 +751,7 @@ restart:
 	if (ri) {
 		int rd { ri->nr() };
 		
-#line 996 "start.x"
+#line 978 "start.x"
 
 	if (i < items.size() - 2) {
 		auto *t2 {
@@ -776,7 +760,7 @@ restart:
 		) };
 		if (t2 && t2->name() == "<-") {
 			
-#line 1010 "start.x"
+#line 992 "start.x"
  {
 	auto *n3 {
 		dynamic_cast<Number_Item *>(
@@ -784,14 +768,14 @@ restart:
 	) };
 	if (n3) {
 		
-#line 1023 "start.x"
+#line 1005 "start.x"
 
 	int v { n3->value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 3
 	);
 
-#line 1032 "start.x"
+#line 1014 "start.x"
  {
 	int up { v & ~ 0xfff };
 	if (up != 0 && up != ~ 0xfff) {
@@ -802,7 +786,7 @@ restart:
 		++i;
 	}
 } 
-#line 1045 "start.x"
+#line 1027 "start.x"
  {
 	int low { v & 0xfff };
 	if (
@@ -816,12 +800,12 @@ restart:
 	}
 	goto restart;
 } 
-#line 1016 "start.x"
+#line 998 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1061 "start.x"
+#line 1043 "start.x"
  {
 	auto c3 {
 		dynamic_cast<Csr_Item *>(
@@ -829,7 +813,7 @@ restart:
 	) };
 	if (c3) {
 		
-#line 1073 "start.x"
+#line 1055 "start.x"
 
 	int cv { c3->nr() };
 	items.erase(items.begin() + i,
@@ -842,11 +826,11 @@ restart:
 	);
 	goto restart;
 
-#line 1067 "start.x"
+#line 1049 "start.x"
 ;
 	}
 } 
-#line 1088 "start.x"
+#line 1070 "start.x"
  {
 	auto rs1 {
 		dynamic_cast<Register_Item *>(
@@ -856,7 +840,7 @@ restart:
 	if (rs1) {
 		int rs1_nr { rs1->nr() };
 		
-#line 1102 "start.x"
+#line 1084 "start.x"
 
 	if (i < items.size() - 4) {
 		auto n3 {
@@ -866,11 +850,11 @@ restart:
 		};
 		if (n3) {
 			
-#line 1117 "start.x"
+#line 1099 "start.x"
 
 	if (n3->name() == "or") {
 		
-#line 1125 "start.x"
+#line 1107 "start.x"
  {
 	auto n4 {
 		dynamic_cast<Number_Item *>(
@@ -879,7 +863,7 @@ restart:
 	};
 	if (n4) {
 		
-#line 1138 "start.x"
+#line 1120 "start.x"
 
 	int imm { n4->value() };
 	items.erase(items.begin() + i,
@@ -892,19 +876,19 @@ restart:
 	);
 	goto restart;
 
-#line 1132 "start.x"
+#line 1114 "start.x"
 ;
 	}
 } 
-#line 1119 "start.x"
+#line 1101 "start.x"
 ;
 	}
 
-#line 1153 "start.x"
+#line 1135 "start.x"
 
 	if (n3->name() == "and") {
 		
-#line 1161 "start.x"
+#line 1143 "start.x"
  {
 	auto n4 {
 		dynamic_cast<Number_Item *>(
@@ -913,7 +897,7 @@ restart:
 	};
 	if (n4) {
 		
-#line 1174 "start.x"
+#line 1156 "start.x"
 
 	int imm { n4->value() };
 	items.erase(items.begin() + i,
@@ -926,42 +910,42 @@ restart:
 	);
 	goto restart;
 
-#line 1168 "start.x"
+#line 1150 "start.x"
 ;
 	}
 } 
-#line 1155 "start.x"
+#line 1137 "start.x"
 ;
 	}
 
-#line 1110 "start.x"
+#line 1092 "start.x"
 ;
 		}
 	}
 
-#line 1096 "start.x"
+#line 1078 "start.x"
 ;
 	}
 } 
-#line 1003 "start.x"
+#line 985 "start.x"
 ;
 		}
 	}
 
-#line 990 "start.x"
+#line 972 "start.x"
 ;
 	}
 } 
-#line 1189 "start.x"
+#line 1171 "start.x"
  {
 	auto pi {
-		dynamic_cast<Pc_Item *>(
+		dynamic_cast<Named_Item *>(
 			&*items[i]
 		)
 	};
-	if (pi) {
+	if (pi && pi->name() == "%pc") {
 		
-#line 1202 "start.x"
+#line 1184 "start.x"
 
 	if (i < items.size() - 2) {
 		auto n2 {
@@ -971,16 +955,16 @@ restart:
 		};
 		if (n2 && n2->name() == "<-") {
 			
-#line 1217 "start.x"
+#line 1199 "start.x"
 
 	auto p3 {
-		dynamic_cast<Pc_Item *>(
+		dynamic_cast<Named_Item *>(
 			&*items[i + 2]
 		)
 	};
-	if (p3) {
+	if (p3 && p3->name() == "%pc") {
 		
-#line 1230 "start.x"
+#line 1212 "start.x"
 
 	if (i < items.size() - 4) {
 		auto n4 {
@@ -996,7 +980,7 @@ restart:
 				n4->name() == "-"
 			};
 			
-#line 1283 "start.x"
+#line 1265 "start.x"
 
 	auto n5 {
 		dynamic_cast<Number_Item *>(
@@ -1017,12 +1001,12 @@ restart:
 		goto restart;
 	}
 
-#line 1244 "start.x"
+#line 1226 "start.x"
 ;
 		}
 	}
 
-#line 1306 "start.x"
+#line 1288 "start.x"
 
 	if (items.begin() + i + 3 == items.end()) {
 		items.emplace(items.begin() + i + 3,
@@ -1034,20 +1018,20 @@ restart:
 		goto restart;
 	}
 
-#line 1224 "start.x"
+#line 1206 "start.x"
 ;
 	}
 
-#line 1210 "start.x"
+#line 1192 "start.x"
 ;
 		}
 	}
 
-#line 1196 "start.x"
+#line 1178 "start.x"
 ;
 	}
 } 
-#line 1320 "start.x"
+#line 1302 "start.x"
  {
 	auto ii {
 		dynamic_cast<I_Type_Item *>(
@@ -1056,7 +1040,7 @@ restart:
 	};
 	if (ii) {
 		
-#line 1333 "start.x"
+#line 1315 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -1072,11 +1056,11 @@ restart:
 	);
 	i = 0; continue;
 
-#line 1327 "start.x"
+#line 1309 "start.x"
 ;
 	}
 } 
-#line 1351 "start.x"
+#line 1333 "start.x"
  {
 	auto ui {
 		dynamic_cast<U_Type_Item *>(
@@ -1085,7 +1069,7 @@ restart:
 	};
 	if (ui) {
 		
-#line 1365 "start.x"
+#line 1347 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -1098,12 +1082,12 @@ restart:
 		new Machine_Item { result }
 	);
 
-#line 1358 "start.x"
+#line 1340 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1380 "start.x"
+#line 1362 "start.x"
  {
 	auto ji {
 		dynamic_cast<J_Type_Item *>(
@@ -1112,7 +1096,7 @@ restart:
 	};
 	if (ji) {
 		
-#line 1393 "start.x"
+#line 1375 "start.x"
 
 	int imm { ji->immediate() };
 	int result = 
@@ -1128,18 +1112,18 @@ restart:
 		new Machine_Item { result }
 	);
 
-#line 1387 "start.x"
+#line 1369 "start.x"
 ;
 	}
 } 
-#line 875 "start.x"
+#line 857 "start.x"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 1591 "start.x"
+#line 1573 "start.x"
 
 	if (items.size() >= 2) {
 		auto ii {
@@ -1154,7 +1138,7 @@ restart:
 		};
 		if (ii && ai && ai->name() == "=") {
 			
-#line 1611 "start.x"
+#line 1593 "start.x"
 
 	Items value;
 	for (unsigned j = 2;
@@ -1169,15 +1153,15 @@ restart:
 		items.begin(), items.end()
 	);
 
-#line 1604 "start.x"
+#line 1586 "start.x"
 ;
 		}
 	}
 
-#line 880 "start.x"
+#line 862 "start.x"
 ;
 		
-#line 1572 "start.x"
+#line 1554 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Machine_Item *>(
@@ -1194,7 +1178,7 @@ restart:
 		);
 	}
 
-#line 881 "start.x"
+#line 863 "start.x"
 ;
 	}
 	if (! items.empty()) {
@@ -1203,7 +1187,7 @@ restart:
 			line << "]\n";
 	}
 
-#line 451 "start.x"
+#line 447 "start.x"
 ;
 
 #line 82 "start.x"
@@ -1376,140 +1360,140 @@ restart:
 		0x00310233
 	);
 
-#line 456 "start.x"
+#line 452 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc",
 		0x0000006f
 	);
 
-#line 467 "start.x"
+#line 463 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 28",
 		0xfe5ff06f
 	);
 
-#line 477 "start.x"
+#line 473 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 32",
 		0xfe1ff06f
 	);
 
-#line 505 "start.x"
+#line 501 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 514 "start.x"
+#line 510 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 523 "start.x"
+#line 519 "start.x"
 
 	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 532 "start.x"
+#line 528 "start.x"
 
 	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 541 "start.x"
+#line 537 "start.x"
 
 	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 550 "start.x"
+#line 546 "start.x"
 
 	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 559 "start.x"
+#line 555 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 568 "start.x"
+#line 564 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 577 "start.x"
+#line 573 "start.x"
 
 	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 586 "start.x"
+#line 582 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 
-#line 595 "start.x"
+#line 591 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
 		0xfe028ae3
 	);
 
-#line 604 "start.x"
+#line 600 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc + -28",
 		0xfeb292e3
 	);
 
-#line 613 "start.x"
+#line 609 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 634 "start.x"
+#line 630 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 643 "start.x"
+#line 639 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 652 "start.x"
+#line 648 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 661 "start.x"
+#line 657 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
@@ -1522,10 +1506,10 @@ restart:
 #line 11 "start.x"
 
 		
-#line 487 "start.x"
+#line 483 "start.x"
 
 	
-#line 494 "start.x"
+#line 490 "start.x"
 
 	State s;
 	std::string l;
@@ -1534,7 +1518,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 488 "start.x"
+#line 484 "start.x"
 
 
 #line 16 "hex.x"

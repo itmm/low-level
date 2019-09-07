@@ -280,10 +280,6 @@ These syntax trees are then transformed into machine code.
 ```
 @def(clear symbols)
 	{
-		Items p; p.emplace_back(new Named_Item { "%pc" });
-		Items e; e.emplace_back(new Pc_Item { });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
 		Items p; p.emplace_back(new Named_Item { "%mtvec" });
 		Items e; e.emplace_back(new Csr_Item { 0x305 });
 		_macros.emplace_back(std::move(p), std::move(e));
@@ -707,20 +703,6 @@ These syntax trees are then transformed into machine code.
 			}
 			void write(std::ostream &out) const override {
 				out << '$' << std::hex << _value << std::dec;
-			}
-	};
-@end(needed by clear symbols)
-```
-
-```
-@add(needed by clear symbols)
-	class Pc_Item: public Item {
-		public:
-			Item *clone() const override {
-				return new Pc_Item { };
-			}
-			void write(std::ostream &out) const override {
-				out << "%pc";
 			}
 	};
 @end(needed by clear symbols)
@@ -1188,11 +1170,11 @@ restart:
 ```
 @add(transform) {
 	auto pi {
-		dynamic_cast<Pc_Item *>(
+		dynamic_cast<Named_Item *>(
 			&*items[i]
 		)
 	};
-	if (pi) {
+	if (pi && pi->name() == "%pc") {
 		@put(transform pc);
 	}
 } @end(transform)
@@ -1216,11 +1198,11 @@ restart:
 ```
 @def(transform pc assgn)
 	auto p3 {
-		dynamic_cast<Pc_Item *>(
+		dynamic_cast<Named_Item *>(
 			&*items[i + 2]
 		)
 	};
-	if (p3) {
+	if (p3 && p3->name() == "%pc") {
 		@put(transform pc assgn pc);
 	}
 @end(transform pc assgn)
@@ -1507,13 +1489,13 @@ restart:
 			items.begin() + i + 2
 		);
 		items.emplace(items.begin() + i,
-			new Pc_Item { }
+			new Named_Item { "%pc" }
 		);
 		items.emplace(items.begin() + i + 1,
 			new Named_Item { "<-" }
 		);
 		items.emplace(items.begin() + i + 2,
-			new Pc_Item { }
+			new Named_Item { "%pc" }
 		);
 		items.emplace(items.begin() + i + 3,
 			new Named_Item { "+" }
