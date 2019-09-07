@@ -17,7 +17,7 @@ default.h: default.ll
 			sed -e 's/\(.*\)/\t"\1\\n"/'; \
 		echo "};") >$@
 
-ll.cpp: default.h
+ll: default.h
 
 SOURCEs := $(wildcard *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))

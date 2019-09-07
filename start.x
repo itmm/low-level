@@ -1,4 +1,5 @@
 
+
 * start low-level with the first unit-test
 
 ```
@@ -544,8 +545,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
-		"if %x5 < 0: %pc <- %pc + -4",
+	assert_line_2(
+		"if %x5 < 0: %pc <- %pc - 4",
 		0xfe02cee3
 	);
 @end(unit-tests)
@@ -553,8 +554,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
-		"if %x5 = 0: %pc <- %pc + -12",
+	assert_line_2(
+		"if %x5 == 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
 @end(unit-tests)
@@ -562,8 +563,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
-		"if %x5 != %x11: %pc <- %pc + -28",
+	assert_line_2(
+		"if %x5 != %x11: %pc <- %pc - 28",
 		0xfeb292e3
 	);
 @end(unit-tests)
@@ -571,7 +572,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
@@ -712,79 +713,6 @@ These syntax trees are then transformed into machine code.
 				}
 				return false;
 			};
-	};
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	class I_Type_Item: public Item {
-		private:
-			int _immediate;
-			int _rs1;
-			int _func3;
-			int _rd;
-			int _opcode;
-		public:
-			I_Type_Item(
-				int immediate, int rs1, int func3,
-				int rd, int opcode
-			):
-				Item { 0 },
-				_immediate { immediate },
-				_rs1 { rs1 },
-				_func3 { func3 },
-				_rd { rd },
-				_opcode { opcode }
-			{ }
-			int immediate() const { return _immediate; }
-			int rs1() const { return _rs1; }
-			int func3() const { return _func3; }
-			int rd() const { return _rd; }
-			int opcode() const { return _opcode; }
-			Item *clone(int delta_escape) const override {
-				return new I_Type_Item {
-					_immediate, _rs1, _func3,
-					_rd, _opcode
-				};
-			}
-			void write(std::ostream &out) const override {
-				out << "#i_type(" << _immediate << ", " << _rs1 <<
-					", " << _func3 << ", " << _rd << ", " <<
-					_opcode << ')';
-			}
-	};
-@end(needed by state)
-```
-
-```
-@add(needed by state)
-	class U_Type_Item: public Item {
-		private:
-			int _immediate;
-			int _rd;
-			int _opcode;
-		public:
-			U_Type_Item(
-				int immediate,
-				int rd, int opcode
-			): Item { 0 },
-				_immediate { immediate },
-				_rd { rd },
-				_opcode { opcode }
-			{ }
-			int immediate() const { return _immediate; }
-			int rd() const { return _rd; }
-			int opcode() const { return _opcode; }
-			Item *clone(int delta) const override {
-				return new U_Type_Item {
-					_immediate,
-					_rd, _opcode
-				};
-			}
-			void write(std::ostream &out) const override {
-				out << "#u_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
-			}
 	};
 @end(needed by state)
 ```
@@ -962,41 +890,6 @@ restart:
 
 ```
 @def(transform named)
-	if (ni->name() == "raw" && ni->escapes() <= 0) {
-		@put(transform raw);
-	}
-@end(transform named)
-```
-
-```
-@def(transform raw)
-	if (i + 1 < items.size()) {
-		auto *n2 {
-			dynamic_cast<Type_Instance_Item *>(
-				&*items[i + 1]
-		) };
-		if (n2 && n2->type() == "num") {
-			@put(do transform raw);
-		}
-	}
-@end(transform raw)
-```
-
-```
-@def(do transform raw)
-	int value { n2->value() };
-	items.erase( items.begin() + i,
-		items.begin() + i + 2
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", value, 0 }
-	);
-	goto restart;
-@end(do transform raw)
-```
-
-```
-@add(transform named)
 	if (ni->name() == "*" && ni->escapes() <= 0) {
 		@put(transform cur addr);
 	}
@@ -1014,334 +907,6 @@ restart:
 	);
 	goto restart;
 @end(transform cur addr)
-```
-
-```
-@add(transform) {
-	auto *ri {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i]
-	) };
-	if (ri && ri->type() == "reg") {
-		int rd { ri->value() };
-		@put(transform reg);
-	}
-} @end(transform)
-```
-
-```
-@def(transform reg)
-	if (i + 2 < items.size()) {
-		auto *t2 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 1]
-		) };
-		if (t2 && t2->name() == "<-") {
-			@put(transform reg assign);
-		}
-	}
-@end(transform reg)
-```
-
-```
-@def(transform reg assign) {
-	auto *n3 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 2]
-	) };
-	if (n3 && n3->type() == "num") {
-		@put(transform reg assign num);
-		i = 0; continue;
-	}
-} @end(transform reg assign)
-```
-
-```
-@def(transform reg assign num)
-	int v { n3->value() };
-	items.erase(items.begin() + i,
-		items.begin() + i + 3
-	);
-@end(transform reg assign num)
-```
-
-```
-@add(transform reg assign num) {
-	int up { v & ~ 0xfff };
-	if (up != 0 && up != ~ 0xfff) {
-		items.emplace(items.begin() + i,
-			new U_Type_Item {
-				up, rd, 0x37
-		});
-		++i;
-	}
-} @end(transform reg assign num)
-```
-
-```
-@add(transform reg assign num) {
-	int low { v & 0xfff };
-	if (
-		(low && (low != 0xfff)) || v == 0
-	) {
-		items.emplace(items.begin() + i,
-			new I_Type_Item {
-				low, 0, 0x0, rd, 0x13
-			}
-		);
-	}
-	goto restart;
-} @end(transform reg assign num)
-```
-
-```
-@add(transform reg assign) {
-	auto c3 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 2]
-	) };
-	if (c3 && c3->type() == "csr") {
-		@put(transform reg assign csr);
-	}
-} @end(transform reg assign)
-```
-
-```
-@def(transform reg assign csr)
-	int cv { c3->value() };
-	items.erase(items.begin() + i,
-		items.begin() + i + 3
-	);
-	items.emplace(items.begin() + i,
-		new I_Type_Item {
-			cv, 0, 0x2, rd, 0x73
-		}
-	);
-	goto restart;
-@end(transform reg assign csr)
-```
-
-```
-@add(transform) {
-	auto pi {
-		dynamic_cast<Named_Item *>(
-			&*items[i]
-		)
-	};
-	if (pi && pi->name() == "%pc") {
-		@put(transform pc);
-	}
-} @end(transform)
-```
-
-```
-@def(transform pc)
-	if (i + 2 < items.size()) {
-		auto n2 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 1]
-			)
-		};
-		if (n2 && n2->name() == "<-") {
-			@put(transform pc assgn);
-		}
-	}
-@end(transform pc)
-```
-
-```
-@def(transform pc assgn)
-	auto p3 {
-		dynamic_cast<Named_Item *>(
-			&*items[i + 2]
-		)
-	};
-	if (p3 && p3->name() == "%pc") {
-		@put(transform pc assgn pc);
-	}
-@end(transform pc assgn)
-```
-
-```
-@def(transform pc assgn pc)
-	if (i + 4 < items.size()) {
-		auto n4 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 3]
-			)
-		};
-		if (n4 && (
-			n4->name() == "+" ||
-			n4->name() == "-"
-		)) {
-			bool neg {
-				n4->name() == "-"
-			};
-			@put(transform pc pm);
-		}
-	}
-@end(transform pc assgn pc)
-```
-
-```
-@add(needed by state)
-	class J_Type_Item: public Item {
-		private:
-			int _immediate;
-			int _rd;
-			int _opcode;
-		public:
-			J_Type_Item(
-				int immediate,
-				int rd, int opcode
-			):
-				Item { 0 },
-				_immediate { immediate },
-				_rd { rd },
-				_opcode { opcode }
-			{ }
-			int immediate() const { return _immediate; }
-			int rd() const { return _rd; }
-			int opcode() const { return _opcode; }
-			Item *clone(int) const override {
-				return new J_Type_Item {
-					_immediate,
-					_rd, _opcode
-				};
-			}
-			void write(std::ostream &out) const override {
-				out << "#j_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
-			}
-	};
-@end(needed by state)
-```
-
-```
-@def(transform pc pm)
-	auto n5 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 4]
-		)
-	};
-	if (n5 && n5->type() == "num") {
-		int value { n5->value() };
-		if (neg) { value = -value; }
-		items.erase(items.begin() + i,
-			items.begin() + i + 5
-		);
-		items.emplace(items.begin() + i,
-			new J_Type_Item(
-				value, 0, 0x6f
-			)
-		);
-		goto restart;
-	}
-@end(transform pc pm)
-```
-
-```
-@add(transform pc assgn pc)
-	if (items.begin() + i + 3 == items.end()) {
-		items.emplace(items.begin() + i + 3,
-			new Named_Item { "+", 0 }
-		);
-		items.emplace(items.begin() + i + 4,
-			new Type_Instance_Item { "num", 0, 0 }
-		);
-		goto restart;
-	}
-@end(transform pc assgn pc)
-```
-
-```
-@add(transform) {
-	auto ii {
-		dynamic_cast<I_Type_Item *>(
-			&*items[i]
-		)
-	};
-	if (ii) {
-		@put(transform i type);
-	}
-} @end(transform)
-```
-
-```
-@def(transform i type)
-	int result {
-		(ii->immediate() << 20) |
-		(ii->rs1() << 15) |
-		(ii->func3() << 12) |
-		(ii->rd() << 7) | ii->opcode()
-	};
-	items.erase(items.begin() + i,
-		items.begin() + i + 1
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result, 0 }
-	);
-	i = 0; continue;
-@end(transform i type)
-```
-
-```
-@add(transform) {
-	auto ui {
-		dynamic_cast<U_Type_Item *>(
-			&*items[i]
-		)
-	};
-	if (ui) {
-		@put(transform u type);
-		i = 0; continue;
-	}
-} @end(transform)
-```
-
-```
-@def(transform u type)
-	int result {
-		ui->immediate() |
-		(ui->rd() << 7) | ui->opcode()
-	};
-	items.erase(items.begin() + i,
-		items.begin() + i + 1
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result, 0 }
-	);
-@end(transform u type)
-```
-
-```
-@add(transform) {
-	auto ji {
-		dynamic_cast<J_Type_Item *>(
-			&*items[i]
-		)
-	};
-	if (ji) {
-		@put(transform j type);
-	}
-} @end(transform)
-```
-
-```
-@def(transform j type)
-	int imm { ji->immediate() };
-	int result = 
-		((imm << (31 - 20)) & 0x80000000) |
-		((imm << (21 - 1)) & 0x7fe00000) |
-		((imm << (20 - 11)) & 0x00100000) |
-		(imm & 0x000ff000) |
-		(ji->rd() << 7) | ji->opcode();
-	items.erase(items.begin() + i,
-		items.begin() + i + 1
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result, 0 }
-	);
-@end(transform j type)
 ```
 
 ```

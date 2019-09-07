@@ -92,17 +92,45 @@
 
 	*) = * )
 	:( = : (
+	(( = ( (
 
 # instruction types
 
-r_type(@num, @reg, @reg, @num, @reg, @num) = @raw: (@2 << 25 or @4:value << 20 or @6:value << 15 or @8 << 12 or @10:value << 7 or @12)
-i_type(@num, @reg, @num, @reg, @num) = @raw: (@2 << 20 or @4:value << 15 or @6 << 12 or @8:value << 7 or @10)
+	r_type(@num, @reg, @reg, @num, @reg, @num) = @raw: (@2 << 25 or @4:value << 20 or @6:value << 15 or @8 << 12 or @10:value << 7 or @12)
+	i_type(@num, @reg, @num, @reg, @num) = @raw: (@2 << 20 or @4:value << 15 or @6 << 12 or @8:value << 7 or @10)
+	b_type(@num, @reg, @reg, @num, @num) = @raw: ((@2 and $1000) << (31 - 12) or (@2 and $7e0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1e) << (8 - 1) or (@2 and $800) >> (11 - 7) or @10)
+	u_type(@num, @reg, @num) = @raw: (@2 or @4:value << 7 or @6)
+	j_type(@num, @reg, @num) = @raw: ((@2 and $100000) << (31 - 20) or (@2 and $7fe) << (21 - 1) or (@2 and $800) << (20 - 11) or (@2 and $ff000) or @4:value << 7 or @6)
 
 # instructions
 
-@reg <- @reg + @reg = r_type($0, @4, @2, $0, @0, $33)
-@reg <- @reg and @num = i_type(@4, @2, $7, @0, $13)
-@reg <- @reg or @num = i_type(@4, @2, $6, @0, $13)
+	@reg <- @num = @0 big_add (@2 and $fffff800) @0 small_add @2
+	@reg big_add $00000000 =
+	@reg big_add $fffff800 =
+	@reg big_add @num = u_type(@2 and $fffff000, @0, $37)
+	@reg small_add 0 = @0 <- %zero + 0
+	@reg small_add @num = @0 small_add_add (@2 and $fff)
+	@reg small_add_add $0 =
+	@reg small_add_add @num = @0 <- %zero + @2
+
+	@reg <- @reg + @reg = r_type($0, @4, @2, $0, @0, $33)
+	@reg <- @reg + @num = i_type(@4, @2, $0, @0, $13)
+	@reg <- @reg - @num = @0 <- @2 + (0 - @4)
+	@reg <- @reg and @num = i_type(@4, @2, $7, @0, $13)
+	@reg <- @reg or @num = i_type(@4, @2, $6, @0, $13)
+	@reg <- @csr = i_type(@2:value, %zero, $2, @0, $73)
+
+	goto @num = %pc <- %pc + ( @1 - `* )
+
+	if @reg @str 0: = if @1 @2 %zero:
+	%pc <- %pc - @num = %pc <- %pc + (0 - @4)
+	if @reg < @reg: %pc <- %pc + @num = b_type(@9, @3, @1, $4, $63)
+	if @reg >= @reg: = if @3 < @1:
+	if @reg == @reg: %pc <- %pc + @num = b_type(@9, @3, @1, $0, $63)
+	if @reg != @reg: %pc <- %pc + @num = b_type(@9, @3, @1, $1, $63)
+
+	%pc <- %pc + @num = j_type(@4, %zero, $6f)
+	%pc <- %pc = %pc <- %pc + 0
 
 # pseudo-instructions
 
@@ -111,5 +139,5 @@ i_type(@num, @reg, @num, @reg, @num) = @raw: (@2 << 20 or @4:value << 15 or @6 <
 # basic extensions
 	
 	@str: = @0 = `*
-	goto @num = %pc <- %pc + ( @1 - `* )
+	raw @num = @raw:@1
 

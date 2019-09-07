@@ -5,7 +5,7 @@
 	raw $30529073		#		%mtvec <- %t0
 	%t0 <- %mhartid
 loop_hart:
-	raw $00029063		#		if %t0 != 0: goto loop_hart
+	if %t0 != 0: goto loop_hart
 
 # init UART
 
@@ -28,20 +28,20 @@ loop_hart:
 
 read:
 	raw $00452283		#		%t0 <- [uart_rd]
-	raw $fe02cee3		#		if %t0 < 0: goto read
+	if %t0 < 0: goto read
 	%t0 <- %t0 and $ff
-	raw $fe028ae3		#		if %t0 = 0: goto read
+	if %t0 == 0: goto read
 can_write:
 	raw $00052303		#		%t1 <- [uart_wr]
-	raw $fe034ee3		#		if %t1 < 0: goto can_write
+	if %t1 < 0: goto can_write
 	raw $00552023		#		[uart_wr] <- %t0
-	raw $feb292e3		#		if %t0 != ch_cr: goto read
+	if %t0 != %a1: goto read # ch_cr
 
 # write additional NL after CR
 
 can_write_nl:
 	raw $00052283		#		%t0 <- [uart_wr]
-	raw $fe02cee3		#		if %t0 < 0: goto can_write_nl
+	if %t0 < 0: goto can_write_nl
 	raw $00c52023		#		[uart_wr] <- ch_nl
 	goto read
 

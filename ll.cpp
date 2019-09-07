@@ -1,25 +1,25 @@
 
-#line 5 "start.x"
+#line 6 "start.x"
 
 	#include <iostream>
 	
-#line 23 "start.x"
+#line 24 "start.x"
 
 	
-#line 45 "start.x"
+#line 46 "start.x"
 
 	
-#line 60 "start.x"
+#line 61 "start.x"
 
 	#include <string>
 	#include <vector>
 	#include <sstream>
 
-#line 219 "start.x"
+#line 220 "start.x"
 
 	#include <memory>
 
-#line 242 "start.x"
+#line 243 "start.x"
 
 	class Item;
 	
@@ -45,7 +45,7 @@
 			}
 	};
 
-#line 303 "start.x"
+#line 304 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -57,7 +57,7 @@
 			opcode;
 	}
 
-#line 317 "start.x"
+#line 318 "start.x"
 
 	int build_i_cmd(
 		int imm, char src1, int funct3, char dst, int opcode
@@ -65,7 +65,7 @@
 		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
 	}
 
-#line 327 "start.x"
+#line 328 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -76,7 +76,7 @@
 		);
 	}
 
-#line 340 "start.x"
+#line 341 "start.x"
 
 	int build_add(
 		char dst, char src1, int imm
@@ -86,7 +86,7 @@
 		);
 	}
 
-#line 582 "start.x"
+#line 583 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -96,7 +96,7 @@
 		);
 	}
 
-#line 630 "start.x"
+#line 631 "start.x"
 
 	class Item {
 		private:
@@ -117,7 +117,7 @@
 		return out;
 	}
 
-#line 653 "start.x"
+#line 654 "start.x"
 
 	class Named_Item: public Item {
 		private:
@@ -182,138 +182,38 @@
 			};
 	};
 
-#line 720 "start.x"
-
-	class I_Type_Item: public Item {
-		private:
-			int _immediate;
-			int _rs1;
-			int _func3;
-			int _rd;
-			int _opcode;
-		public:
-			I_Type_Item(
-				int immediate, int rs1, int func3,
-				int rd, int opcode
-			):
-				Item { 0 },
-				_immediate { immediate },
-				_rs1 { rs1 },
-				_func3 { func3 },
-				_rd { rd },
-				_opcode { opcode }
-			{ }
-			int immediate() const { return _immediate; }
-			int rs1() const { return _rs1; }
-			int func3() const { return _func3; }
-			int rd() const { return _rd; }
-			int opcode() const { return _opcode; }
-			Item *clone(int delta_escape) const override {
-				return new I_Type_Item {
-					_immediate, _rs1, _func3,
-					_rd, _opcode
-				};
-			}
-			void write(std::ostream &out) const override {
-				out << "#i_type(" << _immediate << ", " << _rs1 <<
-					", " << _func3 << ", " << _rd << ", " <<
-					_opcode << ')';
-			}
-	};
-
-#line 761 "start.x"
-
-	class U_Type_Item: public Item {
-		private:
-			int _immediate;
-			int _rd;
-			int _opcode;
-		public:
-			U_Type_Item(
-				int immediate,
-				int rd, int opcode
-			): Item { 0 },
-				_immediate { immediate },
-				_rd { rd },
-				_opcode { opcode }
-			{ }
-			int immediate() const { return _immediate; }
-			int rd() const { return _rd; }
-			int opcode() const { return _opcode; }
-			Item *clone(int delta) const override {
-				return new U_Type_Item {
-					_immediate,
-					_rd, _opcode
-				};
-			}
-			void write(std::ostream &out) const override {
-				out << "#u_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
-			}
-	};
-
-#line 1187 "start.x"
-
-	class J_Type_Item: public Item {
-		private:
-			int _immediate;
-			int _rd;
-			int _opcode;
-		public:
-			J_Type_Item(
-				int immediate,
-				int rd, int opcode
-			):
-				Item { 0 },
-				_immediate { immediate },
-				_rd { rd },
-				_opcode { opcode }
-			{ }
-			int immediate() const { return _immediate; }
-			int rd() const { return _rd; }
-			int opcode() const { return _opcode; }
-			Item *clone(int) const override {
-				return new J_Type_Item {
-					_immediate,
-					_rd, _opcode
-				};
-			}
-			void write(std::ostream &out) const override {
-				out << "#j_type(" << _immediate << ", " << _rd << ", " << _opcode << ')';
-			}
-	};
-
-#line 46 "start.x"
+#line 47 "start.x"
 ;
 	class State {
 			
-#line 95 "start.x"
+#line 96 "start.x"
 
 	void add_machine(int instr);
 
-#line 270 "start.x"
+#line 271 "start.x"
 
 	std::vector<Macro> _macros;
 	void setup_symbols();
 
-#line 48 "start.x"
+#line 49 "start.x"
 
 		public:
 			
-#line 69 "start.x"
+#line 70 "start.x"
 
 	void add_line(
 		const std::string &line
 	);
 
-#line 111 "start.x"
+#line 112 "start.x"
 
 	
-#line 118 "start.x"
+#line 119 "start.x"
 
 	private:
 		std::vector<int> code;
 
-#line 126 "start.x"
+#line 127 "start.x"
 
 	public:
 		int code_size() const {
@@ -322,46 +222,46 @@
 			);
 		}
 
-#line 138 "start.x"
+#line 139 "start.x"
 
 	public:
 		int get_code(int pos) const {
 			return code[pos];
 		}
 
-#line 112 "start.x"
+#line 113 "start.x"
 
 
-#line 285 "start.x"
+#line 286 "start.x"
 
 	State() { setup_symbols(); }
 
-#line 50 "start.x"
+#line 51 "start.x"
 
 	};
 	
-#line 78 "start.x"
+#line 79 "start.x"
 
 	
-#line 30 "start.x"
+#line 31 "start.x"
 
 	#include <cassert>
 
-#line 209 "start.x"
+#line 210 "start.x"
 
 	#include <cctype>
 
-#line 236 "start.x"
+#line 237 "start.x"
 
 	#include <map>
 
-#line 79 "start.x"
+#line 80 "start.x"
 
 	void State::add_line(
 		const std::string &line
 	) {
 		
-#line 352 "start.x"
+#line 353 "start.x"
 
 	std::vector<std::unique_ptr<Item>> items;
 	auto end { line.end() };
@@ -422,7 +322,7 @@
 		}
 	}
 	
-#line 793 "start.x"
+#line 721 "start.x"
 
 restart:
 	#if 0
@@ -438,7 +338,7 @@ restart:
 			unsigned i = 0;
 			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 824 "start.x"
+#line 752 "start.x"
 
 	if (i + 2 < items.size()) {
 		auto t { dynamic_cast<Type_Item *>(&*items[i]) };
@@ -465,7 +365,7 @@ restart:
 		}
 	}
 
-#line 853 "start.x"
+#line 781 "start.x"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -562,7 +462,7 @@ restart:
 		goto restart;
 	}
 } 
-#line 952 "start.x"
+#line 880 "start.x"
  {
 	auto *ni {
 		dynamic_cast<Named_Item *>(
@@ -570,44 +470,11 @@ restart:
 	) };
 	if (ni) {
 		
-#line 964 "start.x"
-
-	if (ni->name() == "raw" && ni->escapes() <= 0) {
-		
-#line 972 "start.x"
-
-	if (i + 1 < items.size()) {
-		auto *n2 {
-			dynamic_cast<Type_Instance_Item *>(
-				&*items[i + 1]
-		) };
-		if (n2 && n2->type() == "num") {
-			
-#line 986 "start.x"
-
-	int value { n2->value() };
-	items.erase( items.begin() + i,
-		items.begin() + i + 2
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", value, 0 }
-	);
-	goto restart;
-
-#line 979 "start.x"
-;
-		}
-	}
-
-#line 966 "start.x"
-;
-	}
-
-#line 999 "start.x"
+#line 892 "start.x"
 
 	if (ni->name() == "*" && ni->escapes() <= 0) {
 		
-#line 1007 "start.x"
+#line 900 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -618,305 +485,28 @@ restart:
 	);
 	goto restart;
 
-#line 1001 "start.x"
+#line 894 "start.x"
 ;
 	}
 
-#line 958 "start.x"
-;
-	}
-} 
-#line 1020 "start.x"
- {
-	auto *ri {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i]
-	) };
-	if (ri && ri->type() == "reg") {
-		int rd { ri->value() };
-		
-#line 1033 "start.x"
-
-	if (i + 2 < items.size()) {
-		auto *t2 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 1]
-		) };
-		if (t2 && t2->name() == "<-") {
-			
-#line 1047 "start.x"
- {
-	auto *n3 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 2]
-	) };
-	if (n3 && n3->type() == "num") {
-		
-#line 1060 "start.x"
-
-	int v { n3->value() };
-	items.erase(items.begin() + i,
-		items.begin() + i + 3
-	);
-
-#line 1069 "start.x"
- {
-	int up { v & ~ 0xfff };
-	if (up != 0 && up != ~ 0xfff) {
-		items.emplace(items.begin() + i,
-			new U_Type_Item {
-				up, rd, 0x37
-		});
-		++i;
-	}
-} 
-#line 1082 "start.x"
- {
-	int low { v & 0xfff };
-	if (
-		(low && (low != 0xfff)) || v == 0
-	) {
-		items.emplace(items.begin() + i,
-			new I_Type_Item {
-				low, 0, 0x0, rd, 0x13
-			}
-		);
-	}
-	goto restart;
-} 
-#line 1053 "start.x"
-;
-		i = 0; continue;
-	}
-} 
-#line 1098 "start.x"
- {
-	auto c3 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 2]
-	) };
-	if (c3 && c3->type() == "csr") {
-		
-#line 1110 "start.x"
-
-	int cv { c3->value() };
-	items.erase(items.begin() + i,
-		items.begin() + i + 3
-	);
-	items.emplace(items.begin() + i,
-		new I_Type_Item {
-			cv, 0, 0x2, rd, 0x73
-		}
-	);
-	goto restart;
-
-#line 1104 "start.x"
+#line 886 "start.x"
 ;
 	}
 } 
-#line 1040 "start.x"
-;
-		}
-	}
-
-#line 1027 "start.x"
-;
-	}
-} 
-#line 1125 "start.x"
- {
-	auto pi {
-		dynamic_cast<Named_Item *>(
-			&*items[i]
-		)
-	};
-	if (pi && pi->name() == "%pc") {
-		
-#line 1138 "start.x"
-
-	if (i + 2 < items.size()) {
-		auto n2 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 1]
-			)
-		};
-		if (n2 && n2->name() == "<-") {
-			
-#line 1153 "start.x"
-
-	auto p3 {
-		dynamic_cast<Named_Item *>(
-			&*items[i + 2]
-		)
-	};
-	if (p3 && p3->name() == "%pc") {
-		
-#line 1166 "start.x"
-
-	if (i + 4 < items.size()) {
-		auto n4 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 3]
-			)
-		};
-		if (n4 && (
-			n4->name() == "+" ||
-			n4->name() == "-"
-		)) {
-			bool neg {
-				n4->name() == "-"
-			};
-			
-#line 1220 "start.x"
-
-	auto n5 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 4]
-		)
-	};
-	if (n5 && n5->type() == "num") {
-		int value { n5->value() };
-		if (neg) { value = -value; }
-		items.erase(items.begin() + i,
-			items.begin() + i + 5
-		);
-		items.emplace(items.begin() + i,
-			new J_Type_Item(
-				value, 0, 0x6f
-			)
-		);
-		goto restart;
-	}
-
-#line 1180 "start.x"
-;
-		}
-	}
-
-#line 1243 "start.x"
-
-	if (items.begin() + i + 3 == items.end()) {
-		items.emplace(items.begin() + i + 3,
-			new Named_Item { "+", 0 }
-		);
-		items.emplace(items.begin() + i + 4,
-			new Type_Instance_Item { "num", 0, 0 }
-		);
-		goto restart;
-	}
-
-#line 1160 "start.x"
-;
-	}
-
-#line 1146 "start.x"
-;
-		}
-	}
-
-#line 1132 "start.x"
-;
-	}
-} 
-#line 1257 "start.x"
- {
-	auto ii {
-		dynamic_cast<I_Type_Item *>(
-			&*items[i]
-		)
-	};
-	if (ii) {
-		
-#line 1270 "start.x"
-
-	int result {
-		(ii->immediate() << 20) |
-		(ii->rs1() << 15) |
-		(ii->func3() << 12) |
-		(ii->rd() << 7) | ii->opcode()
-	};
-	items.erase(items.begin() + i,
-		items.begin() + i + 1
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result, 0 }
-	);
-	i = 0; continue;
-
-#line 1264 "start.x"
-;
-	}
-} 
-#line 1288 "start.x"
- {
-	auto ui {
-		dynamic_cast<U_Type_Item *>(
-			&*items[i]
-		)
-	};
-	if (ui) {
-		
-#line 1302 "start.x"
-
-	int result {
-		ui->immediate() |
-		(ui->rd() << 7) | ui->opcode()
-	};
-	items.erase(items.begin() + i,
-		items.begin() + i + 1
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result, 0 }
-	);
-
-#line 1295 "start.x"
-;
-		i = 0; continue;
-	}
-} 
-#line 1317 "start.x"
- {
-	auto ji {
-		dynamic_cast<J_Type_Item *>(
-			&*items[i]
-		)
-	};
-	if (ji) {
-		
-#line 1330 "start.x"
-
-	int imm { ji->immediate() };
-	int result = 
-		((imm << (31 - 20)) & 0x80000000) |
-		((imm << (21 - 1)) & 0x7fe00000) |
-		((imm << (20 - 11)) & 0x00100000) |
-		(imm & 0x000ff000) |
-		(ji->rd() << 7) | ji->opcode();
-	items.erase(items.begin() + i,
-		items.begin() + i + 1
-	);
-	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result, 0 }
-	);
-
-#line 1324 "start.x"
-;
-	}
-} 
-#line 807 "start.x"
+#line 735 "start.x"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 1368 "start.x"
+#line 933 "start.x"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		auto a { dynamic_cast<Named_Item *>(&*items[i]) };
 		if (a && a->name() == "=") {
 			
-#line 1379 "start.x"
+#line 944 "start.x"
 
 	Items value;
 	for (unsigned j = i + 1;
@@ -933,15 +523,15 @@ restart:
 		items.begin(), items.end()
 	);
 
-#line 1372 "start.x"
+#line 937 "start.x"
 ;
 		}
 	}
 
-#line 812 "start.x"
+#line 740 "start.x"
 ;
 		
-#line 1348 "start.x"
+#line 913 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Type_Instance_Item *>(
@@ -959,7 +549,7 @@ restart:
 		);
 	}
 
-#line 813 "start.x"
+#line 741 "start.x"
 ;
 	}
 	if (! items.empty()) {
@@ -968,30 +558,30 @@ restart:
 			line << "]\n";
 	}
 
-#line 411 "start.x"
+#line 412 "start.x"
 ;
 
-#line 83 "start.x"
+#line 84 "start.x"
 ;
 	}
 
-#line 102 "start.x"
+#line 103 "start.x"
 
 	void State::add_machine(int instr) {
 		
-#line 148 "start.x"
+#line 149 "start.x"
 
 	code.push_back(instr);
 
-#line 104 "start.x"
+#line 105 "start.x"
 
 	}
 
-#line 277 "start.x"
+#line 278 "start.x"
 
 	void State::setup_symbols() {
 		
-#line 291 "start.x"
+#line 292 "start.x"
 
 	#include "default.h"
 	std::istringstream in { setup };
@@ -1001,14 +591,14 @@ restart:
 		add_line(l);
 	}
 
-#line 279 "start.x"
+#line 280 "start.x"
 ;
 	}
 
-#line 52 "start.x"
+#line 53 "start.x"
 ;
 
-#line 155 "start.x"
+#line 156 "start.x"
 
 	void assert_line(const char *line, int expected) {
 		std::cerr << "ignoring " << line << "\n";
@@ -1018,7 +608,7 @@ restart:
 		int expected
 	) {
 		
-#line 186 "start.x"
+#line 187 "start.x"
 
 	State s;
 	s.add_line(line);
@@ -1027,11 +617,11 @@ restart:
 	// std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
 	assert(s.get_code(0) == expected);
 
-#line 163 "start.x"
+#line 164 "start.x"
 ;
 	}
 
-#line 24 "start.x"
+#line 25 "start.x"
 
 
 #line 4 "hex.x"
@@ -1136,178 +726,178 @@ restart:
 		return out;
 	}
 
-#line 7 "start.x"
+#line 8 "start.x"
 ;
 	int main(
 		int argc, const char *argv[]
 	) {
 		
-#line 171 "start.x"
+#line 172 "start.x"
 
 	
-#line 178 "start.x"
+#line 179 "start.x"
 
 	assert_line_2(
 		"raw $87654321", 0x87654321
 	);
 
-#line 226 "start.x"
+#line 227 "start.x"
 
 	assert_line_2(
 		"%x4 <- %x2 + %x3",
 		0x00310233
 	);
 
-#line 416 "start.x"
+#line 417 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc",
 		0x0000006f
 	);
 
-#line 427 "start.x"
+#line 428 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 28",
 		0xfe5ff06f
 	);
 
-#line 437 "start.x"
+#line 438 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 32",
 		0xfe1ff06f
 	);
 
-#line 465 "start.x"
+#line 466 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 474 "start.x"
+#line 475 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 483 "start.x"
+#line 484 "start.x"
 
 	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 492 "start.x"
+#line 493 "start.x"
 
 	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 501 "start.x"
+#line 502 "start.x"
 
 	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 510 "start.x"
+#line 511 "start.x"
 
 	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 519 "start.x"
+#line 520 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 528 "start.x"
+#line 529 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 537 "start.x"
+#line 538 "start.x"
 
 	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 546 "start.x"
+#line 547 "start.x"
 
-	assert_line(
-		"if %x5 < 0: %pc <- %pc + -4",
+	assert_line_2(
+		"if %x5 < 0: %pc <- %pc - 4",
 		0xfe02cee3
 	);
 
-#line 555 "start.x"
+#line 556 "start.x"
 
-	assert_line(
-		"if %x5 = 0: %pc <- %pc + -12",
+	assert_line_2(
+		"if %x5 == 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
 
-#line 564 "start.x"
+#line 565 "start.x"
 
-	assert_line(
-		"if %x5 != %x11: %pc <- %pc + -28",
+	assert_line_2(
+		"if %x5 != %x11: %pc <- %pc - 28",
 		0xfeb292e3
 	);
 
-#line 573 "start.x"
+#line 574 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 594 "start.x"
+#line 595 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 603 "start.x"
+#line 604 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 612 "start.x"
+#line 613 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 621 "start.x"
+#line 622 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
 		0x00552423
 	);
 
-#line 172 "start.x"
+#line 173 "start.x"
 
 
-#line 11 "start.x"
+#line 12 "start.x"
 
 		
-#line 447 "start.x"
+#line 448 "start.x"
 
 	
-#line 454 "start.x"
+#line 455 "start.x"
 
 	State s;
 	std::string l;
@@ -1316,13 +906,13 @@ restart:
 		s.add_line(l);
 	}
 
-#line 448 "start.x"
+#line 449 "start.x"
 
 
 #line 16 "hex.x"
 
 	std::cout << s;
 
-#line 12 "start.x"
+#line 13 "start.x"
 
 	}
