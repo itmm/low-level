@@ -212,7 +212,6 @@ simple implementation just saves the data
 <span class="in2"></span><span class="type">const</span> <span class="type">char</span> *<span class="var">line</span>,<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">expected</span><br/>
 <span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">init assert line</span>)</span>;<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">assert line</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by main</span>)</span><br/>
@@ -244,6 +243,7 @@ group local tests in a fragment
 <code>
 <span class="macro">@def(<span class="name">assert line</span>)</span><br/>
 <span class="in1"></span><span class="type">State</span> <span class="var">s</span>;<br/>
+<span class="in1"></span><span class="fn">clear_symbols</span>(<span class="var">s</span>);<br/>
 <span class="in1"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">line</span>);<br/>
 <span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">code_size</span>() == <span class="num">1</span>);<br/>
 <span class="in1"></span>// <span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"EXP "</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">expected</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
@@ -358,18 +358,11 @@ the first test checks that a simple register add can be parsed
 <code>
 <span class="macro">@add(<span class="name">needed by add line</span>)</span><br/>
 <span class="in1"></span><span class="macro">@put(<span class="name">needed by clear symbols</span>)</span>;<br/>
-<span class="in1"></span><span class="type">void</span> <span class="fn">clear_symbols</span>() {<br/>
+<span class="in1"></span><span class="type">void</span> <span class="fn">clear_symbols</span>(<span class="type">State</span> &amp;<span class="var">state</span>) {<br/>
 <span class="in2"></span><span class="var">_macros</span>.<span class="fn">clear</span>();<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">clear symbols</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by add line</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@def(<span class="name">init assert line</span>)</span><br/>
-<span class="in1"></span><span class="fn">clear_symbols</span>();<br/>
-<span class="macro">@end(<span class="name">init assert line</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -411,84 +404,40 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">clear symbols</span>)</span><br/>
-<span class="in1"></span>{<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%zero"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="num">0</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%ra"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="num">1</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%sp"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="num">1</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%gp"</span>});<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="num">3</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%tp"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="num">4</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%t#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">3</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> + <span class="num">5</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%s#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">2</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> + <span class="num">8</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%fp"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="num">8</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%a#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">8</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> + <span class="num">10</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%s#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">2</span>; <span class="var">i</span> &lt; <span class="num">10</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> + <span class="num">16</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%s1#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">10</span>; <span class="var">i</span> &lt; <span class="num">12</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">3</span>] = <span class="str">'0'</span> + (<span class="var">i</span> % <span class="num">10</span>);<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> + <span class="num">16</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%t#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">3</span>; <span class="var">i</span> &lt; <span class="num">7</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> + <span class="num">25</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"*)"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"*"</span> });<br/>
-<span class="in2"></span><span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">")"</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%zero = %x0"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%ra = %x1"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%sp = %x2"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%gp = %x3"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%tp = %x4"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t0 = %x5"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t1 = %x6"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t2 = %x7"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s0 = %x8"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s1 = %x9"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%fp = %x8"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a0 = %x10"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a1 = %x11"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a2 = %x12"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a3 = %x13"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a4 = %x14"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a5 = %x15"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a6 = %x16"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%a7 = %x17"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s2 = %x18"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s3 = %x19"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s4 = %x20"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s5 = %x21"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s6 = %x22"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s7 = %x23"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s8 = %x24"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s9 = %x25"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s10 = %x26"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%s11 = %x27"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t3 = %x28"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t4 = %x29"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t5 = %x30"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"%t6 = %x31"</span>);<br/>
+<span class="in1"></span><span class="var">state</span>.<span class="fn">add_line</span>(<span class="str">"*) = * )"</span>);<br/>
 <span class="macro">@end(<span class="name">clear symbols</span>)</span><br/>
 </code></div>
 </div>

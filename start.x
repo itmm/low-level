@@ -159,7 +159,6 @@ the machine code.
 		const char *line,
 		int expected
 	) {
-		@put(init assert line);
 		@put(assert line);
 	}
 @end(needed by main)
@@ -185,6 +184,7 @@ the machine code.
 ```
 @def(assert line)
 	State s;
+	clear_symbols(s);
 	s.add_line(line);
 	assert(s.code_size() == 1);
 	// std::cerr << "EXP " << std::hex << expected << "\n";
@@ -270,17 +270,11 @@ These syntax trees are then transformed into machine code.
 ```
 @add(needed by add line)
 	@put(needed by clear symbols);
-	void clear_symbols() {
+	void clear_symbols(State &state) {
 		_macros.clear();
 		@put(clear symbols);
 	}
 @end(needed by add line)
-```
-
-```
-@def(init assert line)
-	clear_symbols();
-@end(init assert line)
 ```
 
 ```
@@ -320,84 +314,40 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(clear symbols)
-	{
-		Items p; p.emplace_back(new Named_Item { "%zero" });
-		Items e; e.emplace_back(new Register_Item { 0 });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
-		Items p; p.emplace_back(new Named_Item { "%ra" });
-		Items e; e.emplace_back(new Register_Item { 1 });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
-		Items p; p.emplace_back(new Named_Item { "%sp" });
-		Items e; e.emplace_back(new Register_Item { 1 });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
-		Items p; p.emplace_back(new Named_Item { "%gp"});
-		Items e; e.emplace_back(new Register_Item { 3 });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
-		Items p; p.emplace_back(new Named_Item { "%tp" });
-		Items e; e.emplace_back(new Register_Item { 4 });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
-		std::string name { "%t#" };
-		for (int i = 0; i < 3; ++i) {
-			name[2] = '0' + i;
-			Items p; p.emplace_back(new Named_Item { name });
-			Items e; e.emplace_back(new Register_Item { i + 5 });
-			_macros.emplace_back(std::move(p), std::move(e));
-		}
-	} {
-		std::string name { "%s#" };
-		for (int i = 0; i < 2; ++i) {
-			name[2] = '0' + i;
-			Items p; p.emplace_back(new Named_Item { name });
-			Items e; e.emplace_back(new Register_Item { i + 8 });
-			_macros.emplace_back(std::move(p), std::move(e));
-		}
-	} {
-		Items p; p.emplace_back(new Named_Item { "%fp" });
-		Items e; e.emplace_back(new Register_Item { 8 });
-		_macros.emplace_back(std::move(p), std::move(e));
-	} {
-		std::string name { "%a#" };
-		for (int i = 0; i < 8; ++i) {
-			name[2] = '0' + i;
-			Items p; p.emplace_back(new Named_Item { name });
-			Items e; e.emplace_back(new Register_Item { i + 10 });
-			_macros.emplace_back(std::move(p), std::move(e));
-		}
-	} {
-		std::string name { "%s#" };
-		for (int i = 2; i < 10; ++i) {
-			name[2] = '0' + i;
-			Items p; p.emplace_back(new Named_Item { name });
-			Items e; e.emplace_back(new Register_Item { i + 16 });
-			_macros.emplace_back(std::move(p), std::move(e));
-		}
-	} {
-		std::string name { "%s1#" };
-		for (int i = 10; i < 12; ++i) {
-			name[3] = '0' + (i % 10);
-			Items p; p.emplace_back(new Named_Item { name });
-			Items e; e.emplace_back(new Register_Item { i + 16 });
-			_macros.emplace_back(std::move(p), std::move(e));
-		}
-	} {
-		std::string name { "%t#" };
-		for (int i = 3; i < 7; ++i) {
-			name[2] = '0' + i;
-			Items p; p.emplace_back(new Named_Item { name });
-			Items e; e.emplace_back(new Register_Item { i + 25 });
-			_macros.emplace_back(std::move(p), std::move(e));
-		}
-	} {
-		Items p; p.emplace_back(new Named_Item { "*)" });
-		Items e; e.emplace_back(new Named_Item { "*" });
-		e.emplace_back(new Named_Item { ")" });
-		_macros.emplace_back(std::move(p), std::move(e));
-	}
+	state.add_line("%zero = %x0");
+	state.add_line("%ra = %x1");
+	state.add_line("%sp = %x2");
+	state.add_line("%gp = %x3");
+	state.add_line("%tp = %x4");
+	state.add_line("%t0 = %x5");
+	state.add_line("%t1 = %x6");
+	state.add_line("%t2 = %x7");
+	state.add_line("%s0 = %x8");
+	state.add_line("%s1 = %x9");
+	state.add_line("%fp = %x8");
+	state.add_line("%a0 = %x10");
+	state.add_line("%a1 = %x11");
+	state.add_line("%a2 = %x12");
+	state.add_line("%a3 = %x13");
+	state.add_line("%a4 = %x14");
+	state.add_line("%a5 = %x15");
+	state.add_line("%a6 = %x16");
+	state.add_line("%a7 = %x17");
+	state.add_line("%s2 = %x18");
+	state.add_line("%s3 = %x19");
+	state.add_line("%s4 = %x20");
+	state.add_line("%s5 = %x21");
+	state.add_line("%s6 = %x22");
+	state.add_line("%s7 = %x23");
+	state.add_line("%s8 = %x24");
+	state.add_line("%s9 = %x25");
+	state.add_line("%s10 = %x26");
+	state.add_line("%s11 = %x27");
+	state.add_line("%t3 = %x28");
+	state.add_line("%t4 = %x29");
+	state.add_line("%t5 = %x30");
+	state.add_line("%t6 = %x31");
+	state.add_line("*) = * )");
 @end(clear symbols)
 ```
 
