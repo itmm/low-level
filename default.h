@@ -80,6 +80,9 @@ std::string setup {
 	"*) = * )\n"
 	":( = : (\n"
 	"r_type(@num, @reg, @reg, @num, @reg, @num) = @raw: (@2 << 25 or @4:value << 20 or @6:value << 15 or @8 << 12 or @10:value << 7 or @12)\n"
+	"i_type(@num, @reg, @num, @reg, @num) = @raw: (@2 << 20 or @4:value << 15 or @6 << 12 or @8:value << 7 or @10)\n"
 	"@reg <- @reg + @reg = r_type($0, @4, @2, $0, @0, $33)\n"
+	"@reg <- @reg and @num = i_type(@4, @2, $7, @0, $13)\n"
+	"@reg <- @reg or @num = i_type(@4, @2, $6, @0, $13)\n"
 	"nop = %x0 <- %x0 + 0\n"
 };

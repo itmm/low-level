@@ -241,7 +241,7 @@
 			}
 	};
 
-#line 1272 "start.x"
+#line 1171 "start.x"
 
 	class J_Type_Item: public Item {
 		private:
@@ -605,12 +605,12 @@ restart:
 ;
 	}
 
-#line 1432 "start.x"
+#line 1331 "start.x"
 
 	if (ni->name() == "goto") {
 		if (i + 1 < items.size()) {
 			
-#line 1442 "start.x"
+#line 1341 "start.x"
 
 	auto n2 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -654,12 +654,12 @@ restart:
 		goto restart;
 	}
 
-#line 1435 "start.x"
+#line 1334 "start.x"
 ;
 		}
 	}
 
-#line 1488 "start.x"
+#line 1387 "start.x"
 
 	if (i + 1 < items.size()) {
 		auto ci {
@@ -779,103 +779,6 @@ restart:
 ;
 	}
 } 
-#line 1109 "start.x"
- {
-	auto rs1 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 2]
-		)
-	};
-	if (rs1 && rs1->type() == "reg") {
-		int rs1_nr { rs1->value() };
-		
-#line 1123 "start.x"
-
-	if (i + 4 < items.size()) {
-		auto n3 {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 3]
-			)
-		};
-		if (n3) {
-			
-#line 1138 "start.x"
-
-	if (n3->name() == "or") {
-		
-#line 1146 "start.x"
- {
-	auto n4 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 4]
-		)
-	};
-	if (n4 && n4->type() == "num") {
-		
-#line 1159 "start.x"
-
-	int imm { n4->value() };
-	items.erase(items.begin() + i,
-		items.begin() + i + 5
-	);
-	items.emplace(items.begin() + i,
-		new I_Type_Item {
-			imm, rs1_nr, 0x6, rd, 0x13
-		}
-	);
-	goto restart;
-
-#line 1153 "start.x"
-;
-	}
-} 
-#line 1140 "start.x"
-;
-	}
-
-#line 1174 "start.x"
-
-	if (n3->name() == "and") {
-		
-#line 1182 "start.x"
- {
-	auto n4 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 4]
-		)
-	};
-	if (n4 && n4->type() == "num") {
-		
-#line 1195 "start.x"
-
-	int imm { n4->value() };
-	items.erase(items.begin() + i,
-		items.begin() + i + 5
-	);
-	items.emplace(items.begin() + i,
-		new I_Type_Item {
-			imm, rs1_nr, 0x7, rd, 0x13
-		}
-	);
-	goto restart;
-
-#line 1189 "start.x"
-;
-	}
-} 
-#line 1176 "start.x"
-;
-	}
-
-#line 1131 "start.x"
-;
-		}
-	}
-
-#line 1117 "start.x"
-;
-	}
-} 
 #line 1024 "start.x"
 ;
 		}
@@ -885,7 +788,7 @@ restart:
 ;
 	}
 } 
-#line 1210 "start.x"
+#line 1109 "start.x"
  {
 	auto pi {
 		dynamic_cast<Named_Item *>(
@@ -894,7 +797,7 @@ restart:
 	};
 	if (pi && pi->name() == "%pc") {
 		
-#line 1223 "start.x"
+#line 1122 "start.x"
 
 	if (i + 2 < items.size()) {
 		auto n2 {
@@ -904,7 +807,7 @@ restart:
 		};
 		if (n2 && n2->name() == "<-") {
 			
-#line 1238 "start.x"
+#line 1137 "start.x"
 
 	auto p3 {
 		dynamic_cast<Named_Item *>(
@@ -913,7 +816,7 @@ restart:
 	};
 	if (p3 && p3->name() == "%pc") {
 		
-#line 1251 "start.x"
+#line 1150 "start.x"
 
 	if (i + 4 < items.size()) {
 		auto n4 {
@@ -929,7 +832,7 @@ restart:
 				n4->name() == "-"
 			};
 			
-#line 1304 "start.x"
+#line 1203 "start.x"
 
 	auto n5 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -950,12 +853,12 @@ restart:
 		goto restart;
 	}
 
-#line 1265 "start.x"
+#line 1164 "start.x"
 ;
 		}
 	}
 
-#line 1327 "start.x"
+#line 1226 "start.x"
 
 	if (items.begin() + i + 3 == items.end()) {
 		items.emplace(items.begin() + i + 3,
@@ -967,20 +870,20 @@ restart:
 		goto restart;
 	}
 
-#line 1245 "start.x"
+#line 1144 "start.x"
 ;
 	}
 
-#line 1231 "start.x"
+#line 1130 "start.x"
 ;
 		}
 	}
 
-#line 1217 "start.x"
+#line 1116 "start.x"
 ;
 	}
 } 
-#line 1341 "start.x"
+#line 1240 "start.x"
  {
 	auto ii {
 		dynamic_cast<I_Type_Item *>(
@@ -989,7 +892,7 @@ restart:
 	};
 	if (ii) {
 		
-#line 1354 "start.x"
+#line 1253 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -1005,11 +908,11 @@ restart:
 	);
 	i = 0; continue;
 
-#line 1348 "start.x"
+#line 1247 "start.x"
 ;
 	}
 } 
-#line 1372 "start.x"
+#line 1271 "start.x"
  {
 	auto ui {
 		dynamic_cast<U_Type_Item *>(
@@ -1018,7 +921,7 @@ restart:
 	};
 	if (ui) {
 		
-#line 1386 "start.x"
+#line 1285 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -1031,12 +934,12 @@ restart:
 		new Type_Instance_Item { "raw", result }
 	);
 
-#line 1379 "start.x"
+#line 1278 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1401 "start.x"
+#line 1300 "start.x"
  {
 	auto ji {
 		dynamic_cast<J_Type_Item *>(
@@ -1045,7 +948,7 @@ restart:
 	};
 	if (ji) {
 		
-#line 1414 "start.x"
+#line 1313 "start.x"
 
 	int imm { ji->immediate() };
 	int result = 
@@ -1061,7 +964,7 @@ restart:
 		new Type_Instance_Item { "raw", result }
 	);
 
-#line 1408 "start.x"
+#line 1307 "start.x"
 ;
 	}
 } 
@@ -1072,13 +975,13 @@ restart:
 			++macro;
 		}
 		
-#line 1538 "start.x"
+#line 1437 "start.x"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		auto a { dynamic_cast<Named_Item *>(&*items[i]) };
 		if (a && a->name() == "=") {
 			
-#line 1549 "start.x"
+#line 1448 "start.x"
 
 	Items value;
 	for (unsigned j = i + 1;
@@ -1095,7 +998,7 @@ restart:
 		items.begin(), items.end()
 	);
 
-#line 1542 "start.x"
+#line 1441 "start.x"
 ;
 		}
 	}
@@ -1103,7 +1006,7 @@ restart:
 #line 797 "start.x"
 ;
 		
-#line 1518 "start.x"
+#line 1417 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Type_Instance_Item *>(
