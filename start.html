@@ -379,72 +379,47 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">setup symbols</span>)</span><br/>
-<span class="in1"></span>{<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%mtvec"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Csr_Item</span> { <span class="num">0x305</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"%mhartid"</span> });<br/>
-<span class="in2"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Csr_Item</span> { <span class="num">0xf14</span> });<br/>
-<span class="in2"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%x#"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="num">10</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + <span class="var">i</span>;<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
-<span class="in1"></span>} {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span> { <span class="str">"%x##"</span> };<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">10</span>; <span class="var">i</span> &lt; <span class="num">32</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">2</span>] = <span class="str">'0'</span> + (<span class="var">i</span> / <span class="num">10</span>);<br/>
-<span class="in3"></span><span class="var">name</span>[<span class="num">3</span>] = <span class="str">'0'</span> + (<span class="var">i</span> % <span class="num">10</span>);<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">p</span>; <span class="var">p</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">name</span> });<br/>
-<span class="in3"></span><span class="type">Items</span> <span class="var">e</span>; <span class="var">e</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">i</span> });<br/>
-<span class="in3"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">e</span>));<br/>
-<span class="in2"></span>}<br/>
+<span class="in1"></span><span class="keyword">static</span> <span class="type">const</span> <span class="type">char</span>* <span class="var">setups</span>[] = {<br/>
+<span class="in2"></span><span class="str">"%mtvec = @csr:$305"</span>,<br/>
+<span class="in2"></span><span class="str">"%mhartid = @csr:$f14"</span>,<br/>
+<span class="in2"></span><span class="str">"%x0 = @reg:0"</span>, <span class="str">"%x1 = @reg:1"</span>,<br/>
+<span class="in2"></span><span class="str">"%x2 = @reg:2"</span>, <span class="str">"%x3 = @reg:3"</span>,<br/>
+<span class="in2"></span><span class="str">"%x4 = @reg:4"</span>, <span class="str">"%x5 = @reg:5"</span>,<br/>
+<span class="in2"></span><span class="str">"%x6 = @reg:6"</span>, <span class="str">"%x7 = @reg:7"</span>,<br/>
+<span class="in2"></span><span class="str">"%x8 = @reg:8"</span>, <span class="str">"%x9 = @reg:9"</span>,<br/>
+<span class="in2"></span><span class="str">"%x10 = @reg:10"</span>, <span class="str">"%x11 = @reg:11"</span>,<br/>
+<span class="in2"></span><span class="str">"%x12 = @reg:12"</span>, <span class="str">"%x13 = @reg:13"</span>,<br/>
+<span class="in2"></span><span class="str">"%x14 = @reg:14"</span>, <span class="str">"%x15 = @reg:15"</span>,<br/>
+<span class="in2"></span><span class="str">"%x16 = @reg:16"</span>, <span class="str">"%x17 = @reg:17"</span>,<br/>
+<span class="in2"></span><span class="str">"%x18 = @reg:18"</span>, <span class="str">"%x19 = @reg:19"</span>,<br/>
+<span class="in2"></span><span class="str">"%x20 = @reg:20"</span>, <span class="str">"%x21 = @reg:21"</span>,<br/>
+<span class="in2"></span><span class="str">"%x22 = @reg:22"</span>, <span class="str">"%x23 = @reg:23"</span>,<br/>
+<span class="in2"></span><span class="str">"%x24 = @reg:24"</span>, <span class="str">"%x25 = @reg:25"</span>,<br/>
+<span class="in2"></span><span class="str">"%x26 = @reg:26"</span>, <span class="str">"%x27 = @reg:27"</span>,<br/>
+<span class="in2"></span><span class="str">"%x28 = @reg:28"</span>, <span class="str">"%x29 = @reg:29"</span>,<br/>
+<span class="in2"></span><span class="str">"%x30 = @reg:30"</span>, <span class="str">"%x31 = @reg:31"</span>,<br/>
+<span class="in2"></span><span class="str">"%zero = %x0"</span>, <span class="str">"%ra = %x1"</span>,<br/>
+<span class="in2"></span><span class="str">"%sp = %x2"</span>, <span class="str">"%gp = %x3"</span>,<br/>
+<span class="in2"></span><span class="str">"%tp = %x4"</span>, <span class="str">"%t0 = %x5"</span>,<br/>
+<span class="in2"></span><span class="str">"%t1 = %x6"</span>, <span class="str">"%t2 = %x7"</span>,<br/>
+<span class="in2"></span><span class="str">"%s0 = %x8"</span>, <span class="str">"%s1 = %x9"</span>,<br/>
+<span class="in2"></span><span class="str">"%fp = %x8"</span>, <span class="str">"%a0 = %x10"</span>,<br/>
+<span class="in2"></span><span class="str">"%a1 = %x11"</span>, <span class="str">"%a2 = %x12"</span>,<br/>
+<span class="in2"></span><span class="str">"%a3 = %x13"</span>, <span class="str">"%a4 = %x14"</span>,<br/>
+<span class="in2"></span><span class="str">"%a5 = %x15"</span>, <span class="str">"%a6 = %x16"</span>,<br/>
+<span class="in2"></span><span class="str">"%a7 = %x17"</span>, <span class="str">"%s2 = %x18"</span>,<br/>
+<span class="in2"></span><span class="str">"%s3 = %x19"</span>, <span class="str">"%s4 = %x20"</span>,<br/>
+<span class="in2"></span><span class="str">"%s5 = %x21"</span>, <span class="str">"%s6 = %x22"</span>,<br/>
+<span class="in2"></span><span class="str">"%s7 = %x23"</span>, <span class="str">"%s8 = %x24"</span>,<br/>
+<span class="in2"></span><span class="str">"%s9 = %x25"</span>, <span class="str">"%s10 = %x26"</span>,<br/>
+<span class="in2"></span><span class="str">"%s11 = %x27"</span>, <span class="str">"%t3 = %x28"</span>,<br/>
+<span class="in2"></span><span class="str">"%t4 = %x29"</span>, <span class="str">"%t5 = %x30"</span>,<br/>
+<span class="in2"></span><span class="str">"%t6 = %x31"</span>, <span class="str">"*) = * )"</span>,<br/>
+<span class="in2"></span><span class="num">nullptr</span><br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">auto</span> <span class="var">i</span> = <span class="var">setups</span>; *<span class="var">i</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="fn">add_line</span>(*<span class="var">i</span>);<br/>
 <span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">setup symbols</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">setup symbols</span>)</span><br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%zero = %x0"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%ra = %x1"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%sp = %x2"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%gp = %x3"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%tp = %x4"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t0 = %x5"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t1 = %x6"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t2 = %x7"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s0 = %x8"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s1 = %x9"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%fp = %x8"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a0 = %x10"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a1 = %x11"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a2 = %x12"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a3 = %x13"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a4 = %x14"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a5 = %x15"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a6 = %x16"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%a7 = %x17"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s2 = %x18"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s3 = %x19"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s4 = %x20"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s5 = %x21"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s6 = %x22"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s7 = %x23"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s8 = %x24"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s9 = %x25"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s10 = %x26"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%s11 = %x27"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t3 = %x28"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t4 = %x29"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t5 = %x30"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"%t6 = %x31"</span>);<br/>
-<span class="in1"></span><span class="fn">add_line</span>(<span class="str">"*) = * )"</span>);<br/>
 <span class="macro">@end(<span class="name">setup symbols</span>)</span><br/>
 </code></div>
 </div>
@@ -524,9 +499,41 @@ the first test checks that a simple register add can be parsed
 <span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in4"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">10</span> + (*<span class="var">cur</span>++ - <span class="str">'0'</span>);<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="var">value</span> });<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">value</span> });<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'#'</span>) {<br/>
 <span class="in3"></span><span class="keyword">break</span>;<br/>
+<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'@'</span>) {<br/>
+<span class="in3"></span>++<span class="var">cur</span>;<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span>;<br/>
+<span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isalnum</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in4"></span><span class="var">name</span> += *<span class="var">cur</span>++;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">':'</span>) {<br/>
+<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
+<span class="in4"></span>++<span class="var">cur</span>;<br/>
+<span class="in4"></span><span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'$'</span>) {<br/>
+<span class="in5"></span>++<span class="var">cur</span>;<br/>
+<span class="in5"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isxdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in6"></span><span class="type">int</span> <span class="var">digit</span>;<br/>
+<span class="in6"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in7"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'0'</span>;<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> &lt;= <span class="str">'F'</span>) {<br/>
+<span class="in7"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'A'</span> + <span class="num">10</span>;<br/>
+<span class="in6"></span>} <span class="keyword">else</span> {<br/>
+<span class="in7"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'a'</span> + <span class="num">10</span>;<br/>
+<span class="in6"></span>}<br/>
+<span class="in6"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">16</span> + <span class="var">digit</span>;<br/>
+<span class="in6"></span>++<span class="var">cur</span>;<br/>
+<span class="in5"></span>}<br/>
+<span class="in4"></span>} <span class="keyword">else</span> {<br/>
+<span class="in5"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in6"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">10</span> + (*<span class="var">cur</span>++ - <span class="str">'0'</span>);<br/>
+<span class="in5"></span>}<br/>
+<span class="in4"></span>}<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="var">name</span>, <span class="var">value</span> });<br/>
+<span class="in3"></span>} <span class="keyword">else</span> {<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Item</span> { <span class="var">name</span> });<br/>
+<span class="in3"></span>}<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'$'</span>) {<br/>
 <span class="in3"></span>++<span class="var">cur</span>;<br/>
 <span class="in3"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
@@ -542,7 +549,7 @@ the first test checks that a simple register add can be parsed
 <span class="in4"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">16</span> + <span class="var">digit</span>;<br/>
 <span class="in4"></span>++<span class="var">cur</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="var">value</span> });<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">value</span> });<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">ispunct</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">ispunct</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in4"></span>++<span class="var">cur</span>;<br/>
@@ -806,6 +813,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in3"></span><span class="var">virtual</span> ~<span class="fn">Item</span>() {};<br/>
 <span class="in3"></span><span class="var">virtual</span> <span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> = <span class="num">0</span>;<br/>
 <span class="in3"></span><span class="var">virtual</span> <span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> = <span class="num">0</span>;<br/>
+<span class="in3"></span><span class="var">virtual</span> <span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="num">false</span>;<br/>
+<span class="in3"></span>}<br/>
 <span class="in1"></span>};<br/>
 <span class="in1"></span><span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">operator</span>&lt;&lt;(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>, <span class="type">const</span> <span class="type">Item</span> &amp;<span class="var">item</span>) {<br/>
 <span class="in2"></span><span class="var">item</span>.<span class="fn">write</span>(<span class="var">out</span>);<br/>
@@ -829,87 +839,46 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
 <span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="var">_name</span>;<br/>
 <span class="in3"></span>}<br/>
+<span class="in3"></span><span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Named_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="var">o</span> &amp;&amp; (<span class="var">o</span>-&gt;<span class="fn">name</span>() == <span class="var">_name</span> || <span class="var">_name</span>.<span class="fn">empty</span>());<br/>
+<span class="in3"></span>};<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Number_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Type_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
+<span class="in2"></span><span class="keyword">private</span>:<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_type</span>;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">Type_Item</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">type</span>): <span class="var">_type</span> { <span class="var">type</span> } { }<br/>
+<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">type</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_type</span>; }<br/>
+<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Type_Item</span> { <span class="var">_type</span> };<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_type</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Type_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="var">o</span> &amp;&amp; <span class="var">o</span>-&gt;<span class="fn">type</span>() == <span class="var">_type</span>;<br/>
+<span class="in3"></span>};<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Type_Instance_Item</span>: <span class="keyword">public</span> <span class="type">Type_Item</span> {<br/>
 <span class="in2"></span><span class="keyword">private</span>:<br/>
 <span class="in3"></span><span class="type">int</span> <span class="var">_value</span>;<br/>
 <span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Number_Item</span>(<span class="type">int</span> <span class="var">value</span>): <span class="var">_value</span> { <span class="var">value</span> } { }<br/>
+<span class="in3"></span><span class="fn">Type_Instance_Item</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">type</span>, <span class="type">int</span> <span class="var">value</span>):<br/>
+<span class="in4"></span><span class="type">Type_Item</span> { <span class="var">type</span> }, <span class="var">_value</span> { <span class="var">value</span> }<br/>
+<span class="in3"></span>{ }<br/>
 <span class="in3"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
 <span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="var">_value</span> };<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="fn">type</span>(), <span class="var">_value</span> };<br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">'$'</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">_value</span> &lt;&lt; <span class="type">std</span>::<span class="var">dec</span>;<br/>
+<span class="in4"></span><span class="type">Type_Item</span>::<span class="fn">write</span>(<span class="var">out</span>);<br/>
+<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">":$"</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">_value</span> &lt;&lt; <span class="type">std</span>::<span class="var">dec</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in1"></span>};<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Register_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">_nr</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Register_Item</span>(<span class="type">int</span> <span class="var">nr</span>):<br/>
-<span class="in4"></span><span class="var">_nr</span> { <span class="var">nr</span> }<br/>
-<span class="in3"></span>{ }<br/>
-<span class="in3"></span><span class="type">int</span> <span class="fn">nr</span>() <span class="type">const</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="var">_nr</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Register_Item</span> { <span class="var">_nr</span> };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">"%x"</span> &lt;&lt; <span class="var">_nr</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in1"></span>};<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Csr_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">_nr</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Csr_Item</span>(<span class="type">int</span> <span class="var">nr</span>):<br/>
-<span class="in4"></span><span class="var">_nr</span> { <span class="var">nr</span> }<br/>
-<span class="in3"></span>{ }<br/>
-<span class="in3"></span><span class="type">int</span> <span class="fn">nr</span>() <span class="type">const</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="var">_nr</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Csr_Item</span> { <span class="var">_nr</span> };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">"#csr.$"</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">_nr</span> &lt;&lt; <span class="type">std</span>::<span class="var">dec</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in1"></span>};<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Machine_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">_instruction</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Machine_Item</span>(<span class="type">int</span> <span class="var">i</span>):<br/>
-<span class="in4"></span><span class="var">_instruction</span> { <span class="var">i</span> }<br/>
-<span class="in3"></span>{ }<br/>
-<span class="in3"></span><span class="type">int</span> <span class="fn">instruction</span>() <span class="type">const</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="var">_instruction</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>() <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">_instruction</span> };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">"#raw.$"</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">_instruction</span> &lt;&lt; <span class="type">std</span>::<span class="var">dec</span>;<br/>
+<span class="in3"></span><span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
+<span class="in4"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Type_Instance_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="var">o</span> &amp;&amp; <span class="var">this</span>-&gt;<span class="type">Type_Item</span>::<span class="fn">matches</span>(*<span class="var">o</span>) &amp;&amp; <span class="var">o</span>-&gt;<span class="fn">value</span>() == <span class="var">_value</span>;<br/>
 <span class="in3"></span>}<br/>
 <span class="in1"></span>};<br/>
 <span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
@@ -1017,6 +986,29 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">transform</span>)</span> {<br/>
+<span class="in1"></span><span class="type">bool</span> <span class="var">matches</span> { <span class="num">true</span> };<br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">p</span> { <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">begin</span>() };<br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">e</span> { <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">end</span>() };<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">matches</span> &amp;&amp; <span class="var">p</span> != <span class="var">e</span>; ++<span class="var">p</span>, ++<span class="var">j</span>) {<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; (<span class="var">i</span> + <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>());<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; (**<span class="var">p</span>).<span class="fn">matches</span>(*<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">matches</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>());<br/>
+<span class="in2"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> : <span class="var">macro</span>-&gt;<span class="fn">replacement</span>()) {<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>-&gt;<span class="fn">clone</span>()<br/>
+<span class="in3"></span>);<br/>
+<span class="in3"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
+<span class="in1"></span>}<br/>
+} <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> *<span class="var">ni</span> {<br/>
 <span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
@@ -1030,31 +1022,6 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">transform named</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>-&gt;<span class="fn">name</span>() == <span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(&amp;**<span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">begin</span>())-&gt;<span class="fn">name</span>()) {<br/>
-<span class="in2"></span><span class="macro">@put(<span class="name">transform named lookup</span>)</span>;<br/>
-<span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">transform named</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@def(<span class="name">transform named lookup</span>)</span><br/>
-<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
-<span class="in1"></span>);<br/>
-<span class="in1"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> : <span class="var">macro</span>-&gt;<span class="fn">replacement</span>()) {<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>-&gt;<span class="fn">clone</span>()<br/>
-<span class="in2"></span>);<br/>
-<span class="in2"></span>++<span class="var">i</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">transform named lookup</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">transform named</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>-&gt;<span class="fn">name</span>() == <span class="str">"raw"</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform raw</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1066,10 +1033,10 @@ read <code><span class="type">State</span></code> form standard input
 <span class="macro">@def(<span class="name">transform raw</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> *<span class="var">n2</span> {<br/>
-<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in4"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
 <span class="in2"></span>) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">n2</span> &amp;&amp; <span class="var">n2</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">do transform raw</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
@@ -1084,7 +1051,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">2</span><br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">value</span> }<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"raw"</span>, <span class="var">value</span> }<br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="macro">@end(<span class="name">do transform raw</span>)</span><br/>
@@ -1107,7 +1074,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">code</span>.<span class="fn">size</span>() * <span class="num">4</span> +<br/>
 <span class="in2"></span><span class="num">0x20010000</span>;<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="var">addr</span> }<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">addr</span> }<br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="macro">@end(<span class="name">transform cur addr</span>)</span><br/>
@@ -1117,11 +1084,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> *<span class="var">ri</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Register_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
 <span class="in1"></span>) };<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">ri</span>) {<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">rd</span> { <span class="var">ri</span>-&gt;<span class="fn">nr</span>() };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ri</span> &amp;&amp; <span class="var">ri</span>-&gt;<span class="fn">type</span>() == <span class="str">"reg"</span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">rd</span> { <span class="var">ri</span>-&gt;<span class="fn">value</span>() };<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform reg</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform</span>)</span><br/>
@@ -1146,10 +1113,10 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform reg assign</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> *<span class="var">n3</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
 <span class="in1"></span>) };<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n3</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n3</span> &amp;&amp; <span class="var">n3</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform reg assign num</span>)</span>;<br/>
 <span class="in2"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1201,10 +1168,10 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@add(<span class="name">transform reg assign</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">c3</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Csr_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
 <span class="in1"></span>) };<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">c3</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">c3</span> &amp;&amp; <span class="var">c3</span>-&gt;<span class="fn">type</span>() == <span class="str">"csr"</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform reg assign csr</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform reg assign</span>)</span><br/>
@@ -1213,7 +1180,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">transform reg assign csr</span>)</span><br/>
-<span class="in1"></span><span class="type">int</span> <span class="var">cv</span> { <span class="var">c3</span>-&gt;<span class="fn">nr</span>() };<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">cv</span> { <span class="var">c3</span>-&gt;<span class="fn">value</span>() };<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span><br/>
 <span class="in1"></span>);<br/>
@@ -1230,12 +1197,12 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@add(<span class="name">transform reg assign</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">rs1</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Register_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">rs1</span>) {<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">rs1_nr</span> { <span class="var">rs1</span>-&gt;<span class="fn">nr</span>() };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">rs1</span> &amp;&amp; <span class="var">rs1</span>-&gt;<span class="fn">type</span>() == <span class="str">"reg"</span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">rs1_nr</span> { <span class="var">rs1</span>-&gt;<span class="fn">value</span>() };<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform reg assign reg</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform reg assign</span>)</span><br/>
@@ -1270,11 +1237,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform or</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">n4</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">4</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span> &amp;&amp; <span class="var">n4</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform or imm</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform or</span>)</span><br/>
@@ -1309,11 +1276,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform and</span>)</span> {<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">n4</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">4</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span> &amp;&amp; <span class="var">n4</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform and imm</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform and</span>)</span><br/>
@@ -1438,11 +1405,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform pc pm</span>)</span><br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">n5</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">4</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n5</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n5</span> &amp;&amp; <span class="var">n5</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">n5</span>-&gt;<span class="fn">value</span>() };<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">neg</span>) { <span class="var">value</span> = -<span class="var">value</span>; }<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
@@ -1466,7 +1433,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in3"></span><span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"+"</span> }<br/>
 <span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">4</span>,<br/>
-<span class="in3"></span><span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="num">0</span> }<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="num">0</span> }<br/>
 <span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1500,7 +1467,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> }<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"raw"</span>, <span class="var">result</span> }<br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">i</span> = <span class="num">0</span>; <span class="keyword">continue</span>;<br/>
 <span class="macro">@end(<span class="name">transform i type</span>)</span><br/>
@@ -1532,7 +1499,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> }<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"raw"</span>, <span class="var">result</span> }<br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">transform u type</span>)</span><br/>
 </code></div>
@@ -1565,7 +1532,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">1</span><br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="keyword">new</span> <span class="type">Machine_Item</span> { <span class="var">result</span> }<br/>
+<span class="in2"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"raw"</span>, <span class="var">result</span> }<br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">transform j type</span>)</span><br/>
 </code></div>
@@ -1585,11 +1552,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform lp</span>)</span><br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">n2</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n2</span> &amp;&amp; <span class="var">n2</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">v1</span> { <span class="var">n2</span>-&gt;<span class="fn">value</span>() };<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform lp num</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1618,11 +1585,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform lp num pm</span>)</span><br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">n4</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">3</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n4</span> &amp;&amp; <span class="var">n4</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">v2</span> { <span class="var">n4</span>-&gt;<span class="fn">value</span>() };<br/>
 <span class="in2"></span><span class="keyword">if</span> (<span class="var">neg</span>) { <span class="var">v2</span> = -<span class="var">v2</span>; }<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform lp num pm num</span>)</span>;<br/>
@@ -1643,7 +1610,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">5</span><br/>
 <span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in3"></span><span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="var">v1</span> + <span class="var">v2</span> }<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">v1</span> + <span class="var">v2</span> }<br/>
 <span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="in1"></span>}<br/>
@@ -1665,11 +1632,11 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform goto</span>)</span><br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">n2</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Number_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]<br/>
 <span class="in2"></span>)<br/>
 <span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">n2</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n2</span> &amp;&amp; <span class="var">n2</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">target</span> {<br/>
 <span class="in3"></span><span class="var">n2</span>-&gt;<span class="fn">value</span>()<br/>
 <span class="in2"></span>};<br/>
@@ -1692,7 +1659,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in3"></span><span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"("</span> }<br/>
 <span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">5</span>,<br/>
-<span class="in3"></span><span class="keyword">new</span> <span class="type">Number_Item</span> { <span class="var">target</span> }<br/>
+<span class="in3"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">target</span> }<br/>
 <span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">6</span>,<br/>
 <span class="in3"></span><span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="str">"-"</span> }<br/>
@@ -1743,14 +1710,15 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">consume machine instrs</span>)</span><br/>
 <span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>() &amp;&amp;<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> *&gt;(<br/>
+<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
 <span class="in3"></span>&amp;**<span class="var">items</span>.<span class="fn">begin</span>()<br/>
 <span class="in1"></span>)) {<br/>
 <span class="in2"></span><span class="type">auto</span> &amp;<span class="var">mi</span> {<br/>
-<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Machine_Item</span> &amp;&gt;(<br/>
+<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> &amp;&gt;(<br/>
 <span class="in4"></span>**<span class="var">items</span>.<span class="fn">begin</span>()<br/>
 <span class="in2"></span>)};<br/>
-<span class="in2"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">instruction</span>());<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() != <span class="str">"raw"</span>) { <span class="keyword">break</span>; }<br/>
+<span class="in2"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">value</span>());<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
 <span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
 <span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span><br/>
