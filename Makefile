@@ -9,6 +9,16 @@ tests: ll echo-as.hex
 	@./ll <echo.ll >echo.hex
 	@diff echo.hex echo-as.hex
 
+default.h: default.ll
+	@echo default.ll
+	@(echo "std::string setup {"; \
+		sed -e 's/#.*//' -e 's/^\s*//' <$^ | \
+			grep -v '^$$' | \
+			sed -e 's/\(.*\)/\t"\1\\n"/'; \
+		echo "};") >$@
+
+ll.cpp: default.h
+
 SOURCEs := $(wildcard *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))
 CPPs := $(filter %.cpp, $(GENs))

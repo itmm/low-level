@@ -60,6 +60,7 @@ machine instructions.
 @def(needed by state)
 	#include <string>
 	#include <vector>
+	#include <sstream>
 @end(needed by state)
 ```
 * `@f(add_line)` needs `std::string`
@@ -223,7 +224,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line(
+	assert_line_2(
 		"%x4 <- %x2 + %x3",
 		0x00310233
 	);
@@ -288,46 +289,12 @@ These syntax trees are then transformed into machine code.
 
 ```
 @def(setup symbols)
-	static const char* setups[] = {
-		"%mtvec = @csr:$305",
-		"%mhartid = @csr:$f14",
-		"%x0 = @reg:0", "%x1 = @reg:1",
-		"%x2 = @reg:2", "%x3 = @reg:3",
-		"%x4 = @reg:4", "%x5 = @reg:5",
-		"%x6 = @reg:6", "%x7 = @reg:7",
-		"%x8 = @reg:8", "%x9 = @reg:9",
-		"%x10 = @reg:10", "%x11 = @reg:11",
-		"%x12 = @reg:12", "%x13 = @reg:13",
-		"%x14 = @reg:14", "%x15 = @reg:15",
-		"%x16 = @reg:16", "%x17 = @reg:17",
-		"%x18 = @reg:18", "%x19 = @reg:19",
-		"%x20 = @reg:20", "%x21 = @reg:21",
-		"%x22 = @reg:22", "%x23 = @reg:23",
-		"%x24 = @reg:24", "%x25 = @reg:25",
-		"%x26 = @reg:26", "%x27 = @reg:27",
-		"%x28 = @reg:28", "%x29 = @reg:29",
-		"%x30 = @reg:30", "%x31 = @reg:31",
-		"%zero = %x0", "%ra = %x1",
-		"%sp = %x2", "%gp = %x3",
-		"%tp = %x4", "%t0 = %x5",
-		"%t1 = %x6", "%t2 = %x7",
-		"%s0 = %x8", "%s1 = %x9",
-		"%fp = %x8", "%a0 = %x10",
-		"%a1 = %x11", "%a2 = %x12",
-		"%a3 = %x13", "%a4 = %x14",
-		"%a5 = %x15", "%a6 = %x16",
-		"%a7 = %x17", "%s2 = %x18",
-		"%s3 = %x19", "%s4 = %x20",
-		"%s5 = %x21", "%s6 = %x22",
-		"%s7 = %x23", "%s8 = %x24",
-		"%s9 = %x25", "%s10 = %x26",
-		"%s11 = %x27", "%t3 = %x28",
-		"%t4 = %x29", "%t5 = %x30",
-		"%t6 = %x31", "*) = * )",
-		nullptr
-	};
-	for (auto i = setups; *i; ++i) {
-		add_line(*i);
+	#include "default.h"
+	std::istringstream in { setup };
+	std::string l;
+	while (std::getline(in, l)) {
+		if (l.empty()) { continue; }
+		add_line(l);
 	}
 @end(setup symbols)
 ```
@@ -412,32 +379,7 @@ These syntax trees are then transformed into machine code.
 			while (cur < end && isalnum(*cur)) {
 				name += *cur++;
 			}
-			if (*cur == ':') {
-				int value { 0 };
-				++cur;
-				if (*cur == '$') {
-					++cur;
-					while (cur < end && isxdigit(*cur)) {
-						int digit;
-						if (isdigit(*cur)) {
-							digit = *cur - '0';
-						} else if (*cur <= 'F') {
-							digit = *cur - 'A' + 10;
-						} else {
-							digit = *cur - 'a' + 10;
-						}
-						value = value * 16 + digit;
-						++cur;
-					}
-				} else {
-					while (cur < end && isdigit(*cur)) {
-						value = value * 10 + (*cur++ - '0');
-					}
-				}
-				items.emplace_back(new Type_Instance_Item { name, value });
-			} else {
-				items.emplace_back(new Type_Item { name });
-			}
+			items.emplace_back(new Type_Item { name });
 		} else if (*cur == '$') {
 			++cur;
 			int value { 0 };
@@ -455,7 +397,7 @@ These syntax trees are then transformed into machine code.
 			}
 			items.emplace_back(new Type_Instance_Item { "num", value });
 		} else if (ispunct(*cur)) {
-			while (cur < end && ispunct(*cur)) {
+			while (cur < end && ispunct(*cur) && *cur != '$' && *cur != '#' && *cur != '@' && *cur != '_' && *cur != '%') {
 				++cur;
 			}
 			items.emplace_back(new Named_Item { { begin, cur } });
@@ -716,6 +658,27 @@ These syntax trees are then transformed into machine code.
 				return o && (o->name() == _name || _name.empty());
 			};
 	};
+	class Type_Instance_Item: public Item {
+		private:
+			std::string _type;
+			int _value;
+		public:
+			Type_Instance_Item(const std::string &type, int value):
+				_type { type }, _value { value }
+			{ }
+			const std::string &type() const { return _type; }
+			int value() const { return _value; }
+			Item *clone() const override {
+				return new Type_Instance_Item { _type, _value };
+			}
+			void write(std::ostream &out) const override {
+				out << '@' << _type << ":$" << std::hex << _value << std::dec;
+			}
+			bool matches(const Item &in) const override {
+				auto o { dynamic_cast<const Type_Instance_Item *>(&in) };
+				return o && _type == o->type() && o->value() == _value;
+			}
+	};
 	class Type_Item: public Item {
 		private:
 			std::string _type;
@@ -730,28 +693,11 @@ These syntax trees are then transformed into machine code.
 			}
 			bool matches(const Item &in) const override {
 				auto o { dynamic_cast<const Type_Item *>(&in) };
-				return o && o->type() == _type;
+				if (o && o->type() == _type) { return true; };
+				auto i { dynamic_cast<const Type_Instance_Item *>(&in) };
+				if (i && i->type() == _type) { return true; }
+				return false;
 			};
-	};
-	class Type_Instance_Item: public Type_Item {
-		private:
-			int _value;
-		public:
-			Type_Instance_Item(const std::string &type, int value):
-				Type_Item { type }, _value { value }
-			{ }
-			int value() const { return _value; }
-			Item *clone() const override {
-				return new Type_Instance_Item { type(), _value };
-			}
-			void write(std::ostream &out) const override {
-				Type_Item::write(out);
-				out << ":$" << std::hex << _value << std::dec;
-			}
-			bool matches(const Item &in) const override {
-				auto o { dynamic_cast<const Type_Instance_Item *>(&in) };
-				return o && this->Type_Item::matches(*o) && o->value() == _value;
-			}
 	};
 @end(needed by state)
 ```
@@ -831,11 +777,18 @@ These syntax trees are then transformed into machine code.
 ```
 @def(expand)
 restart:
+	#if 0
+		std::cerr << "LINE {";
+		for (const auto &i : items) {
+			std::cerr << '[' << *i << "], ";
+		}
+		std::cerr << "}\n";
+	#endif
 	if (items.size()) {
 		auto macro { _macros.begin() };
 		while (macro != _macros.end()) {
 			unsigned i = 0;
-			while (i <= items.size() - macro->pattern().size()) {
+			while (i + macro->pattern().size() <= items.size()) {
 				@put(transform);
 				++i;
 			}
@@ -853,7 +806,36 @@ restart:
 ```
 
 ```
-@def(transform) {
+@def(transform)
+	if (i + 2 < items.size()) {
+		auto t { dynamic_cast<Type_Item *>(&*items[i]) };
+		auto c { dynamic_cast<Named_Item *>(&*items[i + 1]) };
+		if (t && c && c->name() == ":") {
+			auto v { dynamic_cast<Type_Instance_Item *>(&*items[i + 2]) };
+			if (v && v->type() == "num") {
+				std::string type { t->type() };
+				int value { v->value() };
+				items.erase(items.begin() + i, items.begin() + i + 3);
+				items.emplace(items.begin() + i, new Type_Instance_Item { type, value });
+				goto restart;
+			}
+		}
+		auto o { dynamic_cast<Type_Instance_Item *>(&*items[i]) };
+		if (o && c && c->name() == ":") {
+			auto n { dynamic_cast<Named_Item *>(&*items[i + 2]) };
+			if (n && n->name() == "value") {
+				int value { o->value() };
+				items.erase(items.begin() + i, items.begin() + i + 3);
+				items.emplace(items.begin() + i, new Type_Instance_Item { "num", value });
+				goto restart;
+			}
+		}
+	}
+@end(transform)
+```
+
+```
+@add(transform) {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
 	auto e { macro->pattern().end() };
@@ -862,13 +844,89 @@ restart:
 		matches = matches && (**p).matches(*items[i + j]);
 	}
 	if (matches) {
-		items.erase(items.begin() + i, items.begin() + i + macro->pattern().size());
+		auto k { i };
+		i += macro->pattern().size();
 		for (const auto &e : macro->replacement()) {
+			auto para { dynamic_cast<Type_Item *>(&*e) };
+			if (para && ! para->type().empty()) {
+				if (isdigit(para->type()[0])) {
+					int idx { std::stoi(para->type()) };
+					if (idx >= 0 && idx < (int) macro->pattern().size()) {
+						items.emplace(
+							items.begin() + i, items[k + idx]->clone()
+						);
+						++i;
+						continue;
+					}
+				} else if (para->type() == "arithmetic") {
+					auto n1 { dynamic_cast<Type_Instance_Item *>(&*items[k + 0]) };
+					auto op { dynamic_cast<Named_Item *>(&*items[k + 1]) };
+					auto n2 { dynamic_cast<Type_Instance_Item *>(&*items[k + 2]) };
+					if (n1 && n1->type() == "num" && op && n2 && n2->type() == "num") {
+						if (op->name() == "+") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() + n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "-") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() - n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "*") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() * n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "/" && n2->value() != 0) {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() / n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "and") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() & n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "or") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() | n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "<<") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() << n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == ">>") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() >> n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "xor") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() ^ n2->value() }
+							);
+							++i;
+							continue;
+						}
+					}
+				}
+			}
 			items.emplace(
 				items.begin() + i, e->clone()
 			);
 			++i;
 		}
+		items.erase(items.begin() + k, items.begin() + k + macro->pattern().size());
 		goto restart;
 	}
 } @end(transform)
@@ -896,7 +954,7 @@ restart:
 
 ```
 @def(transform raw)
-	if (i < items.size() - 1) {
+	if (i + 1 < items.size()) {
 		auto *n2 {
 			dynamic_cast<Type_Instance_Item *>(
 				&*items[i + 1]
@@ -957,7 +1015,7 @@ restart:
 
 ```
 @def(transform reg)
-	if (i < items.size() - 2) {
+	if (i + 2 < items.size()) {
 		auto *t2 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
@@ -1063,7 +1121,7 @@ restart:
 
 ```
 @def(transform reg assign reg)
-	if (i < items.size() - 4) {
+	if (i + 4 < items.size()) {
 		auto n3 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 3]
@@ -1163,7 +1221,7 @@ restart:
 
 ```
 @def(transform pc)
-	if (i < items.size() - 2) {
+	if (i + 2 < items.size()) {
 		auto n2 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
@@ -1191,7 +1249,7 @@ restart:
 
 ```
 @def(transform pc assgn pc)
-	if (i < items.size() - 4) {
+	if (i + 4 < items.size()) {
 		auto n4 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 3]
@@ -1372,83 +1430,8 @@ restart:
 
 ```
 @add(transform named)
-	if (ni->name() == "(") {
-		if (i < items.size() - 4) {
-			@put(transform lp);
-		}
-	}
-@end(transform named)
-```
-
-```
-@def(transform lp)
-	auto n2 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 1]
-		)
-	};
-	if (n2 && n2->type() == "num") {
-		int v1 { n2->value() };
-		@put(transform lp num);
-	}
-@end(transform lp)
-```
-
-```
-@def(transform lp num)
-	auto n3 {
-		dynamic_cast<Named_Item *>(
-			&*items[i + 2]
-		)
-	};
-	if (n3 && (
-		n3->name() == "+" ||
-		n3->name() == "-"
-	)) {
-		bool neg { n3->name() == "-" };
-		@put(transform lp num pm);
-	}
-@end(transform lp num)
-```
-
-```
-@def(transform lp num pm)
-	auto n4 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 3]
-		)
-	};
-	if (n4 && n4->type() == "num") {
-		int v2 { n4->value() };
-		if (neg) { v2 = -v2; }
-		@put(transform lp num pm num);
-	}
-@end(transform lp num pm)
-```
-
-```
-@def(transform lp num pm num)
-	auto n5 {
-		dynamic_cast<Named_Item *>(
-			&*items[i + 4]
-		)
-	};
-	if (n5 && n5->name() == ")") {
-		items.erase(items.begin() + i,
-			items.begin() + i + 5
-		);
-		items.emplace(items.begin() + i,
-			new Type_Instance_Item { "num", v1 + v2 }
-		);
-		goto restart;
-	}
-@end(transform lp num pm num)
-```
-
-```
-@add(transform named)
 	if (ni->name() == "goto") {
-		if (i < items.size() - 1) {
+		if (i + 1 < items.size()) {
 			@put(transform goto);
 		}
 	}
@@ -1503,7 +1486,7 @@ restart:
 
 ```
 @add(transform named)
-	if (i < items.size() - 1) {
+	if (i + 1 < items.size()) {
 		auto ci {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
@@ -1553,18 +1536,9 @@ restart:
 
 ```
 @def(handle define)
-	if (items.size() >= 2) {
-		auto ii {
-			dynamic_cast<Named_Item *>(
-				&*items[0]
-			)
-		};
-		auto ai {
-			dynamic_cast<Named_Item *>(
-				&*items[1]
-			)
-		};
-		if (ii && ai && ai->name() == "=") {
+	for (unsigned i = 1; i < items.size(); ++i) {
+		auto a { dynamic_cast<Named_Item *>(&*items[i]) };
+		if (a && a->name() == "=") {
 			@put(transform sym assign);
 		}
 	}
@@ -1574,13 +1548,15 @@ restart:
 ```
 @def(transform sym assign)
 	Items value;
-	for (unsigned j = 2;
+	for (unsigned j = i + 1;
 		j < items.size(); ++j
 	) {
 		value.push_back(std::move(items[j]));
 	}
 	Items p;
-	p.emplace_back(new Named_Item { ii->name() });
+	for (unsigned j = 0; j < i; ++j) {
+		p.push_back(std::move(items[j]));
+	}
 	_macros.emplace_back(std::move(p), std::move(value));
 	items.erase(
 		items.begin(), items.end()

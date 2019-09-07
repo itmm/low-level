@@ -13,12 +13,13 @@
 
 	#include <string>
 	#include <vector>
+	#include <sstream>
 
-#line 218 "start.x"
+#line 219 "start.x"
 
 	#include <memory>
 
-#line 241 "start.x"
+#line 242 "start.x"
 
 	class Item;
 	
@@ -44,7 +45,7 @@
 			}
 	};
 
-#line 336 "start.x"
+#line 303 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -56,7 +57,7 @@
 			opcode;
 	}
 
-#line 350 "start.x"
+#line 317 "start.x"
 
 	int build_i_cmd(
 		int imm, char src1, int funct3, char dst, int opcode
@@ -64,7 +65,7 @@
 		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
 	}
 
-#line 360 "start.x"
+#line 327 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -75,7 +76,7 @@
 		);
 	}
 
-#line 373 "start.x"
+#line 340 "start.x"
 
 	int build_add(
 		char dst, char src1, int imm
@@ -85,7 +86,7 @@
 		);
 	}
 
-#line 635 "start.x"
+#line 577 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -95,7 +96,7 @@
 		);
 	}
 
-#line 683 "start.x"
+#line 625 "start.x"
 
 	class Item {
 		public:
@@ -111,7 +112,7 @@
 		return out;
 	}
 
-#line 701 "start.x"
+#line 643 "start.x"
 
 	class Named_Item: public Item {
 		private:
@@ -130,6 +131,27 @@
 				return o && (o->name() == _name || _name.empty());
 			};
 	};
+	class Type_Instance_Item: public Item {
+		private:
+			std::string _type;
+			int _value;
+		public:
+			Type_Instance_Item(const std::string &type, int value):
+				_type { type }, _value { value }
+			{ }
+			const std::string &type() const { return _type; }
+			int value() const { return _value; }
+			Item *clone() const override {
+				return new Type_Instance_Item { _type, _value };
+			}
+			void write(std::ostream &out) const override {
+				out << '@' << _type << ":$" << std::hex << _value << std::dec;
+			}
+			bool matches(const Item &in) const override {
+				auto o { dynamic_cast<const Type_Instance_Item *>(&in) };
+				return o && _type == o->type() && o->value() == _value;
+			}
+	};
 	class Type_Item: public Item {
 		private:
 			std::string _type;
@@ -144,31 +166,14 @@
 			}
 			bool matches(const Item &in) const override {
 				auto o { dynamic_cast<const Type_Item *>(&in) };
-				return o && o->type() == _type;
+				if (o && o->type() == _type) { return true; };
+				auto i { dynamic_cast<const Type_Instance_Item *>(&in) };
+				if (i && i->type() == _type) { return true; }
+				return false;
 			};
 	};
-	class Type_Instance_Item: public Type_Item {
-		private:
-			int _value;
-		public:
-			Type_Instance_Item(const std::string &type, int value):
-				Type_Item { type }, _value { value }
-			{ }
-			int value() const { return _value; }
-			Item *clone() const override {
-				return new Type_Instance_Item { type(), _value };
-			}
-			void write(std::ostream &out) const override {
-				Type_Item::write(out);
-				out << ":$" << std::hex << _value << std::dec;
-			}
-			bool matches(const Item &in) const override {
-				auto o { dynamic_cast<const Type_Instance_Item *>(&in) };
-				return o && this->Type_Item::matches(*o) && o->value() == _value;
-			}
-	};
 
-#line 760 "start.x"
+#line 706 "start.x"
 
 	class I_Type_Item: public Item {
 		private:
@@ -206,7 +211,7 @@
 			}
 	};
 
-#line 800 "start.x"
+#line 746 "start.x"
 
 	class U_Type_Item: public Item {
 		private:
@@ -236,7 +241,7 @@
 			}
 	};
 
-#line 1214 "start.x"
+#line 1272 "start.x"
 
 	class J_Type_Item: public Item {
 		private:
@@ -270,11 +275,11 @@
 ;
 	class State {
 			
-#line 94 "start.x"
+#line 95 "start.x"
 
 	void add_machine(int instr);
 
-#line 269 "start.x"
+#line 270 "start.x"
 
 	std::vector<Macro> _macros;
 	void setup_symbols();
@@ -283,21 +288,21 @@
 
 		public:
 			
-#line 68 "start.x"
+#line 69 "start.x"
 
 	void add_line(
 		const std::string &line
 	);
 
-#line 110 "start.x"
+#line 111 "start.x"
 
 	
-#line 117 "start.x"
+#line 118 "start.x"
 
 	private:
 		std::vector<int> code;
 
-#line 125 "start.x"
+#line 126 "start.x"
 
 	public:
 		int code_size() const {
@@ -306,17 +311,17 @@
 			);
 		}
 
-#line 137 "start.x"
+#line 138 "start.x"
 
 	public:
 		int get_code(int pos) const {
 			return code[pos];
 		}
 
-#line 111 "start.x"
+#line 112 "start.x"
 
 
-#line 284 "start.x"
+#line 285 "start.x"
 
 	State() { setup_symbols(); }
 
@@ -324,28 +329,28 @@
 
 	};
 	
-#line 77 "start.x"
+#line 78 "start.x"
 
 	
 #line 30 "start.x"
 
 	#include <cassert>
 
-#line 208 "start.x"
+#line 209 "start.x"
 
 	#include <cctype>
 
-#line 235 "start.x"
+#line 236 "start.x"
 
 	#include <map>
 
-#line 78 "start.x"
+#line 79 "start.x"
 
 	void State::add_line(
 		const std::string &line
 	) {
 		
-#line 385 "start.x"
+#line 352 "start.x"
 
 	std::vector<std::unique_ptr<Item>> items;
 	auto end { line.end() };
@@ -376,32 +381,7 @@
 			while (cur < end && isalnum(*cur)) {
 				name += *cur++;
 			}
-			if (*cur == ':') {
-				int value { 0 };
-				++cur;
-				if (*cur == '$') {
-					++cur;
-					while (cur < end && isxdigit(*cur)) {
-						int digit;
-						if (isdigit(*cur)) {
-							digit = *cur - '0';
-						} else if (*cur <= 'F') {
-							digit = *cur - 'A' + 10;
-						} else {
-							digit = *cur - 'a' + 10;
-						}
-						value = value * 16 + digit;
-						++cur;
-					}
-				} else {
-					while (cur < end && isdigit(*cur)) {
-						value = value * 10 + (*cur++ - '0');
-					}
-				}
-				items.emplace_back(new Type_Instance_Item { name, value });
-			} else {
-				items.emplace_back(new Type_Item { name });
-			}
+			items.emplace_back(new Type_Item { name });
 		} else if (*cur == '$') {
 			++cur;
 			int value { 0 };
@@ -419,23 +399,57 @@
 			}
 			items.emplace_back(new Type_Instance_Item { "num", value });
 		} else if (ispunct(*cur)) {
-			while (cur < end && ispunct(*cur)) {
+			while (cur < end && ispunct(*cur) && *cur != '$' && *cur != '#' && *cur != '@' && *cur != '_' && *cur != '%') {
 				++cur;
 			}
 			items.emplace_back(new Named_Item { { begin, cur } });
 		}
 	}
 	
-#line 832 "start.x"
+#line 778 "start.x"
 
 restart:
+	#if 0
+		std::cerr << "LINE {";
+		for (const auto &i : items) {
+			std::cerr << '[' << *i << "], ";
+		}
+		std::cerr << "}\n";
+	#endif
 	if (items.size()) {
 		auto macro { _macros.begin() };
 		while (macro != _macros.end()) {
 			unsigned i = 0;
-			while (i <= items.size() - macro->pattern().size()) {
+			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 856 "start.x"
+#line 809 "start.x"
+
+	if (i + 2 < items.size()) {
+		auto t { dynamic_cast<Type_Item *>(&*items[i]) };
+		auto c { dynamic_cast<Named_Item *>(&*items[i + 1]) };
+		if (t && c && c->name() == ":") {
+			auto v { dynamic_cast<Type_Instance_Item *>(&*items[i + 2]) };
+			if (v && v->type() == "num") {
+				std::string type { t->type() };
+				int value { v->value() };
+				items.erase(items.begin() + i, items.begin() + i + 3);
+				items.emplace(items.begin() + i, new Type_Instance_Item { type, value });
+				goto restart;
+			}
+		}
+		auto o { dynamic_cast<Type_Instance_Item *>(&*items[i]) };
+		if (o && c && c->name() == ":") {
+			auto n { dynamic_cast<Named_Item *>(&*items[i + 2]) };
+			if (n && n->name() == "value") {
+				int value { o->value() };
+				items.erase(items.begin() + i, items.begin() + i + 3);
+				items.emplace(items.begin() + i, new Type_Instance_Item { "num", value });
+				goto restart;
+			}
+		}
+	}
+
+#line 838 "start.x"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -445,17 +459,93 @@ restart:
 		matches = matches && (**p).matches(*items[i + j]);
 	}
 	if (matches) {
-		items.erase(items.begin() + i, items.begin() + i + macro->pattern().size());
+		auto k { i };
+		i += macro->pattern().size();
 		for (const auto &e : macro->replacement()) {
+			auto para { dynamic_cast<Type_Item *>(&*e) };
+			if (para && ! para->type().empty()) {
+				if (isdigit(para->type()[0])) {
+					int idx { std::stoi(para->type()) };
+					if (idx >= 0 && idx < (int) macro->pattern().size()) {
+						items.emplace(
+							items.begin() + i, items[k + idx]->clone()
+						);
+						++i;
+						continue;
+					}
+				} else if (para->type() == "arithmetic") {
+					auto n1 { dynamic_cast<Type_Instance_Item *>(&*items[k + 0]) };
+					auto op { dynamic_cast<Named_Item *>(&*items[k + 1]) };
+					auto n2 { dynamic_cast<Type_Instance_Item *>(&*items[k + 2]) };
+					if (n1 && n1->type() == "num" && op && n2 && n2->type() == "num") {
+						if (op->name() == "+") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() + n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "-") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() - n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "*") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() * n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "/" && n2->value() != 0) {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() / n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "and") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() & n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "or") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() | n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "<<") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() << n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == ">>") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() >> n2->value() }
+							);
+							++i;
+							continue;
+						} else if (op->name() == "xor") {
+							items.emplace(
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() ^ n2->value() }
+							);
+							++i;
+							continue;
+						}
+					}
+				}
+			}
 			items.emplace(
 				items.begin() + i, e->clone()
 			);
 			++i;
 		}
+		items.erase(items.begin() + k, items.begin() + k + macro->pattern().size());
 		goto restart;
 	}
 } 
-#line 878 "start.x"
+#line 936 "start.x"
  {
 	auto *ni {
 		dynamic_cast<Named_Item *>(
@@ -463,20 +553,20 @@ restart:
 	) };
 	if (ni) {
 		
-#line 890 "start.x"
+#line 948 "start.x"
 
 	if (ni->name() == "raw") {
 		
-#line 898 "start.x"
+#line 956 "start.x"
 
-	if (i < items.size() - 1) {
+	if (i + 1 < items.size()) {
 		auto *n2 {
 			dynamic_cast<Type_Instance_Item *>(
 				&*items[i + 1]
 		) };
 		if (n2 && n2->type() == "num") {
 			
-#line 912 "start.x"
+#line 970 "start.x"
 
 	int value { n2->value() };
 	items.erase( items.begin() + i,
@@ -487,20 +577,20 @@ restart:
 	);
 	goto restart;
 
-#line 905 "start.x"
+#line 963 "start.x"
 ;
 		}
 	}
 
-#line 892 "start.x"
+#line 950 "start.x"
 ;
 	}
 
-#line 925 "start.x"
+#line 983 "start.x"
 
 	if (ni->name() == "*") {
 		
-#line 933 "start.x"
+#line 991 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -511,89 +601,16 @@ restart:
 	);
 	goto restart;
 
-#line 927 "start.x"
+#line 985 "start.x"
 ;
 	}
 
-#line 1374 "start.x"
-
-	if (ni->name() == "(") {
-		if (i < items.size() - 4) {
-			
-#line 1384 "start.x"
-
-	auto n2 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 1]
-		)
-	};
-	if (n2 && n2->type() == "num") {
-		int v1 { n2->value() };
-		
-#line 1398 "start.x"
-
-	auto n3 {
-		dynamic_cast<Named_Item *>(
-			&*items[i + 2]
-		)
-	};
-	if (n3 && (
-		n3->name() == "+" ||
-		n3->name() == "-"
-	)) {
-		bool neg { n3->name() == "-" };
-		
-#line 1415 "start.x"
-
-	auto n4 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 3]
-		)
-	};
-	if (n4 && n4->type() == "num") {
-		int v2 { n4->value() };
-		if (neg) { v2 = -v2; }
-		
-#line 1430 "start.x"
-
-	auto n5 {
-		dynamic_cast<Named_Item *>(
-			&*items[i + 4]
-		)
-	};
-	if (n5 && n5->name() == ")") {
-		items.erase(items.begin() + i,
-			items.begin() + i + 5
-		);
-		items.emplace(items.begin() + i,
-			new Type_Instance_Item { "num", v1 + v2 }
-		);
-		goto restart;
-	}
-
-#line 1424 "start.x"
-;
-	}
-
-#line 1409 "start.x"
-;
-	}
-
-#line 1392 "start.x"
-;
-	}
-
-#line 1377 "start.x"
-;
-		}
-	}
-
-#line 1449 "start.x"
+#line 1432 "start.x"
 
 	if (ni->name() == "goto") {
-		if (i < items.size() - 1) {
+		if (i + 1 < items.size()) {
 			
-#line 1459 "start.x"
+#line 1442 "start.x"
 
 	auto n2 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -637,14 +654,14 @@ restart:
 		goto restart;
 	}
 
-#line 1452 "start.x"
+#line 1435 "start.x"
 ;
 		}
 	}
 
-#line 1505 "start.x"
+#line 1488 "start.x"
 
-	if (i < items.size() - 1) {
+	if (i + 1 < items.size()) {
 		auto ci {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
@@ -670,11 +687,11 @@ restart:
 		}
 	}
 
-#line 884 "start.x"
+#line 942 "start.x"
 ;
 	}
 } 
-#line 946 "start.x"
+#line 1004 "start.x"
  {
 	auto *ri {
 		dynamic_cast<Type_Instance_Item *>(
@@ -683,16 +700,16 @@ restart:
 	if (ri && ri->type() == "reg") {
 		int rd { ri->value() };
 		
-#line 959 "start.x"
+#line 1017 "start.x"
 
-	if (i < items.size() - 2) {
+	if (i + 2 < items.size()) {
 		auto *t2 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
 		) };
 		if (t2 && t2->name() == "<-") {
 			
-#line 973 "start.x"
+#line 1031 "start.x"
  {
 	auto *n3 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -700,14 +717,14 @@ restart:
 	) };
 	if (n3 && n3->type() == "num") {
 		
-#line 986 "start.x"
+#line 1044 "start.x"
 
 	int v { n3->value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 3
 	);
 
-#line 995 "start.x"
+#line 1053 "start.x"
  {
 	int up { v & ~ 0xfff };
 	if (up != 0 && up != ~ 0xfff) {
@@ -718,7 +735,7 @@ restart:
 		++i;
 	}
 } 
-#line 1008 "start.x"
+#line 1066 "start.x"
  {
 	int low { v & 0xfff };
 	if (
@@ -732,12 +749,12 @@ restart:
 	}
 	goto restart;
 } 
-#line 979 "start.x"
+#line 1037 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1024 "start.x"
+#line 1082 "start.x"
  {
 	auto c3 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -745,7 +762,7 @@ restart:
 	) };
 	if (c3 && c3->type() == "csr") {
 		
-#line 1036 "start.x"
+#line 1094 "start.x"
 
 	int cv { c3->value() };
 	items.erase(items.begin() + i,
@@ -758,11 +775,11 @@ restart:
 	);
 	goto restart;
 
-#line 1030 "start.x"
+#line 1088 "start.x"
 ;
 	}
 } 
-#line 1051 "start.x"
+#line 1109 "start.x"
  {
 	auto rs1 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -772,9 +789,9 @@ restart:
 	if (rs1 && rs1->type() == "reg") {
 		int rs1_nr { rs1->value() };
 		
-#line 1065 "start.x"
+#line 1123 "start.x"
 
-	if (i < items.size() - 4) {
+	if (i + 4 < items.size()) {
 		auto n3 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 3]
@@ -782,11 +799,11 @@ restart:
 		};
 		if (n3) {
 			
-#line 1080 "start.x"
+#line 1138 "start.x"
 
 	if (n3->name() == "or") {
 		
-#line 1088 "start.x"
+#line 1146 "start.x"
  {
 	auto n4 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -795,7 +812,7 @@ restart:
 	};
 	if (n4 && n4->type() == "num") {
 		
-#line 1101 "start.x"
+#line 1159 "start.x"
 
 	int imm { n4->value() };
 	items.erase(items.begin() + i,
@@ -808,19 +825,19 @@ restart:
 	);
 	goto restart;
 
-#line 1095 "start.x"
+#line 1153 "start.x"
 ;
 	}
 } 
-#line 1082 "start.x"
+#line 1140 "start.x"
 ;
 	}
 
-#line 1116 "start.x"
+#line 1174 "start.x"
 
 	if (n3->name() == "and") {
 		
-#line 1124 "start.x"
+#line 1182 "start.x"
  {
 	auto n4 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -829,7 +846,7 @@ restart:
 	};
 	if (n4 && n4->type() == "num") {
 		
-#line 1137 "start.x"
+#line 1195 "start.x"
 
 	int imm { n4->value() };
 	items.erase(items.begin() + i,
@@ -842,33 +859,33 @@ restart:
 	);
 	goto restart;
 
+#line 1189 "start.x"
+;
+	}
+} 
+#line 1176 "start.x"
+;
+	}
+
 #line 1131 "start.x"
 ;
-	}
-} 
-#line 1118 "start.x"
-;
+		}
 	}
 
-#line 1073 "start.x"
+#line 1117 "start.x"
+;
+	}
+} 
+#line 1024 "start.x"
 ;
 		}
 	}
 
-#line 1059 "start.x"
+#line 1011 "start.x"
 ;
 	}
 } 
-#line 966 "start.x"
-;
-		}
-	}
-
-#line 953 "start.x"
-;
-	}
-} 
-#line 1152 "start.x"
+#line 1210 "start.x"
  {
 	auto pi {
 		dynamic_cast<Named_Item *>(
@@ -877,9 +894,9 @@ restart:
 	};
 	if (pi && pi->name() == "%pc") {
 		
-#line 1165 "start.x"
+#line 1223 "start.x"
 
-	if (i < items.size() - 2) {
+	if (i + 2 < items.size()) {
 		auto n2 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 1]
@@ -887,7 +904,7 @@ restart:
 		};
 		if (n2 && n2->name() == "<-") {
 			
-#line 1180 "start.x"
+#line 1238 "start.x"
 
 	auto p3 {
 		dynamic_cast<Named_Item *>(
@@ -896,9 +913,9 @@ restart:
 	};
 	if (p3 && p3->name() == "%pc") {
 		
-#line 1193 "start.x"
+#line 1251 "start.x"
 
-	if (i < items.size() - 4) {
+	if (i + 4 < items.size()) {
 		auto n4 {
 			dynamic_cast<Named_Item *>(
 				&*items[i + 3]
@@ -912,7 +929,7 @@ restart:
 				n4->name() == "-"
 			};
 			
-#line 1246 "start.x"
+#line 1304 "start.x"
 
 	auto n5 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -933,12 +950,12 @@ restart:
 		goto restart;
 	}
 
-#line 1207 "start.x"
+#line 1265 "start.x"
 ;
 		}
 	}
 
-#line 1269 "start.x"
+#line 1327 "start.x"
 
 	if (items.begin() + i + 3 == items.end()) {
 		items.emplace(items.begin() + i + 3,
@@ -950,20 +967,20 @@ restart:
 		goto restart;
 	}
 
-#line 1187 "start.x"
+#line 1245 "start.x"
 ;
 	}
 
-#line 1173 "start.x"
+#line 1231 "start.x"
 ;
 		}
 	}
 
-#line 1159 "start.x"
+#line 1217 "start.x"
 ;
 	}
 } 
-#line 1283 "start.x"
+#line 1341 "start.x"
  {
 	auto ii {
 		dynamic_cast<I_Type_Item *>(
@@ -972,7 +989,7 @@ restart:
 	};
 	if (ii) {
 		
-#line 1296 "start.x"
+#line 1354 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -988,11 +1005,11 @@ restart:
 	);
 	i = 0; continue;
 
-#line 1290 "start.x"
+#line 1348 "start.x"
 ;
 	}
 } 
-#line 1314 "start.x"
+#line 1372 "start.x"
  {
 	auto ui {
 		dynamic_cast<U_Type_Item *>(
@@ -1001,7 +1018,7 @@ restart:
 	};
 	if (ui) {
 		
-#line 1328 "start.x"
+#line 1386 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -1014,12 +1031,12 @@ restart:
 		new Type_Instance_Item { "raw", result }
 	);
 
-#line 1321 "start.x"
+#line 1379 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1343 "start.x"
+#line 1401 "start.x"
  {
 	auto ji {
 		dynamic_cast<J_Type_Item *>(
@@ -1028,7 +1045,7 @@ restart:
 	};
 	if (ji) {
 		
-#line 1356 "start.x"
+#line 1414 "start.x"
 
 	int imm { ji->immediate() };
 	int result = 
@@ -1044,56 +1061,49 @@ restart:
 		new Type_Instance_Item { "raw", result }
 	);
 
-#line 1350 "start.x"
+#line 1408 "start.x"
 ;
 	}
 } 
-#line 839 "start.x"
+#line 792 "start.x"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 1555 "start.x"
+#line 1538 "start.x"
 
-	if (items.size() >= 2) {
-		auto ii {
-			dynamic_cast<Named_Item *>(
-				&*items[0]
-			)
-		};
-		auto ai {
-			dynamic_cast<Named_Item *>(
-				&*items[1]
-			)
-		};
-		if (ii && ai && ai->name() == "=") {
+	for (unsigned i = 1; i < items.size(); ++i) {
+		auto a { dynamic_cast<Named_Item *>(&*items[i]) };
+		if (a && a->name() == "=") {
 			
-#line 1575 "start.x"
+#line 1549 "start.x"
 
 	Items value;
-	for (unsigned j = 2;
+	for (unsigned j = i + 1;
 		j < items.size(); ++j
 	) {
 		value.push_back(std::move(items[j]));
 	}
 	Items p;
-	p.emplace_back(new Named_Item { ii->name() });
+	for (unsigned j = 0; j < i; ++j) {
+		p.push_back(std::move(items[j]));
+	}
 	_macros.emplace_back(std::move(p), std::move(value));
 	items.erase(
 		items.begin(), items.end()
 	);
 
-#line 1568 "start.x"
+#line 1542 "start.x"
 ;
 		}
 	}
 
-#line 844 "start.x"
+#line 797 "start.x"
 ;
 		
-#line 1535 "start.x"
+#line 1518 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Type_Instance_Item *>(
@@ -1111,7 +1121,7 @@ restart:
 		);
 	}
 
-#line 845 "start.x"
+#line 798 "start.x"
 ;
 	}
 	if (! items.empty()) {
@@ -1120,81 +1130,47 @@ restart:
 			line << "]\n";
 	}
 
-#line 464 "start.x"
+#line 406 "start.x"
 ;
 
-#line 82 "start.x"
+#line 83 "start.x"
 ;
 	}
 
-#line 101 "start.x"
+#line 102 "start.x"
 
 	void State::add_machine(int instr) {
 		
-#line 147 "start.x"
+#line 148 "start.x"
 
 	code.push_back(instr);
 
-#line 103 "start.x"
+#line 104 "start.x"
 
 	}
 
-#line 276 "start.x"
+#line 277 "start.x"
 
 	void State::setup_symbols() {
 		
-#line 290 "start.x"
+#line 291 "start.x"
 
-	static const char* setups[] = {
-		"%mtvec = @csr:$305",
-		"%mhartid = @csr:$f14",
-		"%x0 = @reg:0", "%x1 = @reg:1",
-		"%x2 = @reg:2", "%x3 = @reg:3",
-		"%x4 = @reg:4", "%x5 = @reg:5",
-		"%x6 = @reg:6", "%x7 = @reg:7",
-		"%x8 = @reg:8", "%x9 = @reg:9",
-		"%x10 = @reg:10", "%x11 = @reg:11",
-		"%x12 = @reg:12", "%x13 = @reg:13",
-		"%x14 = @reg:14", "%x15 = @reg:15",
-		"%x16 = @reg:16", "%x17 = @reg:17",
-		"%x18 = @reg:18", "%x19 = @reg:19",
-		"%x20 = @reg:20", "%x21 = @reg:21",
-		"%x22 = @reg:22", "%x23 = @reg:23",
-		"%x24 = @reg:24", "%x25 = @reg:25",
-		"%x26 = @reg:26", "%x27 = @reg:27",
-		"%x28 = @reg:28", "%x29 = @reg:29",
-		"%x30 = @reg:30", "%x31 = @reg:31",
-		"%zero = %x0", "%ra = %x1",
-		"%sp = %x2", "%gp = %x3",
-		"%tp = %x4", "%t0 = %x5",
-		"%t1 = %x6", "%t2 = %x7",
-		"%s0 = %x8", "%s1 = %x9",
-		"%fp = %x8", "%a0 = %x10",
-		"%a1 = %x11", "%a2 = %x12",
-		"%a3 = %x13", "%a4 = %x14",
-		"%a5 = %x15", "%a6 = %x16",
-		"%a7 = %x17", "%s2 = %x18",
-		"%s3 = %x19", "%s4 = %x20",
-		"%s5 = %x21", "%s6 = %x22",
-		"%s7 = %x23", "%s8 = %x24",
-		"%s9 = %x25", "%s10 = %x26",
-		"%s11 = %x27", "%t3 = %x28",
-		"%t4 = %x29", "%t5 = %x30",
-		"%t6 = %x31", "*) = * )",
-		nullptr
-	};
-	for (auto i = setups; *i; ++i) {
-		add_line(*i);
+	#include "default.h"
+	std::istringstream in { setup };
+	std::string l;
+	while (std::getline(in, l)) {
+		if (l.empty()) { continue; }
+		add_line(l);
 	}
 
-#line 278 "start.x"
+#line 279 "start.x"
 ;
 	}
 
 #line 52 "start.x"
 ;
 
-#line 154 "start.x"
+#line 155 "start.x"
 
 	void assert_line(const char *line, int expected) {
 		std::cerr << "ignoring " << line << "\n";
@@ -1204,7 +1180,7 @@ restart:
 		int expected
 	) {
 		
-#line 185 "start.x"
+#line 186 "start.x"
 
 	State s;
 	s.add_line(line);
@@ -1213,7 +1189,7 @@ restart:
 	// std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
 	assert(s.get_code(0) == expected);
 
-#line 162 "start.x"
+#line 163 "start.x"
 ;
 	}
 
@@ -1328,172 +1304,172 @@ restart:
 		int argc, const char *argv[]
 	) {
 		
-#line 170 "start.x"
+#line 171 "start.x"
 
 	
-#line 177 "start.x"
+#line 178 "start.x"
 
 	assert_line_2(
 		"raw $87654321", 0x87654321
 	);
 
-#line 225 "start.x"
+#line 226 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x4 <- %x2 + %x3",
 		0x00310233
 	);
 
-#line 469 "start.x"
+#line 411 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc",
 		0x0000006f
 	);
 
-#line 480 "start.x"
+#line 422 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 28",
 		0xfe5ff06f
 	);
 
-#line 490 "start.x"
+#line 432 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 32",
 		0xfe1ff06f
 	);
 
-#line 518 "start.x"
+#line 460 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 527 "start.x"
+#line 469 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 536 "start.x"
+#line 478 "start.x"
 
 	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 545 "start.x"
+#line 487 "start.x"
 
 	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 554 "start.x"
+#line 496 "start.x"
 
 	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 563 "start.x"
+#line 505 "start.x"
 
 	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 572 "start.x"
+#line 514 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 581 "start.x"
+#line 523 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 590 "start.x"
+#line 532 "start.x"
 
 	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 599 "start.x"
+#line 541 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 
-#line 608 "start.x"
+#line 550 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
 		0xfe028ae3
 	);
 
-#line 617 "start.x"
+#line 559 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc + -28",
 		0xfeb292e3
 	);
 
-#line 626 "start.x"
+#line 568 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 647 "start.x"
+#line 589 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 656 "start.x"
+#line 598 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 665 "start.x"
+#line 607 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 674 "start.x"
+#line 616 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
 		0x00552423
 	);
 
-#line 171 "start.x"
+#line 172 "start.x"
 
 
 #line 11 "start.x"
 
 		
-#line 500 "start.x"
+#line 442 "start.x"
 
 	
-#line 507 "start.x"
+#line 449 "start.x"
 
 	State s;
 	std::string l;
@@ -1502,7 +1478,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 501 "start.x"
+#line 443 "start.x"
 
 
 #line 16 "hex.x"
