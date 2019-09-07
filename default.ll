@@ -108,3 +108,8 @@ i_type(@num, @reg, @num, @reg, @num) = @raw: (@2 << 20 or @4:value << 15 or @6 <
 
 	nop = %x0 <- %x0 + 0
 
+# basic extensions
+	
+	@str: = @0 = `*
+	goto @num = %pc <- %pc + ( @1 - `* )
+

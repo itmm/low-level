@@ -85,4 +85,6 @@ std::string setup {
 	"@reg <- @reg and @num = i_type(@4, @2, $7, @0, $13)\n"
 	"@reg <- @reg or @num = i_type(@4, @2, $6, @0, $13)\n"
 	"nop = %x0 <- %x0 + 0\n"
+	"@str: = @0 = `*\n"
+	"goto @num = %pc <- %pc + ( @1 - `* )\n"
 };

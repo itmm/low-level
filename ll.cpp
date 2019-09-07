@@ -86,7 +86,7 @@
 		);
 	}
 
-#line 577 "start.x"
+#line 582 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -96,32 +96,37 @@
 		);
 	}
 
-#line 625 "start.x"
+#line 630 "start.x"
 
 	class Item {
+		private:
+			const int _escapes;
+		protected:
+			Item(int escapes): _escapes { escapes } { }
 		public:
 			virtual ~Item() {};
-			virtual Item *clone() const = 0;
+			virtual Item *clone(int delta_escape) const = 0;
 			virtual void write(std::ostream &out) const = 0;
 			virtual bool matches(const Item &in) const {
 				return false;
 			}
+			int escapes() const { return _escapes; }
 	};
 	std::ostream &operator<<(std::ostream &out, const Item &item) {
 		item.write(out);
 		return out;
 	}
 
-#line 643 "start.x"
+#line 653 "start.x"
 
 	class Named_Item: public Item {
 		private:
 			std::string _name;
 		public:
-			Named_Item(const std::string &name): _name { name } { }
+			Named_Item(const std::string &name, int escapes): Item { escapes }, _name { name } { }
 			const std::string &name() const { return _name; }
-			Item *clone() const override {
-				return new Named_Item { _name };
+			Item *clone(int delta_escape) const override {
+				return new Named_Item { _name, escapes() + delta_escape };
 			}
 			void write(std::ostream &out) const override {
 				out << _name;
@@ -136,13 +141,13 @@
 			std::string _type;
 			int _value;
 		public:
-			Type_Instance_Item(const std::string &type, int value):
-				_type { type }, _value { value }
+			Type_Instance_Item(const std::string &type, int value, int escapes):
+				Item { escapes }, _type { type }, _value { value }
 			{ }
 			const std::string &type() const { return _type; }
 			int value() const { return _value; }
-			Item *clone() const override {
-				return new Type_Instance_Item { _type, _value };
+			Item *clone(int delta_escape) const override {
+				return new Type_Instance_Item { _type, _value, escapes() + delta_escape };
 			}
 			void write(std::ostream &out) const override {
 				out << '@' << _type << ":$" << std::hex << _value << std::dec;
@@ -156,10 +161,10 @@
 		private:
 			std::string _type;
 		public:
-			Type_Item(const std::string &type): _type { type } { }
+			Type_Item(const std::string &type, int escapes): Item { escapes },  _type { type } { }
 			const std::string &type() const { return _type; }
-			Item *clone() const override {
-				return new Type_Item { _type };
+			Item *clone(int delta_escape) const override {
+				return new Type_Item { _type, escapes() + delta_escape };
 			}
 			void write(std::ostream &out) const override {
 				out << '@' << _type;
@@ -169,11 +174,15 @@
 				if (o && o->type() == _type) { return true; };
 				auto i { dynamic_cast<const Type_Instance_Item *>(&in) };
 				if (i && i->type() == _type) { return true; }
+				if (_type == "str") {
+					auto s { dynamic_cast<const Named_Item *>(&in) };
+					if (s) { return true; }
+				}
 				return false;
 			};
 	};
 
-#line 706 "start.x"
+#line 720 "start.x"
 
 	class I_Type_Item: public Item {
 		private:
@@ -187,6 +196,7 @@
 				int immediate, int rs1, int func3,
 				int rd, int opcode
 			):
+				Item { 0 },
 				_immediate { immediate },
 				_rs1 { rs1 },
 				_func3 { func3 },
@@ -198,7 +208,7 @@
 			int func3() const { return _func3; }
 			int rd() const { return _rd; }
 			int opcode() const { return _opcode; }
-			Item *clone() const override {
+			Item *clone(int delta_escape) const override {
 				return new I_Type_Item {
 					_immediate, _rs1, _func3,
 					_rd, _opcode
@@ -211,7 +221,7 @@
 			}
 	};
 
-#line 746 "start.x"
+#line 761 "start.x"
 
 	class U_Type_Item: public Item {
 		private:
@@ -222,7 +232,7 @@
 			U_Type_Item(
 				int immediate,
 				int rd, int opcode
-			):
+			): Item { 0 },
 				_immediate { immediate },
 				_rd { rd },
 				_opcode { opcode }
@@ -230,7 +240,7 @@
 			int immediate() const { return _immediate; }
 			int rd() const { return _rd; }
 			int opcode() const { return _opcode; }
-			Item *clone() const override {
+			Item *clone(int delta) const override {
 				return new U_Type_Item {
 					_immediate,
 					_rd, _opcode
@@ -241,7 +251,7 @@
 			}
 	};
 
-#line 1171 "start.x"
+#line 1187 "start.x"
 
 	class J_Type_Item: public Item {
 		private:
@@ -253,6 +263,7 @@
 				int immediate,
 				int rd, int opcode
 			):
+				Item { 0 },
 				_immediate { immediate },
 				_rd { rd },
 				_opcode { opcode }
@@ -260,7 +271,7 @@
 			int immediate() const { return _immediate; }
 			int rd() const { return _rd; }
 			int opcode() const { return _opcode; }
-			Item *clone() const override {
+			Item *clone(int) const override {
 				return new J_Type_Item {
 					_immediate,
 					_rd, _opcode
@@ -361,18 +372,23 @@
 		}
 		if (cur == end) { break; }
 
+		int escapes { 0 };
+		while (cur < end && *cur == '`') {
+			++escapes;
+			++cur;
+		}
 		auto begin { cur };
 		if (isalpha(*cur) || *cur == '_' || *cur == '%') {
 			while (cur < end && (isalnum(*cur) || *cur == '_' || *cur == '%')) {
 				++cur;
 			}
-			items.emplace_back(new Named_Item { { begin, cur } } );
+			items.emplace_back(new Named_Item { { begin, cur }, escapes } );
 		} else if (isdigit(*cur)) {
 			int value { 0 };
 			while (cur < end && isdigit(*cur)) {
 				value = value * 10 + (*cur++ - '0');
 			}
-			items.emplace_back(new Type_Instance_Item { "num", value });
+			items.emplace_back(new Type_Instance_Item { "num", value, escapes });
 		} else if (*cur == '#') {
 			break;
 		} else if (*cur == '@') {
@@ -381,7 +397,7 @@
 			while (cur < end && isalnum(*cur)) {
 				name += *cur++;
 			}
-			items.emplace_back(new Type_Item { name });
+			items.emplace_back(new Type_Item { name, escapes });
 		} else if (*cur == '$') {
 			++cur;
 			int value { 0 };
@@ -397,16 +413,16 @@
 				value = value * 16 + digit;
 				++cur;
 			}
-			items.emplace_back(new Type_Instance_Item { "num", value });
+			items.emplace_back(new Type_Instance_Item { "num", value, escapes });
 		} else if (ispunct(*cur)) {
-			while (cur < end && ispunct(*cur) && *cur != '$' && *cur != '#' && *cur != '@' && *cur != '_' && *cur != '%') {
+			while (cur < end && ispunct(*cur) && *cur != '$' && *cur != '#' && *cur != '@' && *cur != '_' && *cur != '%' && *cur != '`') {
 				++cur;
 			}
-			items.emplace_back(new Named_Item { { begin, cur } });
+			items.emplace_back(new Named_Item { { begin, cur }, escapes });
 		}
 	}
 	
-#line 778 "start.x"
+#line 793 "start.x"
 
 restart:
 	#if 0
@@ -422,7 +438,7 @@ restart:
 			unsigned i = 0;
 			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 809 "start.x"
+#line 824 "start.x"
 
 	if (i + 2 < items.size()) {
 		auto t { dynamic_cast<Type_Item *>(&*items[i]) };
@@ -433,7 +449,7 @@ restart:
 				std::string type { t->type() };
 				int value { v->value() };
 				items.erase(items.begin() + i, items.begin() + i + 3);
-				items.emplace(items.begin() + i, new Type_Instance_Item { type, value });
+				items.emplace(items.begin() + i, new Type_Instance_Item { type, value, 0 });
 				goto restart;
 			}
 		}
@@ -443,13 +459,13 @@ restart:
 			if (n && n->name() == "value") {
 				int value { o->value() };
 				items.erase(items.begin() + i, items.begin() + i + 3);
-				items.emplace(items.begin() + i, new Type_Instance_Item { "num", value });
+				items.emplace(items.begin() + i, new Type_Instance_Item { "num", value, 0 });
 				goto restart;
 			}
 		}
 	}
 
-#line 838 "start.x"
+#line 853 "start.x"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -457,6 +473,7 @@ restart:
 	for (int j = 0; matches && p != e; ++p, ++j) {
 		matches = matches && (i + j < items.size());
 		matches = matches && (**p).matches(*items[i + j]);
+		matches = matches && (*p)->escapes() <= 0;
 	}
 	if (matches) {
 		auto k { i };
@@ -468,7 +485,7 @@ restart:
 					int idx { std::stoi(para->type()) };
 					if (idx >= 0 && idx < (int) macro->pattern().size()) {
 						items.emplace(
-							items.begin() + i, items[k + idx]->clone()
+							items.begin() + i, items[k + idx]->clone(0)
 						);
 						++i;
 						continue;
@@ -480,55 +497,55 @@ restart:
 					if (n1 && n1->type() == "num" && op && n2 && n2->type() == "num") {
 						if (op->name() == "+") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() + n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() + n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "-") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() - n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() - n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "*") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() * n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() * n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "/" && n2->value() != 0) {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() / n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() / n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "and") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() & n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() & n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "or") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() | n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() | n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "<<") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() << n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() << n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == ">>") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() >> n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() >> n2->value(), 0 }
 							);
 							++i;
 							continue;
 						} else if (op->name() == "xor") {
 							items.emplace(
-								items.begin() + i, new Type_Instance_Item { "num", n1->value() ^ n2->value() }
+								items.begin() + i, new Type_Instance_Item { "num", n1->value() ^ n2->value(), 0 }
 							);
 							++i;
 							continue;
@@ -537,7 +554,7 @@ restart:
 				}
 			}
 			items.emplace(
-				items.begin() + i, e->clone()
+				items.begin() + i, e->clone(-1)
 			);
 			++i;
 		}
@@ -545,7 +562,7 @@ restart:
 		goto restart;
 	}
 } 
-#line 936 "start.x"
+#line 952 "start.x"
  {
 	auto *ni {
 		dynamic_cast<Named_Item *>(
@@ -553,11 +570,11 @@ restart:
 	) };
 	if (ni) {
 		
-#line 948 "start.x"
+#line 964 "start.x"
 
-	if (ni->name() == "raw") {
+	if (ni->name() == "raw" && ni->escapes() <= 0) {
 		
-#line 956 "start.x"
+#line 972 "start.x"
 
 	if (i + 1 < items.size()) {
 		auto *n2 {
@@ -566,132 +583,50 @@ restart:
 		) };
 		if (n2 && n2->type() == "num") {
 			
-#line 970 "start.x"
+#line 986 "start.x"
 
 	int value { n2->value() };
 	items.erase( items.begin() + i,
 		items.begin() + i + 2
 	);
 	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", value }
+		new Type_Instance_Item { "raw", value, 0 }
 	);
 	goto restart;
 
-#line 963 "start.x"
+#line 979 "start.x"
 ;
 		}
 	}
 
-#line 950 "start.x"
+#line 966 "start.x"
 ;
 	}
 
-#line 983 "start.x"
+#line 999 "start.x"
 
-	if (ni->name() == "*") {
+	if (ni->name() == "*" && ni->escapes() <= 0) {
 		
-#line 991 "start.x"
+#line 1007 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
 	int addr = code.size() * 4 +
 		0x20010000;
 	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "num", addr }
+		new Type_Instance_Item { "num", addr, 0 }
 	);
 	goto restart;
 
-#line 985 "start.x"
+#line 1001 "start.x"
 ;
 	}
 
-#line 1331 "start.x"
-
-	if (ni->name() == "goto") {
-		if (i + 1 < items.size()) {
-			
-#line 1341 "start.x"
-
-	auto n2 {
-		dynamic_cast<Type_Instance_Item *>(
-			&*items[i + 1]
-		)
-	};
-	if (n2 && n2->type() == "num") {
-		int target {
-			n2->value()
-		};
-		items.erase(items.begin() + i,
-			items.begin() + i + 2
-		);
-		items.emplace(items.begin() + i,
-			new Named_Item { "%pc" }
-		);
-		items.emplace(items.begin() + i + 1,
-			new Named_Item { "<-" }
-		);
-		items.emplace(items.begin() + i + 2,
-			new Named_Item { "%pc" }
-		);
-		items.emplace(items.begin() + i + 3,
-			new Named_Item { "+" }
-		);
-		items.emplace(items.begin() + i + 4,
-			new Named_Item { "(" }
-		);
-		items.emplace(items.begin() + i + 5,
-			new Type_Instance_Item { "num", target }
-		);
-		items.emplace(items.begin() + i + 6,
-			new Named_Item { "-" }
-		);
-		items.emplace(items.begin() + i + 7,
-			new Named_Item { "*" }
-		);
-		items.emplace(items.begin() + i + 8,
-			new Named_Item { ")" }
-		);
-		goto restart;
-	}
-
-#line 1334 "start.x"
-;
-		}
-	}
-
-#line 1387 "start.x"
-
-	if (i + 1 < items.size()) {
-		auto ci {
-			dynamic_cast<Named_Item *>(
-				&*items[i + 1]
-			)
-		};
-		if (ci && ci->name() == ":") {
-			std::string name {
-				ni->name()
-			};
-			items.erase(
-				items.begin() + i,
-				items.begin() + i + 2
-			);
-			items.emplace(items.begin() + i,
-				new Named_Item { name }
-			);
-			items.emplace(items.begin() + i + 1,
-				new Named_Item { "=" }
-			);
-			items.emplace(items.begin() + i + 2,
-				new Named_Item { "*" }
-			);
-		}
-	}
-
-#line 942 "start.x"
+#line 958 "start.x"
 ;
 	}
 } 
-#line 1004 "start.x"
+#line 1020 "start.x"
  {
 	auto *ri {
 		dynamic_cast<Type_Instance_Item *>(
@@ -700,7 +635,7 @@ restart:
 	if (ri && ri->type() == "reg") {
 		int rd { ri->value() };
 		
-#line 1017 "start.x"
+#line 1033 "start.x"
 
 	if (i + 2 < items.size()) {
 		auto *t2 {
@@ -709,7 +644,7 @@ restart:
 		) };
 		if (t2 && t2->name() == "<-") {
 			
-#line 1031 "start.x"
+#line 1047 "start.x"
  {
 	auto *n3 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -717,14 +652,14 @@ restart:
 	) };
 	if (n3 && n3->type() == "num") {
 		
-#line 1044 "start.x"
+#line 1060 "start.x"
 
 	int v { n3->value() };
 	items.erase(items.begin() + i,
 		items.begin() + i + 3
 	);
 
-#line 1053 "start.x"
+#line 1069 "start.x"
  {
 	int up { v & ~ 0xfff };
 	if (up != 0 && up != ~ 0xfff) {
@@ -735,7 +670,7 @@ restart:
 		++i;
 	}
 } 
-#line 1066 "start.x"
+#line 1082 "start.x"
  {
 	int low { v & 0xfff };
 	if (
@@ -749,12 +684,12 @@ restart:
 	}
 	goto restart;
 } 
-#line 1037 "start.x"
+#line 1053 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1082 "start.x"
+#line 1098 "start.x"
  {
 	auto c3 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -762,7 +697,7 @@ restart:
 	) };
 	if (c3 && c3->type() == "csr") {
 		
-#line 1094 "start.x"
+#line 1110 "start.x"
 
 	int cv { c3->value() };
 	items.erase(items.begin() + i,
@@ -775,20 +710,20 @@ restart:
 	);
 	goto restart;
 
-#line 1088 "start.x"
+#line 1104 "start.x"
 ;
 	}
 } 
-#line 1024 "start.x"
+#line 1040 "start.x"
 ;
 		}
 	}
 
-#line 1011 "start.x"
+#line 1027 "start.x"
 ;
 	}
 } 
-#line 1109 "start.x"
+#line 1125 "start.x"
  {
 	auto pi {
 		dynamic_cast<Named_Item *>(
@@ -797,7 +732,7 @@ restart:
 	};
 	if (pi && pi->name() == "%pc") {
 		
-#line 1122 "start.x"
+#line 1138 "start.x"
 
 	if (i + 2 < items.size()) {
 		auto n2 {
@@ -807,7 +742,7 @@ restart:
 		};
 		if (n2 && n2->name() == "<-") {
 			
-#line 1137 "start.x"
+#line 1153 "start.x"
 
 	auto p3 {
 		dynamic_cast<Named_Item *>(
@@ -816,7 +751,7 @@ restart:
 	};
 	if (p3 && p3->name() == "%pc") {
 		
-#line 1150 "start.x"
+#line 1166 "start.x"
 
 	if (i + 4 < items.size()) {
 		auto n4 {
@@ -832,7 +767,7 @@ restart:
 				n4->name() == "-"
 			};
 			
-#line 1203 "start.x"
+#line 1220 "start.x"
 
 	auto n5 {
 		dynamic_cast<Type_Instance_Item *>(
@@ -853,37 +788,37 @@ restart:
 		goto restart;
 	}
 
-#line 1164 "start.x"
+#line 1180 "start.x"
 ;
 		}
 	}
 
-#line 1226 "start.x"
+#line 1243 "start.x"
 
 	if (items.begin() + i + 3 == items.end()) {
 		items.emplace(items.begin() + i + 3,
-			new Named_Item { "+" }
+			new Named_Item { "+", 0 }
 		);
 		items.emplace(items.begin() + i + 4,
-			new Type_Instance_Item { "num", 0 }
+			new Type_Instance_Item { "num", 0, 0 }
 		);
 		goto restart;
 	}
 
-#line 1144 "start.x"
+#line 1160 "start.x"
 ;
 	}
 
-#line 1130 "start.x"
+#line 1146 "start.x"
 ;
 		}
 	}
 
-#line 1116 "start.x"
+#line 1132 "start.x"
 ;
 	}
 } 
-#line 1240 "start.x"
+#line 1257 "start.x"
  {
 	auto ii {
 		dynamic_cast<I_Type_Item *>(
@@ -892,7 +827,7 @@ restart:
 	};
 	if (ii) {
 		
-#line 1253 "start.x"
+#line 1270 "start.x"
 
 	int result {
 		(ii->immediate() << 20) |
@@ -904,15 +839,15 @@ restart:
 		items.begin() + i + 1
 	);
 	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result }
+		new Type_Instance_Item { "raw", result, 0 }
 	);
 	i = 0; continue;
 
-#line 1247 "start.x"
+#line 1264 "start.x"
 ;
 	}
 } 
-#line 1271 "start.x"
+#line 1288 "start.x"
  {
 	auto ui {
 		dynamic_cast<U_Type_Item *>(
@@ -921,7 +856,7 @@ restart:
 	};
 	if (ui) {
 		
-#line 1285 "start.x"
+#line 1302 "start.x"
 
 	int result {
 		ui->immediate() |
@@ -931,15 +866,15 @@ restart:
 		items.begin() + i + 1
 	);
 	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result }
+		new Type_Instance_Item { "raw", result, 0 }
 	);
 
-#line 1278 "start.x"
+#line 1295 "start.x"
 ;
 		i = 0; continue;
 	}
 } 
-#line 1300 "start.x"
+#line 1317 "start.x"
  {
 	auto ji {
 		dynamic_cast<J_Type_Item *>(
@@ -948,7 +883,7 @@ restart:
 	};
 	if (ji) {
 		
-#line 1313 "start.x"
+#line 1330 "start.x"
 
 	int imm { ji->immediate() };
 	int result = 
@@ -961,27 +896,27 @@ restart:
 		items.begin() + i + 1
 	);
 	items.emplace(items.begin() + i,
-		new Type_Instance_Item { "raw", result }
+		new Type_Instance_Item { "raw", result, 0 }
 	);
 
-#line 1307 "start.x"
+#line 1324 "start.x"
 ;
 	}
 } 
-#line 792 "start.x"
+#line 807 "start.x"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 1437 "start.x"
+#line 1368 "start.x"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		auto a { dynamic_cast<Named_Item *>(&*items[i]) };
 		if (a && a->name() == "=") {
 			
-#line 1448 "start.x"
+#line 1379 "start.x"
 
 	Items value;
 	for (unsigned j = i + 1;
@@ -998,15 +933,15 @@ restart:
 		items.begin(), items.end()
 	);
 
-#line 1441 "start.x"
+#line 1372 "start.x"
 ;
 		}
 	}
 
-#line 797 "start.x"
+#line 812 "start.x"
 ;
 		
-#line 1417 "start.x"
+#line 1348 "start.x"
 
 	while (! items.empty() &&
 		dynamic_cast<Type_Instance_Item *>(
@@ -1024,7 +959,7 @@ restart:
 		);
 	}
 
-#line 798 "start.x"
+#line 813 "start.x"
 ;
 	}
 	if (! items.empty()) {
@@ -1033,7 +968,7 @@ restart:
 			line << "]\n";
 	}
 
-#line 406 "start.x"
+#line 411 "start.x"
 ;
 
 #line 83 "start.x"
@@ -1223,140 +1158,140 @@ restart:
 		0x00310233
 	);
 
-#line 411 "start.x"
+#line 416 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc",
 		0x0000006f
 	);
 
-#line 422 "start.x"
+#line 427 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 28",
 		0xfe5ff06f
 	);
 
-#line 432 "start.x"
+#line 437 "start.x"
 
 	assert_line_2(
 		"%pc <- %pc - 32",
 		0xfe1ff06f
 	);
 
-#line 460 "start.x"
+#line 465 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 and $ff",
 		0x0ff2f293
 	);
 
-#line 469 "start.x"
+#line 474 "start.x"
 
 	assert_line_2(
 		"%x5 <- %x5 or $1",
 		0x0012e293
 	);
 
-#line 478 "start.x"
+#line 483 "start.x"
 
 	assert_line_2(
 		"%x6 <- %x6 or $1",
 		0x00136313
 	);
 
-#line 487 "start.x"
+#line 492 "start.x"
 
 	assert_line_2(
 		"%x11 <- $0d",
 		0x00d00593
 	);
 
-#line 496 "start.x"
+#line 501 "start.x"
 
 	assert_line_2(
 		"%x12 <- $0a",
 		0x00a00613
 	);
 
-#line 505 "start.x"
+#line 510 "start.x"
 
 	assert_line_2(
 		"%x10 <- $1013000",
 		0x1013537
 	);
 
-#line 514 "start.x"
+#line 519 "start.x"
 
 	assert_line(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
-#line 523 "start.x"
+#line 528 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5",
 		0x30529073
 	);
 
-#line 532 "start.x"
+#line 537 "start.x"
 
 	assert_line_2(
 		"%x5 <- %mhartid",
 		0xf14022f3
 	);
 
-#line 541 "start.x"
+#line 546 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc + -4",
 		0xfe02cee3
 	);
 
-#line 550 "start.x"
+#line 555 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc + -12",
 		0xfe028ae3
 	);
 
-#line 559 "start.x"
+#line 564 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc + -28",
 		0xfeb292e3
 	);
 
-#line 568 "start.x"
+#line 573 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 589 "start.x"
+#line 594 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 598 "start.x"
+#line 603 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 607 "start.x"
+#line 612 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 616 "start.x"
+#line 621 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
@@ -1369,10 +1304,10 @@ restart:
 #line 11 "start.x"
 
 		
-#line 442 "start.x"
+#line 447 "start.x"
 
 	
-#line 449 "start.x"
+#line 454 "start.x"
 
 	State s;
 	std::string l;
@@ -1381,7 +1316,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 443 "start.x"
+#line 448 "start.x"
 
 
 #line 16 "hex.x"
