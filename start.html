@@ -327,10 +327,73 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Item</span>;<br/>
-<span class="in1"></span><br/>
-<span class="in1"></span><span class="keyword">using</span> <span class="type">Item_Ptr</span> = <span class="type">std</span>::<span class="var">unique_ptr</span>&lt;<span class="type">Item</span>&gt;;<br/>
-<span class="in1"></span><span class="keyword">using</span> <span class="type">Items</span> = <span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">Item_Ptr</span>&gt;;<br/>
+<span class="in1"></span><span class="type">enum</span> <span class="keyword">class</span> <span class="type">Item_Type</span> {<br/>
+<span class="in2"></span><span class="var">t_type</span>, <span class="var">t_instance</span>, <span class="var">t_string</span><br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Item</span> {<br/>
+<span class="in2"></span><span class="keyword">private</span>:<br/>
+<span class="in3"></span><span class="type">Item_Type</span> <span class="var">_type</span>;<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_escapes</span>;<br/>
+<span class="in3"></span><span class="type">int</span> <span class="var">_value</span>;<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_str</span>;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="fn">Item</span>(<span class="type">Item_Type</span> <span class="var">type</span>, <span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">str</span>, <span class="type">int</span> <span class="var">value</span>, <span class="type">int</span> <span class="var">escapes</span>):<br/>
+<span class="in4"></span><span class="var">_type</span> { <span class="var">type</span> }, <br/>
+<span class="in4"></span><span class="var">_escapes</span> { <span class="var">escapes</span> },<br/>
+<span class="in4"></span><span class="var">_value</span> { <span class="var">value</span> },<br/>
+<span class="in4"></span><span class="var">_str</span> { <span class="var">str</span> }<br/>
+<span class="in3"></span>{ }<br/>
+<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> {<br/>
+<span class="in4"></span><span class="keyword">switch</span> (<span class="var">_type</span>) {<br/>
+<span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_type</span>:<br/>
+<span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_str</span>;<br/>
+<span class="in6"></span><span class="keyword">break</span>;<br/>
+<span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_instance</span>:<br/>
+<span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_str</span> &lt;&lt; <span class="str">':'</span> &lt;&lt; <span class="var">_value</span>;<br/>
+<span class="in6"></span><span class="keyword">break</span>;<br/>
+<span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_string</span>:<br/>
+<span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">"@str:"</span> &lt;&lt; <span class="var">_str</span>;<br/>
+<span class="in4"></span>}<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="var">virtual</span> <span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> {<br/>
+<span class="in4"></span><span class="keyword">switch</span> (<span class="var">_type</span>) {<br/>
+<span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_type</span>: {<br/>
+<span class="in6"></span><span class="keyword">if</span> (<span class="keyword">in</span>.<span class="var">_type</span> == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp; <span class="keyword">in</span>.<span class="var">_str</span> == <span class="var">_str</span>) {<br/>
+<span class="in7"></span><span class="keyword">return</span> <span class="num">true</span>;<br/>
+<span class="in6"></span>}<br/>
+<span class="in6"></span><span class="keyword">if</span> (<span class="keyword">in</span>.<span class="var">_type</span> == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="keyword">in</span>.<span class="var">_str</span> == <span class="var">_str</span>) {<br/>
+<span class="in7"></span><span class="keyword">return</span> <span class="num">true</span>;<br/>
+<span class="in6"></span>}<br/>
+<span class="in6"></span><span class="keyword">if</span> (<span class="keyword">in</span>.<span class="var">_type</span> == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">_str</span> == <span class="str">"str"</span>) {<br/>
+<span class="in7"></span><span class="keyword">return</span> <span class="num">true</span>;<br/>
+<span class="in6"></span>}<br/>
+<span class="in6"></span><span class="keyword">return</span> <span class="num">false</span>;<br/>
+<span class="in5"></span>}<br/>
+<span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_instance</span>: {<br/>
+<span class="in6"></span><span class="keyword">return</span> <span class="keyword">in</span>.<span class="var">_type</span> == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="keyword">in</span>.<span class="var">_str</span> == <span class="var">_str</span> &amp;&amp; <span class="keyword">in</span>.<span class="var">_value</span> == <span class="var">_value</span>;<br/>
+<span class="in5"></span>}<br/>
+<span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_string</span>: {<br/>
+<span class="in6"></span><span class="keyword">return</span> <span class="keyword">in</span>.<span class="var">_type</span> == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="keyword">in</span>.<span class="var">_str</span> == <span class="var">_str</span>;<br/>
+<span class="in5"></span>}<br/>
+<span class="in4"></span>}<br/>
+<span class="in4"></span><span class="keyword">return</span> <span class="num">false</span>;<br/>
+<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">escapes</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_escapes</span>; }<br/>
+<span class="in3"></span><span class="type">Item_Type</span> <span class="fn">type</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_type</span>; }<br/>
+<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">str</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_str</span>; }<br/>
+<span class="in3"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
+<span class="in1"></span>};<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">operator</span>&lt;&lt;(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>, <span class="type">const</span> <span class="type">Item</span> &amp;<span class="var">item</span>) {<br/>
+<span class="in2"></span><span class="var">item</span>.<span class="fn">write</span>(<span class="var">out</span>);<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="var">out</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
+<span class="in1"></span><span class="keyword">using</span> <span class="type">Items</span> = <span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">Item</span>&gt;;<br/>
 <span class="in1"></span><span class="keyword">class</span> <span class="type">Macro</span> {<br/>
 <span class="in2"></span><span class="keyword">private</span>:<br/>
 <span class="in3"></span><span class="type">Items</span> <span class="var">_pattern</span>;<br/>
@@ -512,7 +575,7 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">add line</span>)</span><br/>
-<span class="in1"></span><span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">std</span>::<span class="var">unique_ptr</span>&lt;<span class="type">Item</span>&gt;&gt; <span class="var">items</span>;<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">Item</span>&gt; <span class="var">items</span>;<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">end</span> { <span class="var">line</span>.<span class="fn">end</span>() };<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">cur</span> { <span class="var">line</span>.<span class="fn">begin</span>() };<br/>
 <span class="in1"></span><span class="keyword">for</span> (;;) {<br/>
@@ -531,13 +594,13 @@ the first test checks that a simple register add can be parsed
 <span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; (<span class="fn">isalnum</span>(*<span class="var">cur</span>) || *<span class="var">cur</span> == <span class="str">'_'</span> || *<span class="var">cur</span> == <span class="str">'%'</span>)) {<br/>
 <span class="in4"></span>++<span class="var">cur</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { { <span class="var">begin</span>, <span class="var">cur</span> }, <span class="var">escapes</span> } );<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_string</span>, <span class="type">std</span>::<span class="type">string</span> { <span class="var">begin</span>, <span class="var">cur</span> }, <span class="num">0</span>, <span class="var">escapes</span>);<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in3"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
 <span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in4"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">10</span> + (*<span class="var">cur</span>++ - <span class="str">'0'</span>);<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">value</span>, <span class="var">escapes</span> });<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">value</span>, <span class="var">escapes</span>);<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'#'</span>) {<br/>
 <span class="in3"></span><span class="keyword">break</span>;<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'@'</span>) {<br/>
@@ -546,7 +609,7 @@ the first test checks that a simple register add can be parsed
 <span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isalnum</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in4"></span><span class="var">name</span> += *<span class="var">cur</span>++;<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Item</span> { <span class="var">name</span>, <span class="var">escapes</span> });<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_type</span>, <span class="var">name</span>, <span class="num">0</span>, <span class="var">escapes</span>);<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'$'</span>) {<br/>
 <span class="in3"></span>++<span class="var">cur</span>;<br/>
 <span class="in3"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
@@ -562,12 +625,12 @@ the first test checks that a simple register add can be parsed
 <span class="in4"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">16</span> + <span class="var">digit</span>;<br/>
 <span class="in4"></span>++<span class="var">cur</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">value</span>, <span class="var">escapes</span> });<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">value</span>, <span class="var">escapes</span>);<br/>
 <span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">ispunct</span>(*<span class="var">cur</span>)) {<br/>
 <span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">ispunct</span>(*<span class="var">cur</span>) &amp;&amp; *<span class="var">cur</span> != <span class="str">'$'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'#'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'@'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'_'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'%'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'`'</span>) {<br/>
 <span class="in4"></span>++<span class="var">cur</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="keyword">new</span> <span class="type">Named_Item</span> { { <span class="var">begin</span>, <span class="var">cur</span> }, <span class="var">escapes</span> });<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_string</span>, <span class="type">std</span>::<span class="type">string</span> { <span class="var">begin</span>, <span class="var">cur</span> }, <span class="num">0</span>, <span class="var">escapes</span>);<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="macro">@put(<span class="name">expand</span>)</span>;<br/>
@@ -820,98 +883,6 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">const</span> <span class="type">int</span> <span class="var">_escapes</span>;<br/>
-<span class="in2"></span><span class="var">protected</span>:<br/>
-<span class="in3"></span><span class="fn">Item</span>(<span class="type">int</span> <span class="var">escapes</span>): <span class="var">_escapes</span> { <span class="var">escapes</span> } { }<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="var">virtual</span> ~<span class="fn">Item</span>() {};<br/>
-<span class="in3"></span><span class="var">virtual</span> <span class="type">Item</span> *<span class="fn">clone</span>(<span class="type">int</span> <span class="var">delta_escape</span>) <span class="type">const</span> = <span class="num">0</span>;<br/>
-<span class="in3"></span><span class="var">virtual</span> <span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> = <span class="num">0</span>;<br/>
-<span class="in3"></span><span class="var">virtual</span> <span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="num">false</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">int</span> <span class="fn">escapes</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_escapes</span>; }<br/>
-<span class="in1"></span>};<br/>
-<span class="in1"></span><span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">operator</span>&lt;&lt;(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>, <span class="type">const</span> <span class="type">Item</span> &amp;<span class="var">item</span>) {<br/>
-<span class="in2"></span><span class="var">item</span>.<span class="fn">write</span>(<span class="var">out</span>);<br/>
-<span class="in2"></span><span class="keyword">return</span> <span class="var">out</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">needed by state</span>)</span><br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Named_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_name</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Named_Item</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">name</span>, <span class="type">int</span> <span class="var">escapes</span>): <span class="type">Item</span> { <span class="var">escapes</span> }, <span class="var">_name</span> { <span class="var">name</span> } { }<br/>
-<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">name</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_name</span>; }<br/>
-<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>(<span class="type">int</span> <span class="var">delta_escape</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Named_Item</span> { <span class="var">_name</span>, <span class="fn">escapes</span>() + <span class="var">delta_escape</span> };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="var">_name</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Named_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="var">o</span> &amp;&amp; (<span class="var">o</span>-&gt;<span class="fn">name</span>() == <span class="var">_name</span> || <span class="var">_name</span>.<span class="fn">empty</span>());<br/>
-<span class="in3"></span>};<br/>
-<span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Type_Instance_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_type</span>;<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">_value</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Type_Instance_Item</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">type</span>, <span class="type">int</span> <span class="var">value</span>, <span class="type">int</span> <span class="var">escapes</span>):<br/>
-<span class="in4"></span><span class="type">Item</span> { <span class="var">escapes</span> }, <span class="var">_type</span> { <span class="var">type</span> }, <span class="var">_value</span> { <span class="var">value</span> }<br/>
-<span class="in3"></span>{ }<br/>
-<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">type</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_type</span>; }<br/>
-<span class="in3"></span><span class="type">int</span> <span class="fn">value</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_value</span>; }<br/>
-<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>(<span class="type">int</span> <span class="var">delta_escape</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="var">_type</span>, <span class="var">_value</span>, <span class="fn">escapes</span>() + <span class="var">delta_escape</span> };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_type</span> &lt;&lt; <span class="str">":$"</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">_value</span> &lt;&lt; <span class="type">std</span>::<span class="var">dec</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Type_Instance_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="var">o</span> &amp;&amp; <span class="var">_type</span> == <span class="var">o</span>-&gt;<span class="fn">type</span>() &amp;&amp; <span class="var">o</span>-&gt;<span class="fn">value</span>() == <span class="var">_value</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in1"></span>};<br/>
-<span class="in1"></span><span class="keyword">class</span> <span class="type">Type_Item</span>: <span class="keyword">public</span> <span class="type">Item</span> {<br/>
-<span class="in2"></span><span class="keyword">private</span>:<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">_type</span>;<br/>
-<span class="in2"></span><span class="keyword">public</span>:<br/>
-<span class="in3"></span><span class="fn">Type_Item</span>(<span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="var">type</span>, <span class="type">int</span> <span class="var">escapes</span>): <span class="type">Item</span> { <span class="var">escapes</span> },  <span class="var">_type</span> { <span class="var">type</span> } { }<br/>
-<span class="in3"></span><span class="type">const</span> <span class="type">std</span>::<span class="type">string</span> &amp;<span class="fn">type</span>() <span class="type">const</span> { <span class="keyword">return</span> <span class="var">_type</span>; }<br/>
-<span class="in3"></span><span class="type">Item</span> *<span class="fn">clone</span>(<span class="type">int</span> <span class="var">delta_escape</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="keyword">new</span> <span class="type">Type_Item</span> { <span class="var">_type</span>, <span class="fn">escapes</span>() + <span class="var">delta_escape</span> };<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">void</span> <span class="fn">write</span>(<span class="type">std</span>::<span class="type">ostream</span> &amp;<span class="var">out</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_type</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="type">bool</span> <span class="fn">matches</span>(<span class="type">const</span> <span class="type">Item</span> &amp;<span class="keyword">in</span>) <span class="type">const</span> <span class="var">override</span> {<br/>
-<span class="in4"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Type_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">o</span> &amp;&amp; <span class="var">o</span>-&gt;<span class="fn">type</span>() == <span class="var">_type</span>) { <span class="keyword">return</span> <span class="num">true</span>; };<br/>
-<span class="in4"></span><span class="type">auto</span> <span class="var">i</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Type_Instance_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">i</span> &amp;&amp; <span class="var">i</span>-&gt;<span class="fn">type</span>() == <span class="var">_type</span>) { <span class="keyword">return</span> <span class="num">true</span>; }<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="var">_type</span> == <span class="str">"str"</span>) {<br/>
-<span class="in5"></span><span class="type">auto</span> <span class="var">s</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">const</span> <span class="type">Named_Item</span> *&gt;(&amp;<span class="keyword">in</span>) };<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">s</span>) { <span class="keyword">return</span> <span class="num">true</span>; }<br/>
-<span class="in4"></span>}<br/>
-<span class="in4"></span><span class="keyword">return</span> <span class="num">false</span>;<br/>
-<span class="in3"></span>};<br/>
-<span class="in1"></span>};<br/>
-<span class="macro">@end(<span class="name">needed by state</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
 <span class="macro">@def(<span class="name">expand</span>)</span><br/>
 <span class="var">restart</span>:<br/>
 <span class="in1"></span><span class="keyword">#if</span> <span class="num">0</span><br/>
@@ -946,25 +917,21 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">i</span> + <span class="num">2</span> &lt; <span class="var">items</span>.<span class="fn">size</span>()) {<br/>
-<span class="in2"></span><span class="type">auto</span> <span class="var">t</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Type_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="type">auto</span> <span class="var">c</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">t</span> &amp;&amp; <span class="var">c</span> &amp;&amp; <span class="var">c</span>-&gt;<span class="fn">name</span>() == <span class="str">":"</span>) {<br/>
-<span class="in3"></span><span class="type">auto</span> <span class="var">v</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]) };<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">v</span> &amp;&amp; <span class="var">v</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">type</span> { <span class="var">t</span>-&gt;<span class="fn">type</span>() };<br/>
-<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">v</span>-&gt;<span class="fn">value</span>() };<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">t</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">c</span> { <span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>] };<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">v</span> { <span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>] };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">c</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">c</span>.<span class="fn">str</span>() == <span class="str">":"</span>) {<br/>
+<span class="in3"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp; <span class="var">v</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">v</span>.<span class="fn">str</span>() == <span class="str">"num"</span>) {<br/>
+<span class="in4"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">type</span> { <span class="var">t</span>.<span class="fn">str</span>() };<br/>
+<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">v</span>.<span class="fn">value</span>() };<br/>
 <span class="in4"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>);<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="var">type</span>, <span class="var">value</span>, <span class="num">0</span> });<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="var">type</span>, <span class="var">value</span>, <span class="num">0</span>);<br/>
 <span class="in4"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="in3"></span>}<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">auto</span> <span class="var">o</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">o</span> &amp;&amp; <span class="var">c</span> &amp;&amp; <span class="var">c</span>-&gt;<span class="fn">name</span>() == <span class="str">":"</span>) {<br/>
-<span class="in3"></span><span class="type">auto</span> <span class="var">n</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>]) };<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">n</span> &amp;&amp; <span class="var">n</span>-&gt;<span class="fn">name</span>() == <span class="str">"value"</span>) {<br/>
-<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">o</span>-&gt;<span class="fn">value</span>() };<br/>
+<span class="in3"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">v</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">v</span>.<span class="fn">str</span>() == <span class="str">"value"</span>) {<br/>
+<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">t</span>.<span class="fn">value</span>() };<br/>
 <span class="in4"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>);<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">value</span>, <span class="num">0</span> });<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">value</span>, <span class="num">0</span>);<br/>
 <span class="in4"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="in3"></span>}<br/>
 <span class="in2"></span>}<br/>
@@ -980,80 +947,79 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="type">auto</span> <span class="var">e</span> { <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">end</span>() };<br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">matches</span> &amp;&amp; <span class="var">p</span> != <span class="var">e</span>; ++<span class="var">p</span>, ++<span class="var">j</span>) {<br/>
 <span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; (<span class="var">i</span> + <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>());<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; (**<span class="var">p</span>).<span class="fn">matches</span>(*<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; (*<span class="var">p</span>)-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; <span class="var">p</span>-&gt;<span class="fn">matches</span>(<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; <span class="var">p</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">matches</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">k</span> { <span class="var">i</span> };<br/>
 <span class="in2"></span><span class="var">i</span> += <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>();<br/>
 <span class="in2"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> : <span class="var">macro</span>-&gt;<span class="fn">replacement</span>()) {<br/>
-<span class="in3"></span><span class="type">auto</span> <span class="var">para</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Type_Item</span> *&gt;(&amp;*<span class="var">e</span>) };<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">para</span> &amp;&amp; ! <span class="var">para</span>-&gt;<span class="fn">type</span>().<span class="fn">empty</span>()) {<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(<span class="var">para</span>-&gt;<span class="fn">type</span>()[<span class="num">0</span>])) {<br/>
-<span class="in5"></span><span class="type">int</span> <span class="var">idx</span> { <span class="type">std</span>::<span class="fn">stoi</span>(<span class="var">para</span>-&gt;<span class="fn">type</span>()) };<br/>
+<span class="in3"></span><span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp; ! <span class="var">e</span>.<span class="fn">str</span>().<span class="fn">empty</span>()) {<br/>
+<span class="in4"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(<span class="var">e</span>.<span class="fn">str</span>()[<span class="num">0</span>])) {<br/>
+<span class="in5"></span><span class="type">int</span> <span class="var">idx</span> { <span class="type">std</span>::<span class="fn">stoi</span>(<span class="var">e</span>.<span class="fn">str</span>()) };<br/>
 <span class="in5"></span><span class="keyword">if</span> (<span class="var">idx</span> &gt;= <span class="num">0</span> &amp;&amp; <span class="var">idx</span> &lt; (<span class="type">int</span>) <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>()) {<br/>
-<span class="in6"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>[<span class="var">k</span> + <span class="var">idx</span>]-&gt;<span class="fn">clone</span>(<span class="num">0</span>)<br/>
+<span class="in6"></span><span class="var">items</span>.<span class="fn">insert</span>(<br/>
+<span class="in7"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>[<span class="var">k</span> + <span class="var">idx</span>]<br/>
 <span class="in6"></span>);<br/>
 <span class="in6"></span>++<span class="var">i</span>;<br/>
 <span class="in6"></span><span class="keyword">continue</span>;<br/>
 <span class="in5"></span>}<br/>
-<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">para</span>-&gt;<span class="fn">type</span>() == <span class="str">"arithmetic"</span>) {<br/>
-<span class="in5"></span><span class="type">auto</span> <span class="var">n1</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">k</span> + <span class="num">0</span>]) };<br/>
-<span class="in5"></span><span class="type">auto</span> <span class="var">op</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">k</span> + <span class="num">1</span>]) };<br/>
-<span class="in5"></span><span class="type">auto</span> <span class="var">n2</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">k</span> + <span class="num">2</span>]) };<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">n1</span> &amp;&amp; <span class="var">n1</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span> &amp;&amp; <span class="var">op</span> &amp;&amp; <span class="var">n2</span> &amp;&amp; <span class="var">n2</span>-&gt;<span class="fn">type</span>() == <span class="str">"num"</span>) {<br/>
-<span class="in6"></span><span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"+"</span>) {<br/>
+<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">str</span>() == <span class="str">"arithmetic"</span>) {<br/>
+<span class="in5"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">n1</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">0</span>] };<br/>
+<span class="in5"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">op</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">1</span>] };<br/>
+<span class="in5"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">n2</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">2</span>] };<br/>
+<span class="in5"></span><span class="keyword">if</span> (<span class="var">n1</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">n1</span>.<span class="fn">str</span>() == <span class="str">"num"</span> &amp;&amp; <span class="var">op</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">n2</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">n2</span>.<span class="fn">str</span>() == <span class="str">"num"</span>) {<br/>
+<span class="in6"></span><span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"+"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() + <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() + <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"-"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"-"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() - <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() - <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"*"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"*"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() * <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() * <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"/"</span> &amp;&amp; <span class="var">n2</span>-&gt;<span class="fn">value</span>() != <span class="num">0</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"/"</span> &amp;&amp; <span class="var">n2</span>.<span class="fn">value</span>() != <span class="num">0</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() / <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() / <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"and"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"and"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() &amp; <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() &amp; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"or"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"or"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() | <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() | <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"&lt;&lt;"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"&lt;&lt;"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() &lt;&lt; <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() &lt;&lt; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"&gt;&gt;"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"&gt;&gt;"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() &gt;&gt; <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() &gt;&gt; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>-&gt;<span class="fn">name</span>() == <span class="str">"xor"</span>) {<br/>
+<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"xor"</span>) {<br/>
 <span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">n1</span>-&gt;<span class="fn">value</span>() ^ <span class="var">n2</span>-&gt;<span class="fn">value</span>(), <span class="num">0</span> }<br/>
+<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() ^ <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
 <span class="in7"></span>);<br/>
 <span class="in7"></span>++<span class="var">i</span>;<br/>
 <span class="in7"></span><span class="keyword">continue</span>;<br/>
@@ -1062,7 +1028,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in4"></span>}<br/>
 <span class="in3"></span>}<br/>
 <span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>-&gt;<span class="fn">clone</span>(-<span class="num">1</span>)<br/>
+<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>.<span class="fn">type</span>(), <span class="var">e</span>.<span class="fn">str</span>(), <span class="var">e</span>.<span class="fn">value</span>(), <span class="var">e</span>.<span class="fn">escapes</span>() - <span class="num">1</span><br/>
 <span class="in3"></span>);<br/>
 <span class="in3"></span>++<span class="var">i</span>;<br/>
 <span class="in2"></span>}<br/>
@@ -1075,11 +1041,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
-<span class="in1"></span><span class="type">auto</span> *<span class="var">ni</span> {<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(<br/>
-<span class="in3"></span>&amp;*<span class="var">items</span>[<span class="var">i</span>]<br/>
-<span class="in1"></span>) };<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>) {<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">ni</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform named</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform</span>)</span><br/>
@@ -1088,7 +1051,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">transform named</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>-&gt;<span class="fn">name</span>() == <span class="str">"*"</span> &amp;&amp; <span class="var">ni</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>.<span class="fn">str</span>() == <span class="str">"*"</span> &amp;&amp; <span class="var">ni</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform cur addr</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform named</span>)</span><br/>
@@ -1102,7 +1065,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">code</span>.<span class="fn">size</span>() * <span class="num">4</span> +<br/>
 <span class="in2"></span><span class="num">0x20010000</span>;<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="keyword">new</span> <span class="type">Type_Instance_Item</span> { <span class="str">"num"</span>, <span class="var">addr</span>, <span class="num">0</span> }<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">addr</span>, <span class="num">0</span><br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="macro">@end(<span class="name">transform cur addr</span>)</span><br/>
@@ -1111,15 +1074,9 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">consume machine instrs</span>)</span><br/>
-<span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>() &amp;&amp;<br/>
-<span class="in2"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> *&gt;(<br/>
-<span class="in3"></span>&amp;**<span class="var">items</span>.<span class="fn">begin</span>()<br/>
-<span class="in1"></span>)) {<br/>
-<span class="in2"></span><span class="type">auto</span> &amp;<span class="var">mi</span> {<br/>
-<span class="in3"></span><span class="var">dynamic_cast</span>&lt;<span class="type">Type_Instance_Item</span> &amp;&gt;(<br/>
-<span class="in4"></span>**<span class="var">items</span>.<span class="fn">begin</span>()<br/>
-<span class="in2"></span>)};<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() != <span class="str">"raw"</span>) { <span class="keyword">break</span>; }<br/>
+<span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>()) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">mi</span> { *<span class="var">items</span>.<span class="fn">begin</span>() };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() != <span class="type">Item_Type</span>::<span class="var">t_instance</span> || <span class="var">mi</span>.<span class="fn">str</span>() != <span class="str">"raw"</span>) { <span class="keyword">break</span>; }<br/>
 <span class="in2"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">value</span>());<br/>
 <span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
 <span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
@@ -1133,8 +1090,8 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">handle define</span>)</span><br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">i</span> = <span class="num">1</span>; <span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">i</span>) {<br/>
-<span class="in2"></span><span class="type">auto</span> <span class="var">a</span> { <span class="var">dynamic_cast</span>&lt;<span class="type">Named_Item</span> *&gt;(&amp;*<span class="var">items</span>[<span class="var">i</span>]) };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span> &amp;&amp; <span class="var">a</span>-&gt;<span class="fn">name</span>() == <span class="str">"="</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">a</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"="</span>) {<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
@@ -1148,11 +1105,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">1</span>;<br/>
 <span class="in2"></span><span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">j</span><br/>
 <span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="var">value</span>.<span class="fn">push_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">items</span>[<span class="var">j</span>]));<br/>
+<span class="in2"></span><span class="var">value</span>.<span class="fn">push_back</span>(<span class="var">items</span>[<span class="var">j</span>]);<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="type">Items</span> <span class="var">p</span>;<br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">j</span> &lt; <span class="var">i</span>; ++<span class="var">j</span>) {<br/>
-<span class="in2"></span><span class="var">p</span>.<span class="fn">push_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">items</span>[<span class="var">j</span>]));<br/>
+<span class="in2"></span><span class="var">p</span>.<span class="fn">push_back</span>(<span class="var">items</span>[<span class="var">j</span>]);<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">value</span>));<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
