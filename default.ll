@@ -74,6 +74,7 @@
 	*) = * )
 	:( = : (
 	(( = ( (
+	)) = ) )
 
 # CSR registers
 
@@ -101,6 +102,7 @@
 	b_type(@num, @reg, @reg, @num, @num) = @raw: ((@2 and $1000) << (31 - 12) or (@2 and $7e0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1e) << (8 - 1) or (@2 and $800) >> (11 - 7) or @10)
 	u_type(@num, @reg, @num) = @raw: (@2 or @4:value << 7 or @6)
 	j_type(@num, @reg, @num) = @raw: ((@2 and $100000) << (31 - 20) or (@2 and $7fe) << (21 - 1) or (@2 and $800) << (20 - 11) or (@2 and $ff000) or @4:value << 7 or @6)
+	s_type(@num, @reg, @reg, @num, @num) = @raw: ((@2 and $fe0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1f) << 7 or @10)
 
 # instructions
 
@@ -119,6 +121,12 @@
 	@reg <- @reg and @num = i_type(@4, @2, $7, @0, $13)
 	@reg <- @reg or @num = i_type(@4, @2, $6, @0, $13)
 	@reg <- @csr = i_type(@2:value, %zero, $2, @0, $73)
+	@csr <- @reg = i_type(@0:value, @2, $1, %zero, $73)
+
+	@reg <- [@reg + @num] = i_type(@5:value, @3, $2, @0, $03)
+	@reg <- [@reg] = i_type(0, @3, $2, @0, $03)
+	[@reg + @num] <- @reg = s_type(@3, @6, @1, $2, $23)
+	[@reg] <- @reg = s_type(0, @4, @1, $2, $23)
 
 	goto @num = %pc <- %pc + ( @1 - `* )
 
@@ -132,6 +140,11 @@
 	%pc <- %pc + @num = j_type(@4, %zero, $6f)
 	%pc <- %pc = %pc <- %pc + 0
 
+	@reg <- %pc + @num = u_type(@4 and $fffff000, @0, $17) smallpc(@0, @4 and $fff)
+	smallpc(@reg, 0) =
+	smallpc(@reg, @num) = @2 <- @2 + @4
+	@reg <- %pc = @0 <- %pc + 0
+
 # pseudo-instructions
 
 	nop = %x0 <- %x0 + 0
@@ -140,4 +153,3 @@
 	
 	@str: = @0 = `*
 	raw @num = @raw:@1
-

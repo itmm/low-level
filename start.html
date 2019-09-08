@@ -349,7 +349,7 @@ the first test checks that a simple register add can be parsed
 <span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_str</span>;<br/>
 <span class="in6"></span><span class="keyword">break</span>;<br/>
 <span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_instance</span>:<br/>
-<span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_str</span> &lt;&lt; <span class="str">':'</span> &lt;&lt; <span class="var">_value</span>;<br/>
+<span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">'@'</span> &lt;&lt; <span class="var">_str</span> &lt;&lt; <span class="str">":$"</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">_value</span> &lt;&lt; <span class="type">std</span>::<span class="var">dec</span>;<br/>
 <span class="in6"></span><span class="keyword">break</span>;<br/>
 <span class="in5"></span><span class="keyword">case</span> <span class="type">Item_Type</span>::<span class="var">t_string</span>:<br/>
 <span class="in6"></span><span class="var">out</span> &lt;&lt; <span class="str">"@str:"</span> &lt;&lt; <span class="var">_str</span>;<br/>
@@ -761,7 +761,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %pc"</span>,<br/>
 <span class="in2"></span><span class="num">0x00000297</span><br/>
 <span class="in1"></span>);<br/>
@@ -771,7 +771,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"%mtvec &lt;- %x5"</span>,<br/>
 <span class="in2"></span><span class="num">0x30529073</span><br/>
 <span class="in1"></span>);<br/>
@@ -844,7 +844,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"%x6 &lt;- [%x10]"</span>,<br/>
 <span class="in2"></span><span class="num">0x00052303</span><br/>
 <span class="in1"></span>);<br/>
@@ -854,7 +854,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- [%x10 + $04]"</span>,<br/>
 <span class="in2"></span><span class="num">0x00452283</span><br/>
 <span class="in1"></span>);<br/>
@@ -864,7 +864,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"[%x10] &lt;- %x12"</span>,<br/>
 <span class="in2"></span><span class="num">0x00c52023</span><br/>
 <span class="in1"></span>);<br/>
@@ -874,7 +874,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
 <span class="in2"></span><span class="str">"[%x10 + $08] &lt;- %x5"</span>,<br/>
 <span class="in2"></span><span class="num">0x00552423</span><br/>
 <span class="in1"></span>);<br/>
@@ -888,7 +888,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="keyword">#if</span> <span class="num">0</span><br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"LINE {"</span>;<br/>
 <span class="in2"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">i</span> : <span class="var">items</span>) {<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">'['</span> &lt;&lt; *<span class="var">i</span> &lt;&lt; <span class="str">"], "</span>;<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">'['</span> &lt;&lt; <span class="var">i</span> &lt;&lt; <span class="str">"], "</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"}\n"</span>;<br/>
 <span class="in1"></span><span class="keyword">#endif</span><br/>
@@ -1091,7 +1091,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="macro">@def(<span class="name">handle define</span>)</span><br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">i</span> = <span class="num">1</span>; <span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">i</span>) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">a</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"="</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"="</span> &amp;&amp; <span class="var">a</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>

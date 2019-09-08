@@ -43,7 +43,7 @@
 						out << '@' << _str;
 						break;
 					case Item_Type::t_instance:
-						out << '@' << _str << ':' << _value;
+						out << '@' << _str << ":$" << std::hex << _value << std::dec;
 						break;
 					case Item_Type::t_string:
 						out << "@str:" << _str;
@@ -359,7 +359,7 @@ restart:
 	#if 0
 		std::cerr << "LINE {";
 		for (const auto &i : items) {
-			std::cerr << '[' << *i << "], ";
+			std::cerr << '[' << i << "], ";
 		}
 		std::cerr << "}\n";
 	#endif
@@ -527,7 +527,7 @@ restart:
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
-		if (a.type() == Item_Type::t_string && a.str() == "=") {
+		if (a.type() == Item_Type::t_string && a.str() == "=" && a.escapes() <= 0) {
 			
 #line 967 "start.x"
 
@@ -836,14 +836,14 @@ restart:
 
 #line 647 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x5 <- %pc",
 		0x00000297
 	);
 
 #line 656 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%mtvec <- %x5",
 		0x30529073
 	);
@@ -885,28 +885,28 @@ restart:
 
 #line 722 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
 #line 731 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
 #line 740 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
 #line 749 "start.x"
 
-	assert_line(
+	assert_line_2(
 		"[%x10 + $08] <- %x5",
 		0x00552423
 	);
