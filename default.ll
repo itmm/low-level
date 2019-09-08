@@ -69,6 +69,12 @@
 	%t5 = %x30
 	%t6 = %x31
 
+# splitting special chars sequences
+
+	*) = * )
+	:( = : (
+	(( = ( (
+
 # CSR registers
 
 	%mtvec = @csr:$305
@@ -87,12 +93,6 @@
 	@num or @num = @arithmetic
 	@num xor @num = @arithmetic
 	complement @num = (@1 xor 0)
-
-# splitting special chars sequences
-
-	*) = * )
-	:( = : (
-	(( = ( (
 
 # instruction types
 
