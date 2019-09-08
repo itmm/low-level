@@ -369,7 +369,7 @@ restart:
 			unsigned i = 0;
 			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 773 "start.x"
+#line 777 "start.x"
 
 	if (i + 2 < items.size()) {
 		const auto &t { items[i] };
@@ -392,7 +392,7 @@ restart:
 		}
 	}
 
-#line 798 "start.x"
+#line 802 "start.x"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -488,16 +488,16 @@ restart:
 		goto restart;
 	}
 } 
-#line 896 "start.x"
+#line 900 "start.x"
  {
 	const auto &ni { items[i] };
 	if (ni.type() == Item_Type::t_string) {
 		
-#line 905 "start.x"
+#line 909 "start.x"
 
 	if (ni.str() == "*" && ni.escapes() <= 0) {
 		
-#line 913 "start.x"
+#line 917 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -508,11 +508,11 @@ restart:
 	);
 	goto restart;
 
-#line 907 "start.x"
+#line 911 "start.x"
 ;
 	}
 
-#line 899 "start.x"
+#line 903 "start.x"
 ;
 	}
 } 
@@ -523,18 +523,23 @@ restart:
 			++macro;
 		}
 		
-#line 940 "start.x"
+#line 944 "start.x"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
 		if (a.type() == Item_Type::t_string && a.str() == "<=" && a.escapes() <= 0) {
 			
-#line 951 "start.x"
+#line 955 "start.x"
 
 	Items value;
+	unsigned last { items.size() };
 	for (unsigned j = i + 1;
-		j < items.size(); ++j
+		j < last; ++j
 	) {
+		const auto &cur { items[j] };
+		if (cur.type() == Item_Type::t_string && cur.str() == "." && cur.escapes() <= 0) {
+			last = j; break;
+		}
 		value.push_back(items[j]);
 	}
 	Items p;
@@ -542,11 +547,12 @@ restart:
 		p.push_back(items[j]);
 	}
 	_macros.emplace_back(std::move(p), std::move(value));
+	if (last < items.size()) { ++last; }
 	items.erase(
-		items.begin(), items.end()
+		items.begin(), items.begin() + last
 	);
 
-#line 944 "start.x"
+#line 948 "start.x"
 ;
 		}
 	}
@@ -554,7 +560,7 @@ restart:
 #line 761 "start.x"
 ;
 		
-#line 926 "start.x"
+#line 930 "start.x"
 
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
@@ -572,7 +578,11 @@ restart:
 	if (! items.empty()) {
 		std::cerr <<
 			"cant expand fully [" <<
-			line << "]\n";
+			line << "]; got [";
+		for (const auto &i: items) {
+			std::cerr << i << ", ";
+		}
+		std::cerr << "\n";
 	}
 
 #line 535 "start.x"

@@ -892,7 +892,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="keyword">if</span> (! <span class="var">items</span>.<span class="fn">empty</span>()) {<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
 <span class="in3"></span><span class="str">"cant expand fully ["</span> &lt;&lt;<br/>
-<span class="in3"></span><span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
+<span class="in3"></span><span class="var">line</span> &lt;&lt; <span class="str">"]; got ["</span>;<br/>
+<span class="in2"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">i</span>: <span class="var">items</span>) {<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="var">i</span> &lt;&lt; <span class="str">", "</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
 </code></div>
@@ -1086,9 +1090,14 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform sym assign</span>)</span><br/>
 <span class="in1"></span><span class="type">Items</span> <span class="var">value</span>;<br/>
+<span class="in1"></span><span class="type">unsigned</span> <span class="var">last</span> { <span class="var">items</span>.<span class="fn">size</span>() };<br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">1</span>;<br/>
-<span class="in2"></span><span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">j</span><br/>
+<span class="in2"></span><span class="var">j</span> &lt; <span class="var">last</span>; ++<span class="var">j</span><br/>
 <span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">cur</span> { <span class="var">items</span>[<span class="var">j</span>] };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">cur</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">cur</span>.<span class="fn">str</span>() == <span class="str">"."</span> &amp;&amp; <span class="var">cur</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
+<span class="in3"></span><span class="var">last</span> = <span class="var">j</span>; <span class="keyword">break</span>;<br/>
+<span class="in2"></span>}<br/>
 <span class="in2"></span><span class="var">value</span>.<span class="fn">push_back</span>(<span class="var">items</span>[<span class="var">j</span>]);<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="type">Items</span> <span class="var">p</span>;<br/>
@@ -1096,8 +1105,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="var">p</span>.<span class="fn">push_back</span>(<span class="var">items</span>[<span class="var">j</span>]);<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">value</span>));<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">last</span> &lt; <span class="var">items</span>.<span class="fn">size</span>()) { ++<span class="var">last</span>; }<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>(), <span class="var">items</span>.<span class="fn">end</span>()<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>(), <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">last</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>

@@ -122,4 +122,5 @@ std::string setup {
 	"nop <= %x0 <- %x0 + 0\n"
 	"@str: <= @0 <= `*\n"
 	"raw @num <= @raw:@1\n"
+	"@reg => @str <= @2 <= @0 `. @0\n"
 };

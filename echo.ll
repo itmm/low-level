@@ -8,13 +8,10 @@ loop_hart:
 
 # init UART
 
-	uart <= %a0
-	uart <- $10013000
+	%a0 => uart <- $10013000
 	%t0 <- [uart + $08]
-	ch_cr <= %a1
-	ch_cr <- $0d
-	ch_nl <= %a2
-	ch_nl <- $0a
+	%a1 => ch_cr <- $0d
+	%a2 => ch_nl <- $0a
 	%t1 <- [uart + $0c]
 	%t0 <- %t0 or $01
 	%t1 <- %t1 or $01

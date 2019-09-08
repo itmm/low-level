@@ -764,7 +764,11 @@ restart:
 	if (! items.empty()) {
 		std::cerr <<
 			"cant expand fully [" <<
-			line << "]\n";
+			line << "]; got [";
+		for (const auto &i: items) {
+			std::cerr << i << ", ";
+		}
+		std::cerr << "\n";
 	}
 @end(expand)
 ```
@@ -950,9 +954,14 @@ restart:
 ```
 @def(transform sym assign)
 	Items value;
+	unsigned last { items.size() };
 	for (unsigned j = i + 1;
-		j < items.size(); ++j
+		j < last; ++j
 	) {
+		const auto &cur { items[j] };
+		if (cur.type() == Item_Type::t_string && cur.str() == "." && cur.escapes() <= 0) {
+			last = j; break;
+		}
 		value.push_back(items[j]);
 	}
 	Items p;
@@ -960,8 +969,9 @@ restart:
 		p.push_back(items[j]);
 	}
 	_macros.emplace_back(std::move(p), std::move(value));
+	if (last < items.size()) { ++last; }
 	items.erase(
-		items.begin(), items.end()
+		items.begin(), items.begin() + last
 	);
 @end(transform sym assign)
 ```
