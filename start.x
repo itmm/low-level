@@ -154,10 +154,7 @@ the machine code.
 
 ```
 @add(needed by main)
-	void assert_line(const char *line, int expected) {
-		std::cerr << "ignoring " << line << "\n";
-	}
-	void assert_line_2(
+	void assert_line(
 		const char *line,
 		int expected
 	) {
@@ -177,7 +174,7 @@ the machine code.
 
 ```
 @def(unit-tests)
-	assert_line_2(
+	assert_line(
 		"raw $87654321", 0x87654321
 	);
 @end(unit-tests)
@@ -225,9 +222,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x4 <- %x2 + %x3",
-		0x00310233
+	assert_line(
+		"%x4 <- %x2 + %x3", 0x00310233
 	);
 @end(unit-tests)
 ```
@@ -542,9 +538,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%pc <- %pc",
-		0x0000006f
+	assert_line(
+		"%pc <- %pc", 0x0000006f
 	);
 @end(unit-tests)
 ```
@@ -553,9 +548,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%pc <- %pc - 28",
-		0xfe5ff06f
+	assert_line(
+		"%pc <- %pc - 28", 0xfe5ff06f
 	);
 @end(unit-tests)
 ```
@@ -563,9 +557,8 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%pc <- %pc - 32",
-		0xfe1ff06f
+	assert_line(
+		"%pc <- %pc - 32", 0xfe1ff06f
 	);
 @end(unit-tests)
 ```
@@ -591,88 +584,79 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x5 <- %x5 and $ff",
-		0x0ff2f293
+	assert_line(
+		"%x5 <- %x5 and $ff", 0x0ff2f293
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x5 <- %x5 or $1",
-		0x0012e293
+	assert_line(
+		"%x5 <- %x5 or $1", 0x0012e293
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x6 <- %x6 or $1",
-		0x00136313
+	assert_line(
+		"%x6 <- %x6 or $1", 0x00136313
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x11 <- $0d",
-		0x00d00593
+	assert_line(
+		"%x11 <- $0d", 0x00d00593
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x12 <- $0a",
-		0x00a00613
+	assert_line(
+		"%x12 <- $0a", 0x00a00613
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x10 <- $1013000",
-		0x1013537
+	assert_line(
+		"%x10 <- $1013000", 0x1013537
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x5 <- %pc",
-		0x00000297
+	assert_line(
+		"%x5 <- %pc", 0x00000297
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%mtvec <- %x5",
-		0x30529073
+	assert_line(
+		"%mtvec <- %x5", 0x30529073
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
-		"%x5 <- %mhartid",
-		0xf14022f3
+	assert_line(
+		"%x5 <- %mhartid", 0xf14022f3
 	);
 @end(unit-tests)
 ```
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"if %x5 < 0: %pc <- %pc - 4",
 		0xfe02cee3
 	);
@@ -681,7 +665,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"if %x5 == 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
@@ -690,7 +674,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"if %x5 != %x11: %pc <- %pc - 28",
 		0xfeb292e3
 	);
@@ -699,7 +683,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
@@ -720,7 +704,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
@@ -729,7 +713,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
@@ -738,7 +722,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
@@ -747,7 +731,7 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(unit-tests)
-	assert_line_2(
+	assert_line(
 		"[%x10 + $08] <- %x5",
 		0x00552423
 	);

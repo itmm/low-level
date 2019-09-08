@@ -206,10 +206,7 @@ simple implementation just saves the data
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">needed by main</span>)</span><br/>
-<span class="in1"></span><span class="type">void</span> <span class="fn">assert_line</span>(<span class="type">const</span> <span class="type">char</span> *<span class="var">line</span>, <span class="type">int</span> <span class="var">expected</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"ignoring "</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
-<span class="in1"></span>}<br/>
-<span class="in1"></span><span class="type">void</span> <span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="type">void</span> <span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">char</span> *<span class="var">line</span>,<br/>
 <span class="in2"></span><span class="type">int</span> <span class="var">expected</span><br/>
 <span class="in1"></span>) {<br/>
@@ -234,7 +231,7 @@ group local tests in a fragment
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"raw $87654321"</span>, <span class="num">0x87654321</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
@@ -307,9 +304,8 @@ needs <code><span class="var">unique_ptr</span></code>
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x4 &lt;- %x2 + %x3"</span>,<br/>
-<span class="in2"></span><span class="num">0x00310233</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x4 &lt;- %x2 + %x3"</span>, <span class="num">0x00310233</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -640,9 +636,8 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%pc &lt;- %pc"</span>,<br/>
-<span class="in2"></span><span class="num">0x0000006f</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%pc &lt;- %pc"</span>, <span class="num">0x0000006f</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -653,9 +648,8 @@ check for simple endless loop
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%pc &lt;- %pc - 28"</span>,<br/>
-<span class="in2"></span><span class="num">0xfe5ff06f</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%pc &lt;- %pc - 28"</span>, <span class="num">0xfe5ff06f</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -666,9 +660,8 @@ check for simple endless loop
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%pc &lt;- %pc - 32"</span>,<br/>
-<span class="in2"></span><span class="num">0xfe1ff06f</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%pc &lt;- %pc - 32"</span>, <span class="num">0xfe1ff06f</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -701,9 +694,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x5 &lt;- %x5 and $ff"</span>,<br/>
-<span class="in2"></span><span class="num">0x0ff2f293</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %x5 and $ff"</span>, <span class="num">0x0ff2f293</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -711,9 +703,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x5 &lt;- %x5 or $1"</span>,<br/>
-<span class="in2"></span><span class="num">0x0012e293</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %x5 or $1"</span>, <span class="num">0x0012e293</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -721,9 +712,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x6 &lt;- %x6 or $1"</span>,<br/>
-<span class="in2"></span><span class="num">0x00136313</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x6 &lt;- %x6 or $1"</span>, <span class="num">0x00136313</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -731,9 +721,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x11 &lt;- $0d"</span>,<br/>
-<span class="in2"></span><span class="num">0x00d00593</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x11 &lt;- $0d"</span>, <span class="num">0x00d00593</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -741,9 +730,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x12 &lt;- $0a"</span>,<br/>
-<span class="in2"></span><span class="num">0x00a00613</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x12 &lt;- $0a"</span>, <span class="num">0x00a00613</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -751,9 +739,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x10 &lt;- $1013000"</span>,<br/>
-<span class="in2"></span><span class="num">0x1013537</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x10 &lt;- $1013000"</span>, <span class="num">0x1013537</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -761,9 +748,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x5 &lt;- %pc"</span>,<br/>
-<span class="in2"></span><span class="num">0x00000297</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %pc"</span>, <span class="num">0x00000297</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -771,9 +757,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%mtvec &lt;- %x5"</span>,<br/>
-<span class="in2"></span><span class="num">0x30529073</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%mtvec &lt;- %x5"</span>, <span class="num">0x30529073</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -781,9 +766,8 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x5 &lt;- %mhartid"</span>,<br/>
-<span class="in2"></span><span class="num">0xf14022f3</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %mhartid"</span>, <span class="num">0xf14022f3</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -791,7 +775,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"if %x5 &lt; 0: %pc &lt;- %pc - 4"</span>,<br/>
 <span class="in2"></span><span class="num">0xfe02cee3</span><br/>
 <span class="in1"></span>);<br/>
@@ -801,7 +785,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"if %x5 == 0: %pc &lt;- %pc - 12"</span>,<br/>
 <span class="in2"></span><span class="num">0xfe028ae3</span><br/>
 <span class="in1"></span>);<br/>
@@ -811,7 +795,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"if %x5 != %x11: %pc &lt;- %pc - 28"</span>,<br/>
 <span class="in2"></span><span class="num">0xfeb292e3</span><br/>
 <span class="in1"></span>);<br/>
@@ -821,7 +805,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"if %x5 != 0: %pc &lt;- %pc + 0"</span>,<br/>
 <span class="in2"></span><span class="num">0x00029063</span><br/>
 <span class="in1"></span>);<br/>
@@ -844,7 +828,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x6 &lt;- [%x10]"</span>,<br/>
 <span class="in2"></span><span class="num">0x00052303</span><br/>
 <span class="in1"></span>);<br/>
@@ -854,7 +838,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- [%x10 + $04]"</span>,<br/>
 <span class="in2"></span><span class="num">0x00452283</span><br/>
 <span class="in1"></span>);<br/>
@@ -864,7 +848,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"[%x10] &lt;- %x12"</span>,<br/>
 <span class="in2"></span><span class="num">0x00c52023</span><br/>
 <span class="in1"></span>);<br/>
@@ -874,7 +858,7 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
-<span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"[%x10 + $08] &lt;- %x5"</span>,<br/>
 <span class="in2"></span><span class="num">0x00552423</span><br/>
 <span class="in1"></span>);<br/>
