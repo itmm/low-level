@@ -786,7 +786,7 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"if %x5 == 0: %pc &lt;- %pc - 12"</span>,<br/>
+<span class="in2"></span><span class="str">"if %x5 = 0: %pc &lt;- %pc - 12"</span>,<br/>
 <span class="in2"></span><span class="num">0xfe028ae3</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
@@ -1075,7 +1075,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="macro">@def(<span class="name">handle define</span>)</span><br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">i</span> = <span class="num">1</span>; <span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">i</span>) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">a</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"="</span> &amp;&amp; <span class="var">a</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"&lt;="</span> &amp;&amp; <span class="var">a</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>

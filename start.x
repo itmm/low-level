@@ -666,7 +666,7 @@ These syntax trees are then transformed into machine code.
 ```
 @add(unit-tests)
 	assert_line(
-		"if %x5 == 0: %pc <- %pc - 12",
+		"if %x5 = 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
 @end(unit-tests)
@@ -940,7 +940,7 @@ restart:
 @def(handle define)
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
-		if (a.type() == Item_Type::t_string && a.str() == "=" && a.escapes() <= 0) {
+		if (a.type() == Item_Type::t_string && a.str() == "<=" && a.escapes() <= 0) {
 			@put(transform sym assign);
 		}
 	}
