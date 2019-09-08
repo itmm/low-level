@@ -268,23 +268,88 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
+@add(needed by state)
+	class Macros {
+		private:
+			Macros *_parent;
+			using Container = std::vector<Macro>;
+			Container _macros;
+		public:
+			Macros(Macros *parent): _parent { parent } {}
+			
+			class Iterator {
+				private:
+					Macros *_macros;
+					Container::iterator _cur;
+					void fix() {
+						if (_macros && _cur == _macros->_macros.end()) {
+							if (_macros->_parent) {
+								_macros = _macros->_parent;
+								_cur = _macros->_macros.begin();
+							} else {
+								_macros = nullptr;
+							}
+						}
+					}
+				public:
+					Iterator(Macros *macros, Container::iterator cur):
+						_macros { macros },
+						_cur { cur }
+					{ fix() ;}
+					Macro &operator*() { return *_cur; }
+					Macro *operator->() { return &*_cur; }
+					const Macro &operator*() const { return *_cur; }
+					const Macro *operator->() const { return &*_cur; }
+					Iterator &operator++() {
+						++_cur;
+						fix();
+						return *this;
+					}
+					bool operator!=(const Iterator &o) const {
+						return o._macros != _macros || (_macros != nullptr && o._cur != _cur);
+					}
+			};
+
+			Iterator begin() {
+				return { this , _macros.begin() };
+			}
+
+			Iterator end() {
+				return { nullptr, Container::iterator { } };
+			}
+
+			void emplace_back(Items &&pattern, Items &&replacement) {
+				_macros.emplace_back(std::move(pattern), std::move(replacement));
+			}
+	};
+@end(needed by state)
+```
+
+```
 @add(private state)
-	std::vector<Macro> _macros;
-	void setup_symbols();
+	Macros _macros;
+	static Macros *setup_symbols();
 @end(private state)
 ```
 
 ```
 @add(state impl)
-	void State::setup_symbols() {
-		@put(setup symbols);
+	Macros *State::setup_symbols() {
+		static State s { nullptr };
+		static bool initialized { false };
+		if (! initialized) {
+			@put(setup symbols);
+			initialized = true;
+		}
+		return &s._macros;
 	}
 @end(state impl)
 ```
 
 ```
 @add(public state)
-	State() { setup_symbols(); }
+	State(): _macros { setup_symbols() } { }
+	State(Macros *parent): _macros { parent } { }
 @end(public state)
 ```
 
@@ -295,7 +360,7 @@ These syntax trees are then transformed into machine code.
 	std::string l;
 	while (std::getline(in, l)) {
 		if (l.empty()) { continue; }
-		add_line(l);
+		s.add_line(l);
 	}
 @end(setup symbols)
 ```

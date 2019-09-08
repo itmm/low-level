@@ -35,7 +35,7 @@ can_write:
 	raw $00052303		#		%t1 <- [uart_wr]
 	if %t1 < 0: goto can_write
 	raw $00552023		#		[uart_wr] <- %t0
-	if %t0 != %a1: goto read # ch_cr
+	if %t0 != ch_cr: goto read
 
 # write additional NL after CR
 
