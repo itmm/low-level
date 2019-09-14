@@ -2,7 +2,7 @@ CXXFLAGS += -Wall -g
 
 .PHONY: all clean tests
 
-all: tests echo.list ref.list
+all: tests
 
 tests: ll echo-as.hex
 	@echo run unit-tests
