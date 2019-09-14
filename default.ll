@@ -184,7 +184,7 @@
 	@reg <- @reg < @reg <= r_type($0, @4, @2, $2, @0, $33)
 	@reg <- @reg <u @reg <= r_type($0, @5, @2, $3, @0, $33)
 	@reg <- @reg xor @reg <= r_type($0, @4, @2, $4, @0, $33)
-	@reg <- complement @reg <= @0 <- @3 xor %zero
+	@reg <- complement @reg <= @0 <- @3 xor 0
 	@reg <- @reg != 0 <= @0 <- %zero <u @2
 	@reg <- @reg > @reg <= @0 <- @4 < @2
 	@reg <- @reg >u @reg <= @0 <- @5 <u @2

@@ -307,6 +307,9 @@ needs <code><span class="var">unique_ptr</span></code>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x4 &lt;- %x2 + %x3"</span>, <span class="num">0x00310233</span><br/>
 <span class="in1"></span>);<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- %a1 - %a2"</span>, <span class="num">0x40c58533</span><br/>
+<span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -697,6 +700,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %x5 and $ff"</span>, <span class="num">0x0ff2f293</span><br/>
 <span class="in1"></span>);<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- %a1 and %a2"</span>, <span class="num">0x00c5f533</span><br/>
+<span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
 </div>
@@ -706,6 +712,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %x5 or $1"</span>, <span class="num">0x0012e293</span><br/>
 <span class="in1"></span>);<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- %a1 or %a2"</span>, <span class="num">0x00c5e533</span><br/>
+<span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
 </div>
@@ -714,6 +723,21 @@ read <code><span class="type">State</span></code> form standard input
 <span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x6 &lt;- %x6 or $1"</span>, <span class="num">0x00136313</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- %a1 xor $ff"</span>, <span class="num">0x0ff5c513</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- %a1 xor %a2"</span>, <span class="num">0x00c5c533</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="fn">assert_line</span>(<br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- complement %a1"</span>, <span class="num">0x0005c513</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>

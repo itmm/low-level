@@ -2,7 +2,7 @@ CXXFLAGS += -Wall -g
 
 .PHONY: all clean tests
 
-all: tests echo.list
+all: tests echo.list ref.list
 
 tests: ll echo-as.hex
 	@echo run unit-tests
@@ -29,22 +29,32 @@ $(GENs) .hx-run: $(SOURCEs)
 	@touch .hx-run
 
 ll: $(CPPs)
-	@echo C++ ll
-	@$(CXX) $(CXXFLAGS) $(CPPs) -o ll
+	@echo C++ $@
+	@$(CXX) $(CXXFLAGS) $(CPPs) -o $@
 
 clean:
 	@echo RM
 	@rm -f .hx-run $(GENs)
 
 echo.o: echo.s
-	riscv32-unknown-elf-gcc -Wall -march=rv32g -c $^
+ref.o: ref.s
+
+%.o: %.s
+	@echo RV32-CC $@
+	@riscv32-unknown-elf-gcc -Wall -march=rv32g -c $^
 
 echo.elf: echo.o
-	riscv32-unknown-elf-ld -T memory.lds $^  -o $@
+	@echo RV32-ELF $@
+	@riscv32-unknown-elf-ld -T memory.lds $^  -o $@
 
 echo-as.hex: echo.elf
-	riscv32-unknown-elf-objcopy $^ -O ihex $@
+	@echo RV32-HEX $@
+	@riscv32-unknown-elf-objcopy $^ -O ihex $@
 
 echo.list: echo.hex
-	@echo LIST
+	@echo RV32-LIST $@
+	@riscv32-unknown-elf-objdump -EL -D -mriscv $^ >$@
+
+ref.list: ref.o
+	@echo RV32-LIST $@
 	@riscv32-unknown-elf-objdump -EL -D -mriscv $^ >$@

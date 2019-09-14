@@ -225,6 +225,9 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%x4 <- %x2 + %x3", 0x00310233
 	);
+	assert_line(
+		"%a0 <- %a1 - %a2", 0x40c58533
+	);
 @end(unit-tests)
 ```
 * the first test checks that a simple register add can be parsed
@@ -587,6 +590,9 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%x5 <- %x5 and $ff", 0x0ff2f293
 	);
+	assert_line(
+		"%a0 <- %a1 and %a2", 0x00c5f533
+	);
 @end(unit-tests)
 ```
 
@@ -595,6 +601,9 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%x5 <- %x5 or $1", 0x0012e293
 	);
+	assert_line(
+		"%a0 <- %a1 or %a2", 0x00c5e533
+	);
 @end(unit-tests)
 ```
 
@@ -602,6 +611,20 @@ These syntax trees are then transformed into machine code.
 @add(unit-tests)
 	assert_line(
 		"%x6 <- %x6 or $1", 0x00136313
+	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
+	assert_line(
+		"%a0 <- %a1 xor $ff", 0x0ff5c513
+	);
+	assert_line(
+		"%a0 <- %a1 xor %a2", 0x00c5c533
+	);
+	assert_line(
+		"%a0 <- complement %a1", 0x0005c513
 	);
 @end(unit-tests)
 ```

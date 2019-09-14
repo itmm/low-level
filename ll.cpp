@@ -19,7 +19,7 @@
 
 	#include <memory>
 
-#line 239 "start.x"
+#line 242 "start.x"
 
 	enum class Item_Type {
 		t_type, t_instance, t_string
@@ -82,7 +82,7 @@
 		return out;
 	}
 
-#line 304 "start.x"
+#line 307 "start.x"
 
 	using Items = std::vector<Item>;
 	class Macro {
@@ -105,7 +105,7 @@
 			}
 	};
 
-#line 329 "start.x"
+#line 332 "start.x"
 
 	class Macros {
 		private:
@@ -161,7 +161,7 @@
 			}
 	};
 
-#line 427 "start.x"
+#line 430 "start.x"
 
 	int build_r_cmd(
 		int funct7, char src2, char src1,
@@ -173,7 +173,7 @@
 			opcode;
 	}
 
-#line 441 "start.x"
+#line 444 "start.x"
 
 	int build_i_cmd(
 		int imm, char src1, int funct3, char dst, int opcode
@@ -181,7 +181,7 @@
 		return (imm << 20) | (src1 << 15) | (funct3 << 12) | (dst << 7) | opcode;
 	}
 
-#line 451 "start.x"
+#line 454 "start.x"
 
 	int build_add(
 		char dst, char src1, char src2
@@ -192,7 +192,7 @@
 		);
 	}
 
-#line 464 "start.x"
+#line 467 "start.x"
 
 	int build_add(
 		char dst, char src1, int imm
@@ -202,7 +202,7 @@
 		);
 	}
 
-#line 694 "start.x"
+#line 717 "start.x"
 
 	int build_load(
 		char dst, char src, int imm
@@ -220,7 +220,7 @@
 
 	void add_machine(int instr);
 
-#line 387 "start.x"
+#line 390 "start.x"
 
 	Macros _macros;
 	static Macros *setup_symbols();
@@ -262,7 +262,7 @@
 #line 113 "start.x"
 
 
-#line 408 "start.x"
+#line 411 "start.x"
 
 	State(): _macros { setup_symbols() } { }
 	State(Macros *parent): _macros { parent } { }
@@ -282,7 +282,7 @@
 
 	#include <cctype>
 
-#line 233 "start.x"
+#line 236 "start.x"
 
 	#include <map>
 
@@ -292,7 +292,7 @@
 		const std::string &line
 	) {
 		
-#line 476 "start.x"
+#line 479 "start.x"
 
 	std::vector<Item> items;
 	auto end { line.end() };
@@ -353,7 +353,7 @@
 		}
 	}
 	
-#line 742 "start.x"
+#line 765 "start.x"
 
 restart:
 	#if 0
@@ -369,7 +369,7 @@ restart:
 			unsigned i = 0;
 			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 777 "start.x"
+#line 800 "start.x"
 
 	if (i + 2 < items.size()) {
 		const auto &t { items[i] };
@@ -392,7 +392,7 @@ restart:
 		}
 	}
 
-#line 802 "start.x"
+#line 825 "start.x"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -488,16 +488,16 @@ restart:
 		goto restart;
 	}
 } 
-#line 900 "start.x"
+#line 923 "start.x"
  {
 	const auto &ni { items[i] };
 	if (ni.type() == Item_Type::t_string) {
 		
-#line 909 "start.x"
+#line 932 "start.x"
 
 	if (ni.str() == "*" && ni.escapes() <= 0) {
 		
-#line 917 "start.x"
+#line 940 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -508,28 +508,28 @@ restart:
 	);
 	goto restart;
 
-#line 911 "start.x"
+#line 934 "start.x"
 ;
 	}
 
-#line 903 "start.x"
+#line 926 "start.x"
 ;
 	}
 } 
-#line 756 "start.x"
+#line 779 "start.x"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 944 "start.x"
+#line 967 "start.x"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
 		if (a.type() == Item_Type::t_string && a.str() == "<=" && a.escapes() <= 0) {
 			
-#line 955 "start.x"
+#line 978 "start.x"
 
 	Items value;
 	unsigned last { items.size() };
@@ -552,15 +552,15 @@ restart:
 		items.begin(), items.begin() + last
 	);
 
-#line 948 "start.x"
+#line 971 "start.x"
 ;
 		}
 	}
 
-#line 761 "start.x"
+#line 784 "start.x"
 ;
 		
-#line 930 "start.x"
+#line 953 "start.x"
 
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
@@ -572,7 +572,7 @@ restart:
 		);
 	}
 
-#line 762 "start.x"
+#line 785 "start.x"
 ;
 	}
 	if (! items.empty()) {
@@ -585,7 +585,7 @@ restart:
 		std::cerr << "\n";
 	}
 
-#line 535 "start.x"
+#line 538 "start.x"
 ;
 
 #line 84 "start.x"
@@ -604,14 +604,14 @@ restart:
 
 	}
 
-#line 394 "start.x"
+#line 397 "start.x"
 
 	Macros *State::setup_symbols() {
 		static State s { nullptr };
 		static bool initialized { false };
 		if (! initialized) {
 			
-#line 415 "start.x"
+#line 418 "start.x"
 
 	#include "default.h"
 	std::istringstream in { setup };
@@ -621,7 +621,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 399 "start.x"
+#line 402 "start.x"
 ;
 			initialized = true;
 		}
@@ -776,129 +776,150 @@ restart:
 	assert_line(
 		"%x4 <- %x2 + %x3", 0x00310233
 	);
+	assert_line(
+		"%a0 <- %a1 - %a2", 0x40c58533
+	);
 
-#line 540 "start.x"
+#line 543 "start.x"
 
 	assert_line(
 		"%pc <- %pc", 0x0000006f
 	);
 
-#line 550 "start.x"
+#line 553 "start.x"
 
 	assert_line(
 		"%pc <- %pc - 28", 0xfe5ff06f
 	);
 
-#line 559 "start.x"
+#line 562 "start.x"
 
 	assert_line(
 		"%pc <- %pc - 32", 0xfe1ff06f
 	);
 
-#line 586 "start.x"
+#line 589 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 and $ff", 0x0ff2f293
 	);
+	assert_line(
+		"%a0 <- %a1 and %a2", 0x00c5f533
+	);
 
-#line 594 "start.x"
+#line 600 "start.x"
 
 	assert_line(
 		"%x5 <- %x5 or $1", 0x0012e293
 	);
+	assert_line(
+		"%a0 <- %a1 or %a2", 0x00c5e533
+	);
 
-#line 602 "start.x"
+#line 611 "start.x"
 
 	assert_line(
 		"%x6 <- %x6 or $1", 0x00136313
 	);
 
-#line 610 "start.x"
+#line 619 "start.x"
+
+	assert_line(
+		"%a0 <- %a1 xor $ff", 0x0ff5c513
+	);
+	assert_line(
+		"%a0 <- %a1 xor %a2", 0x00c5c533
+	);
+	assert_line(
+		"%a0 <- complement %a1", 0x0005c513
+	);
+
+#line 633 "start.x"
 
 	assert_line(
 		"%x11 <- $0d", 0x00d00593
 	);
 
-#line 618 "start.x"
+#line 641 "start.x"
 
 	assert_line(
 		"%x12 <- $0a", 0x00a00613
 	);
 
-#line 626 "start.x"
+#line 649 "start.x"
 
 	assert_line(
 		"%x10 <- $1013000", 0x1013537
 	);
 
-#line 634 "start.x"
+#line 657 "start.x"
 
 	assert_line(
 		"%x5 <- %pc", 0x00000297
 	);
 
-#line 642 "start.x"
+#line 665 "start.x"
 
 	assert_line(
 		"%mtvec <- %x5", 0x30529073
 	);
 
-#line 650 "start.x"
+#line 673 "start.x"
 
 	assert_line(
 		"%x5 <- %mhartid", 0xf14022f3
 	);
 
-#line 658 "start.x"
+#line 681 "start.x"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc - 4",
 		0xfe02cee3
 	);
 
-#line 667 "start.x"
+#line 690 "start.x"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
 
-#line 676 "start.x"
+#line 699 "start.x"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc - 28",
 		0xfeb292e3
 	);
 
-#line 685 "start.x"
+#line 708 "start.x"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 706 "start.x"
+#line 729 "start.x"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 715 "start.x"
+#line 738 "start.x"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 724 "start.x"
+#line 747 "start.x"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 733 "start.x"
+#line 756 "start.x"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
@@ -911,10 +932,10 @@ restart:
 #line 12 "start.x"
 
 		
-#line 568 "start.x"
+#line 571 "start.x"
 
 	
-#line 575 "start.x"
+#line 578 "start.x"
 
 	State s;
 	std::string l;
@@ -923,7 +944,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 569 "start.x"
+#line 572 "start.x"
 
 
 #line 16 "hex.x"

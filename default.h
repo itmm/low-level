@@ -158,7 +158,7 @@ std::string setup {
 	"@reg <- @reg < @reg <= r_type($0, @4, @2, $2, @0, $33)\n"
 	"@reg <- @reg <u @reg <= r_type($0, @5, @2, $3, @0, $33)\n"
 	"@reg <- @reg xor @reg <= r_type($0, @4, @2, $4, @0, $33)\n"
-	"@reg <- complement @reg <= @0 <- @3 xor %zero\n"
+	"@reg <- complement @reg <= @0 <- @3 xor 0\n"
 	"@reg <- @reg != 0 <= @0 <- %zero <u @2\n"
 	"@reg <- @reg > @reg <= @0 <- @4 < @2\n"
 	"@reg <- @reg >u @reg <= @0 <- @5 <u @2\n"
