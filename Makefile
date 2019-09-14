@@ -23,10 +23,12 @@ SOURCEs := $(shell hx-srcs.sh *.x)
 GENs := $(shell hx-files.sh $(SOURCEs))
 CPPs := $(filter %.cpp, $(GENs))
 
-$(GENs) .hx-run: $(SOURCEs)
+.hx_run: $(SOURCES)
 	@echo HX
 	@hx
 	@touch .hx-run
+
+$(CPPs): .hx_run
 
 ll: $(CPPs)
 	@echo C++ $@
