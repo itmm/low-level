@@ -1,7 +1,7 @@
 .PHONY: all clean
 
-SOURCEs := $(shell hx-srcs.sh *.x)
-GENs := $(shell hx-files.sh $(SOURCEs))
+SRCs := $(shell hx-srcs.sh)
+GENs := $(shell hx-files.sh $(SRCs))
 CPPs := $(filter %.cpp, $(GENs))
 
 all: .hx_run
@@ -10,7 +10,7 @@ all: .hx_run
 .hx_run: $(SOURCES)
 	@echo HX
 	@hx
-	@touch .hx-run
+	@date >$@
 
 clean:
 	@echo RM

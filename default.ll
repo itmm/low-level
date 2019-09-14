@@ -199,6 +199,7 @@
 	@reg <- @reg << @reg <== r_type($0, @4, @2, $1, @0, $33)
 	@reg <- @reg >> @reg <== r_type($0, @4, @2, $5, @0, $33)
 	@reg <- @reg >>> @reg <== r_type($20, @4, @2, $5, @0, $33)
+	@reg <- @reg <== @0 <- @2 + 0
 
 	fence(@num, @num) <== i_type(@2 << 4 or @4, %zero, $0, %zero, $0f)
 	fence.i <== i_type(0, %zero, $1, %zero, $0f)

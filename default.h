@@ -172,6 +172,7 @@ std::string setup {
 	"@reg <- @reg << @reg <== r_type($0, @4, @2, $1, @0, $33)\n"
 	"@reg <- @reg >> @reg <== r_type($0, @4, @2, $5, @0, $33)\n"
 	"@reg <- @reg >>> @reg <== r_type($20, @4, @2, $5, @0, $33)\n"
+	"@reg <- @reg <== @0 <- @2 + 0\n"
 	"fence(@num, @num) <== i_type(@2 << 4 or @4, %zero, $0, %zero, $0f)\n"
 	"fence.i <== i_type(0, %zero, $1, %zero, $0f)\n"
 	"trap <== i_type($0, %zero, 0, %zero, $73)\n"
