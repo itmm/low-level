@@ -106,16 +106,18 @@
 
 # instructions
 
-	@reg <- @num <= @0 big_add (@2 and $fffff800) @0 small_add @2
-	@reg big_add $00000000 <=
-	@reg big_add $fffff800 <=
-	@reg big_add @num <= u_type(@2 and $fffff000, @0, $37)
-	@reg small_add 0 <= @0 <- %zero + 0
-	@reg small_add @num <= @0 small_add_add (@2 and $fff)
-	@reg small_add_add $0 <=
-	@reg small_add_add @num <= @0 <- %zero + @2
+	@reg <- - @num <= @0 <- (0 - @3)
+	@reg <- @num <= big_assign (@0, @2 and $fffff800) small_assign(@0, @2)
+	big_assign(@reg, $00000000) <=
+	big_assign(@reg, $fffff800) <=
+	big_assign(@reg, @num) <= u_type(@4 and $fffff000, @2, $37)
+	small_assign(@reg, 0) <= @2 <- %zero + 0
+	small_assign(@reg, @num) <= small_masked_assign (@2, @4 and $fff)
+	small_masked_assign(@reg, 0) <=
+	small_masked_assign(@reg, @num) <= @2 <- %zero + @4
 
 	@reg <- @reg + @reg <= r_type($0, @4, @2, $0, @0, $33)
+	@reg <- @reg - @reg <= r_type($20, @4, @2, $0, @0, $33)
 	@reg <- @reg + @num <= i_type(@4, @2, $0, @0, $13)
 	@reg <- @reg - @num <= @0 <- @2 + (0 - @4)
 	@reg <- @reg and @num <= i_type(@4, @2, $7, @0, $13)
@@ -123,27 +125,66 @@
 	@reg <- @csr <= i_type(@2:value, %zero, $2, @0, $73)
 	@csr <- @reg <= i_type(@0:value, @2, $1, %zero, $73)
 
-	@reg <- [@reg + @num] <= i_type(@5:value, @3, $2, @0, $03)
-	@reg <- [@reg] <= i_type(0, @3, $2, @0, $03)
+	@reg <- [@reg + @num] <= i_type(@5, @3, $2, @0, $03)
+	@reg <- [@reg] <= @0 <- [@3 + 0]
+	@reg <- [@reg - @num] <= @0 <- [@3 + (0 - @5)]
+	@reg <-b [@reg + @num] <= i_type(@6, @4, $0, @0, $03)
+	@reg <-b [@reg] <= @0 <-b [@4 + 0]
+	@reg <-b [@reg - @num] <= @0 <-b [@4 + (0 - @6)]
+	@reg <-h [@reg + @num] <= i_type(@6, @4, $1, @0, $03)
+	@reg <-h [@reg] <= @0 <-h [@4 + 0]
+	@reg <-h [@reg - @num] <= @0 <-h [@4 + (0 - @6)]
+	@reg <-bu [@reg + @num] <= i_type(@6, @4, $4, @0, $03)
+	@reg <-bu [@reg] <= @0 <-bu [@4 + 0]
+	@reg <-bu [@reg - @num] <= @0 <-bu [@4 + (0 - @6)]
+	@reg <-hu [@reg + @num] <= i_type(@6, @4, $5, @0, $03)
+	@reg <-hu [@reg] <= @0 <-hu [@4 + 0]
+	@reg <-hu [@reg - @num] <= @0 <-hu [@4 + (0 - @6)]
+
 	[@reg + @num] <- @reg <= s_type(@3, @6, @1, $2, $23)
-	[@reg] <- @reg <= s_type(0, @4, @1, $2, $23)
+	[@reg] <- @reg <= [@1 + 0] <- @4
+	[@reg - @num] <- @reg <= [@1 + (0 - @3) <- @6
+	[@reg + @num] <-b @reg <= s_type(@3, @7, @1, $0, $23)
+	[@reg] <-b @reg <= [@1 + 0] <-b @5
+	[@reg - @num] <-b @reg <= [@1 + (0 - @3) <-b @7
+	[@reg + @num] <-h @reg <= s_type(@3, @7, @1, $1, $23)
+	[@reg] <-h @reg <= [@1 + 0] <-h @5
+	[@reg - @num] <-h @reg <= [@1 + (0 - @3) <-h @7
 
 	goto @num <= %pc <- %pc + ( @1 - `* )
-
 	if @reg @str 0: <= if @1 @2 %zero:
-	%pc <- %pc - @num <= %pc <- %pc + (0 - @4)
 	if @reg < @reg: %pc <- %pc + @num <= b_type(@9, @3, @1, $4, $63)
-	if @reg >= @reg: <= if @3 < @1:
+	if @reg > @reg: <= if @3 < @1:
+	if @reg >= @reg: %pc <- %pc + @num <= b_type(@9, @3, @1, $5, $63)
+	if @reg `<= @reg: <= if @3 >= @1:
+	if @reg <u @reg: %pc <- %pc + @num <= b_type(@9, @3, @1, $6, $63)
+	if @reg >u @reg: <= if @3 <u @1:
+	if @reg >=u @reg: %pc <- %pc + @num <= b_type(@9, @3, @1, $7, $63)
+	if @reg `<=u @reg: <= if @3 >=u @1:
 	if @reg = @reg: %pc <- %pc + @num <= b_type(@9, @3, @1, $0, $63)
 	if @reg != @reg: %pc <- %pc + @num <= b_type(@9, @3, @1, $1, $63)
 
-	%pc <- %pc + @num <= j_type(@4, %zero, $6f)
+	%pc <- %pc - @num <= %pc <- %pc + (0 - @4)
+	@reg <- %pc, %pc <- %pc + @num <= j_type(@8, @0, $6f)
+	%pc <- %pc + @num <= %zero <- %pc, %pc <- %pc + @4
 	%pc <- %pc <= %pc <- %pc + 0
+	@reg <- %pc, %pc <- @reg + @num <= i_type(@8, @6, $0, @0, $67)
+	@reg <- %pc, %pc <- @reg - @num <= @0 <- %pc, %pc <- @6 + (0 - @8)
+	@reg <- %pc, %pc <- @reg <= @0 <- %pc, %pc <- @6 + 0
+	%pc <- @reg <= %zero <- %pc, %pc <- @2 + 0
 
-	@reg <- %pc + @num <= u_type(@4 and $fffff000, @0, $17) smallpc(@0, @4 and $fff)
-	smallpc(@reg, 0) <=
-	smallpc(@reg, @num) <= @2 <- @2 + @4
+	@reg <- %pc + @num <= u_type(@4 and $fffff000, @0, $17) small_pc(@0, @4 and $fff)
+	small_pc(@reg, 0) <=
+	small_pc(@reg, @num) <= @2 <- @2 + @4
 	@reg <- %pc <= @0 <- %pc + 0
+
+	@reg <- @reg < @num <= i_type(@4, @2, $2, @0, $13)
+	@reg <- @reg <u @num <= i_type(@5, @2, $3, @0, $13)
+	@reg <- @reg xor @num <= i_type(@4, @2, $4, @0, $13)
+
+	@reg <- @reg << @num <= i_type(@4 and $1f, @2, $1, @0, $13)
+	@reg <- @reg >> @num <= i_type(@4 and $1f, @2, $5, @0, $13)
+	@reg <- @reg >>> @num <= i_type((@4 and $1f) or $200, @2, $5, @0, $13)
 
 # pseudo-instructions
 
