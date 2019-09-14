@@ -181,10 +181,27 @@
 	@reg <- @reg < @num <= i_type(@4, @2, $2, @0, $13)
 	@reg <- @reg <u @num <= i_type(@5, @2, $3, @0, $13)
 	@reg <- @reg xor @num <= i_type(@4, @2, $4, @0, $13)
-
+	@reg <- @reg < @reg <= r_type($0, @4, @2, $2, @0, $33)
+	@reg <- @reg <u @reg <= r_type($0, @5, @2, $3, @0, $33)
+	@reg <- @reg xor @reg <= r_type($0, @4, @2, $4, @0, $33)
+	@reg <- complement @reg <= @0 <- @3 xor %zero
+	@reg <- @reg != 0 <= @0 <- %zero <u @2
+	@reg <- @reg > @reg <= @0 <- @4 < @2
+	@reg <- @reg >u @reg <= @0 <- @5 <u @2
+	@reg <- @reg and @reg <= r_type($0, @4, @2, $f, @0, $33)
+	@reg <- @reg or @reg <= r_type($0, @4, @2, $e, @0, $33)
 	@reg <- @reg << @num <= i_type(@4 and $1f, @2, $1, @0, $13)
 	@reg <- @reg >> @num <= i_type(@4 and $1f, @2, $5, @0, $13)
 	@reg <- @reg >>> @num <= i_type((@4 and $1f) or $200, @2, $5, @0, $13)
+	@reg <- @reg << @reg <= r_type($0, @4, @2, $1, @0, $33)
+	@reg <- @reg >> @reg <= r_type($0, @4, @2, $5, @0, $33)
+	@reg <- @reg >>> @reg <= r_type($20, @4, @2, $5, @0, $33)
+
+	fence(@num, @num) <= i_type(@2 << 4 or @4, %zero, $0, %zero, $0f)
+	fence.i <= i_type(0, %zero, $1, %zero, $0f)
+
+	trap <= i_type($0, %zero, 0, %zero, $73)
+	break <= i_type($1, %zero, 0, %zero, $73)
 
 # pseudo-instructions
 
