@@ -17,8 +17,8 @@ loop_hart:
 	%t1 <- %t1 or $01
 	[uart + $08] <- %t0
 	[uart + $0c] <- %t1
-	uart_rd <= uart + $04
-	uart_wr <= uart + $00
+	uart_rd <== uart + $04
+	uart_wr <== uart + $00
 
 # read loop
 

@@ -7,3 +7,4 @@ _enter:
 	or a0, a1, a2
 	xori a0, a1, 0xff
 	xor a0, a1, a2
+	la a0, _enter
