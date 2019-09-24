@@ -7,7 +7,7 @@ CPPs := $(filter %.cpp, $(GENs))
 all: .hx_run
 	@make -f Makefile.build all
 
-.hx_run: $(SOURCES)
+.hx_run: $(SRCs)
 	@echo HX
 	@hx
 	@date >$@
