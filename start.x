@@ -195,8 +195,13 @@ the machine code.
 @def(assert line)
 	State s;
 	s.add_line(line);
+	if (s.code_size() != 1) {
+		std::cerr << "assert failed in [" << line << "]\n";
+		std::cerr << "got " << s.code_size() << " elements\n";
+	}
 	assert(s.code_size() == 1);
 	if (s.get_code(0) != expected) {
+		std::cerr << "assert failed in [" << line << "]\n";
 		std::cerr << "EXP " << std::hex << expected << "\n";
 		std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
 	}
@@ -575,6 +580,7 @@ These syntax trees are then transformed into machine code.
 			items.emplace_back(Item_Type::t_string, std::string { begin, cur }, 0, escapes);
 		}
 	}
+	items.emplace_back(Item_Type::t_string, ";", 0, 0);
 	@put(expand);
 @end(add line)
 ```
@@ -835,9 +841,9 @@ restart:
 			"cant expand fully [" <<
 			line << "]; got [";
 		for (const auto &i: items) {
-			std::cerr << i << ", ";
+			std::cerr << i << " ";
 		}
-		std::cerr << "\n";
+		std::cerr << "]\n";
 	}
 @end(expand)
 ```
@@ -999,6 +1005,13 @@ restart:
 @def(consume machine instrs)
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
+		if (mi.type() == Item_Type::t_string && mi.str() == ";") {
+			items.erase(
+				items.begin(),
+				items.begin() + 1
+			);
+			continue;
+		}
 		if (mi.type() != Item_Type::t_instance || mi.str() != "raw") { break; }
 		add_machine(mi.value());
 		items.erase(
@@ -1023,7 +1036,7 @@ restart:
 ```
 @def(transform sym assign)
 	Items value;
-	unsigned last { items.size() };
+	unsigned last { items.size() - 1 }; // skip last ;
 	for (unsigned j = i + 1;
 		j < last; ++j
 	) {
@@ -1146,17 +1159,17 @@ restart:
 
 # instruction types
 
-	r_type(@num, @reg, @reg, @num, @reg, @num) <== @raw: (@2 << 25 or @4:value << 20 or @6:value << 15 or @8 << 12 or @10:value << 7 or @12)
-	i_type(@num, @reg, @num, @reg, @num) <== @raw: (@2 << 20 or @4:value << 15 or @6 << 12 or @8:value << 7 or @10)
-	b_type(@num, @reg, @reg, @num, @num) <== @raw: ((@2 and $1000) << (31 - 12) or (@2 and $7e0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1e) << (8 - 1) or (@2 and $800) >> (11 - 7) or @10)
-	u_type(@num, @reg, @num) <== @raw: (@2 or @4:value << 7 or @6)
-	j_type(@num, @reg, @num) <== @raw: ((@2 and $100000) << (31 - 20) or (@2 and $7fe) << (21 - 1) or (@2 and $800) << (20 - 11) or (@2 and $ff000) or @4:value << 7 or @6)
-	s_type(@num, @reg, @reg, @num, @num) <== @raw: ((@2 and $fe0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1f) << 7 or @10)
+	r_type(@num, @reg, @reg, @num, @reg, @num) ; <== @raw: (@2 << 25 or @4:value << 20 or @6:value << 15 or @8 << 12 or @10:value << 7 or @12)
+	i_type(@num, @reg, @num, @reg, @num) ; <== @raw: (@2 << 20 or @4:value << 15 or @6 << 12 or @8:value << 7 or @10)
+	b_type(@num, @reg, @reg, @num, @num) ; <== @raw: ((@2 and $1000) << (31 - 12) or (@2 and $7e0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1e) << (8 - 1) or (@2 and $800) >> (11 - 7) or @10)
+	u_type(@num, @reg, @num) ; <== @raw: (@2 or @4:value << 7 or @6)
+	j_type(@num, @reg, @num) ; <== @raw: ((@2 and $100000) << (31 - 20) or (@2 and $7fe) << (21 - 1) or (@2 and $800) << (20 - 11) or (@2 and $ff000) or @4:value << 7 or @6)
+	s_type(@num, @reg, @reg, @num, @num) ; <== @raw: ((@2 and $fe0) << (25 - 5) or @4:value << 20 or @6:value << 15 or @8 << 12 or (@2 and $1f) << 7 or @10)
 
 # instructions
 
 	@reg <- - @num <== @0 <- (0 - @3)
-	@reg <- @num <== big_assign (@0, @2 and $fffff800) small_assign(@0, @2)
+	@reg <- @num <== big_assign(@0, @2 and $fffff800) ; small_assign(@0, @2)
 	big_assign(@reg, $00000000) <==
 	big_assign(@reg, $fffff800) <==
 	big_assign(@reg, @num) <== u_type(@4 and $fffff000, @2, $37)
@@ -1172,7 +1185,7 @@ restart:
 	@reg <- @reg and @num <== i_type(@4, @2, $7, @0, $13)
 	@reg <- @reg or @num <== i_type(@4, @2, $6, @0, $13)
 	@reg <- @csr <== i_type(@2:value, %zero, $2, @0, $73)
-	@csr <- @reg <== i_type(@0:value, @2, $1, %zero, $73)
+	@csr <- @reg ; <== i_type(@0:value, @2, $1, %zero, $73) ;
 
 	@reg <- [@reg + @num] <== i_type(@5, @3, $2, @0, $03)
 	@reg <- [@reg] <== @0 <- [@3 + 0]
@@ -1216,18 +1229,19 @@ restart:
 	%pc <- %pc - @num <== %pc <- %pc + (0 - @4)
 	@reg <- %pc, %pc <- %pc + @num <== j_type(@8, @0, $6f)
 	%pc <- %pc + @num <== %zero <- %pc, %pc <- %pc + @4
-	%pc <- %pc <== %pc <- %pc + 0
+	%pc <- %pc ; <== %pc <- %pc + 0 ;
 	@reg <- %pc, %pc <- @reg + @num <== i_type(@8, @6, $0, @0, $67)
 	@reg <- %pc, %pc <- @reg - @num <== @0 <- %pc, %pc <- @6 + (0 - @8)
-	@reg <- %pc, %pc <- @reg <== @0 <- %pc, %pc <- @6 + 0
+	@reg <- %pc, %pc <- @reg ; <== @0 <- %pc, %pc <- @6 + 0 ;
 	%pc <- @reg <== %zero <- %pc, %pc <- @2 + 0
 
-	@reg <- %pc + @num <== big_pc(@4 and $fffff800, @0) small_pc(@0, @4, @4 and $fff, @4 and $80000000)
+	@reg <- %pc + @num <== big_pc(@4 and $fffff800, @0) ; small_pc(@0, @4, @4 and $fff, @4 and $80000000)
+	@reg <- %pc - @num <== @0 <- %pc + (0 - @4)
 	big_pc($fffff800, @reg) <== big_pc(0, @4)
 	big_pc(@num, @reg) <== u_type(@2 and $fffff000, @4, $17)
 	small_pc(@reg, @num, 0, 0) <==
 	small_pc(@reg, @num, @num, @num) <== @2 <- @2 + @4
-	@reg <- %pc <== @0 <- %pc + 0
+	@reg <- %pc ; <== @0 <- %pc + 0 ;
 
 	@reg <- @reg < @num <== i_type(@4, @2, $2, @0, $13)
 	@reg <- @reg <u @num <== i_type(@5, @2, $3, @0, $13)
@@ -1247,7 +1261,7 @@ restart:
 	@reg <- @reg << @reg <== r_type($0, @4, @2, $1, @0, $33)
 	@reg <- @reg >> @reg <== r_type($0, @4, @2, $5, @0, $33)
 	@reg <- @reg >>> @reg <== r_type($20, @4, @2, $5, @0, $33)
-	@reg <- @reg <== @0 <- @2 + 0
+	@reg <- @reg ; <== @0 <- @2 + 0 ;
 
 	fence(@num, @num) <== i_type(@2 << 4 or @4, %zero, $0, %zero, $0f)
 	fence.i <== i_type(0, %zero, $1, %zero, $0f)
