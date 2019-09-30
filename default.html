@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Default macros</title>
+<link rel="stylesheet" type="text/css" href="slides/slides.css"></head>
+<body>
+<h1>Default macros</h1>
+<div class="slides">
+<div>
+<div>
+<h1>Default macros</h1>
+</div>
+</div>
+<div><div>
+<code>
+<span class="macro">@Def(<span class="name">file: default.ll</span>)</span><br/>
+<span class="keyword">#</span> <span class="var">canonical</span> <span class="var">register</span> <span class="var">names</span><br/>
+<br/>
+<span class="in1"></span>%<span class="var">x0</span> &lt;== @<span class="var">reg</span>:<span class="num">0</span><br/>
+<span class="in1"></span>%<span class="var">x1</span> &lt;== @<span class="var">reg</span>:<span class="num">1</span><br/>
+<span class="in1"></span>%<span class="var">x2</span> &lt;== @<span class="var">reg</span>:<span class="num">2</span><br/>
+<span class="in1"></span>%<span class="var">x3</span> &lt;== @<span class="var">reg</span>:<span class="num">3</span><br/>
+<span class="in1"></span>%<span class="var">x4</span> &lt;== @<span class="var">reg</span>:<span class="num">4</span><br/>
+<span class="in1"></span>%<span class="var">x5</span> &lt;== @<span class="var">reg</span>:<span class="num">5</span><br/>
+<span class="in1"></span>%<span class="var">x6</span> &lt;== @<span class="var">reg</span>:<span class="num">6</span><br/>
+<span class="in1"></span>%<span class="var">x7</span> &lt;== @<span class="var">reg</span>:<span class="num">7</span><br/>
+<span class="in1"></span>%<span class="var">x8</span> &lt;== @<span class="var">reg</span>:<span class="num">8</span><br/>
+<span class="in1"></span>%<span class="var">x9</span> &lt;== @<span class="var">reg</span>:<span class="num">9</span><br/>
+<span class="in1"></span>%<span class="var">x10</span> &lt;== @<span class="var">reg</span>:<span class="num">10</span><br/>
+<span class="in1"></span>%<span class="var">x11</span> &lt;== @<span class="var">reg</span>:<span class="num">11</span><br/>
+<span class="in1"></span>%<span class="var">x12</span> &lt;== @<span class="var">reg</span>:<span class="num">12</span><br/>
+<span class="in1"></span>%<span class="var">x13</span> &lt;== @<span class="var">reg</span>:<span class="num">13</span><br/>
+<span class="in1"></span>%<span class="var">x14</span> &lt;== @<span class="var">reg</span>:<span class="num">14</span><br/>
+<span class="in1"></span>%<span class="var">x15</span> &lt;== @<span class="var">reg</span>:<span class="num">15</span><br/>
+<span class="in1"></span>%<span class="var">x16</span> &lt;== @<span class="var">reg</span>:<span class="num">16</span><br/>
+<span class="in1"></span>%<span class="var">x17</span> &lt;== @<span class="var">reg</span>:<span class="num">17</span><br/>
+<span class="in1"></span>%<span class="var">x18</span> &lt;== @<span class="var">reg</span>:<span class="num">18</span><br/>
+<span class="in1"></span>%<span class="var">x19</span> &lt;== @<span class="var">reg</span>:<span class="num">19</span><br/>
+<span class="in1"></span>%<span class="var">x20</span> &lt;== @<span class="var">reg</span>:<span class="num">20</span><br/>
+<span class="in1"></span>%<span class="var">x21</span> &lt;== @<span class="var">reg</span>:<span class="num">21</span><br/>
+<span class="in1"></span>%<span class="var">x22</span> &lt;== @<span class="var">reg</span>:<span class="num">22</span><br/>
+<span class="in1"></span>%<span class="var">x23</span> &lt;== @<span class="var">reg</span>:<span class="num">23</span><br/>
+<span class="in1"></span>%<span class="var">x24</span> &lt;== @<span class="var">reg</span>:<span class="num">24</span><br/>
+<span class="in1"></span>%<span class="var">x25</span> &lt;== @<span class="var">reg</span>:<span class="num">25</span><br/>
+<span class="in1"></span>%<span class="var">x26</span> &lt;== @<span class="var">reg</span>:<span class="num">26</span><br/>
+<span class="in1"></span>%<span class="var">x27</span> &lt;== @<span class="var">reg</span>:<span class="num">27</span><br/>
+<span class="in1"></span>%<span class="var">x28</span> &lt;== @<span class="var">reg</span>:<span class="num">28</span><br/>
+<span class="in1"></span>%<span class="var">x29</span> &lt;== @<span class="var">reg</span>:<span class="num">29</span><br/>
+<span class="in1"></span>%<span class="var">x30</span> &lt;== @<span class="var">reg</span>:<span class="num">30</span><br/>
+<span class="in1"></span>%<span class="var">x31</span> &lt;== @<span class="var">reg</span>:<span class="num">31</span><br/>
+<br/>
+<span class="keyword">#</span> <span class="var">ABI</span> <span class="var">register</span> <span class="var">names</span><br/>
+<br/>
+<span class="in1"></span>%<span class="var">zero</span> &lt;== %<span class="var">x0</span><br/>
+<span class="in1"></span>%<span class="var">ra</span> &lt;== %<span class="var">x1</span><br/>
+<span class="in1"></span>%<span class="var">sp</span> &lt;== %<span class="var">x2</span><br/>
+<span class="in1"></span>%<span class="var">gp</span> &lt;== %<span class="var">x3</span><br/>
+<span class="in1"></span>%<span class="var">tp</span> &lt;== %<span class="var">x4</span><br/>
+<span class="in1"></span>%<span class="var">t0</span> &lt;== %<span class="var">x5</span><br/>
+<span class="in1"></span>%<span class="var">t1</span> &lt;== %<span class="var">x6</span><br/>
+<span class="in1"></span>%<span class="var">t2</span> &lt;== %<span class="var">x7</span><br/>
+<span class="in1"></span>%<span class="var">fp</span> &lt;== %<span class="var">x8</span><br/>
+<span class="in1"></span>%<span class="var">s0</span> &lt;== %<span class="var">x8</span><br/>
+<span class="in1"></span>%<span class="var">s1</span> &lt;== %<span class="var">x9</span><br/>
+<span class="in1"></span>%<span class="var">a0</span> &lt;== %<span class="var">x10</span><br/>
+<span class="in1"></span>%<span class="var">a1</span> &lt;== %<span class="var">x11</span><br/>
+<span class="in1"></span>%<span class="var">a2</span> &lt;== %<span class="var">x12</span><br/>
+<span class="in1"></span>%<span class="var">a3</span> &lt;== %<span class="var">x13</span><br/>
+<span class="in1"></span>%<span class="var">a4</span> &lt;== %<span class="var">x14</span><br/>
+<span class="in1"></span>%<span class="var">a5</span> &lt;== %<span class="var">x15</span><br/>
+<span class="in1"></span>%<span class="var">a6</span> &lt;== %<span class="var">x16</span><br/>
+<span class="in1"></span>%<span class="var">a7</span> &lt;== %<span class="var">x17</span><br/>
+<span class="in1"></span>%<span class="var">s2</span> &lt;== %<span class="var">x18</span><br/>
+<span class="in1"></span>%<span class="var">s3</span> &lt;== %<span class="var">x19</span><br/>
+<span class="in1"></span>%<span class="var">s4</span> &lt;== %<span class="var">x20</span><br/>
+<span class="in1"></span>%<span class="var">s5</span> &lt;== %<span class="var">x21</span><br/>
+<span class="in1"></span>%<span class="var">s6</span> &lt;== %<span class="var">x22</span><br/>
+<span class="in1"></span>%<span class="var">s7</span> &lt;== %<span class="var">x23</span><br/>
+<span class="in1"></span>%<span class="var">s8</span> &lt;== %<span class="var">x24</span><br/>
+<span class="in1"></span>%<span class="var">s9</span> &lt;== %<span class="var">x25</span><br/>
+<span class="in1"></span>%<span class="var">s10</span> &lt;== %<span class="var">x26</span><br/>
+<span class="in1"></span>%<span class="var">s11</span> &lt;== %<span class="var">x27</span><br/>
+<span class="in1"></span>%<span class="var">t3</span> &lt;== %<span class="var">x28</span><br/>
+<span class="in1"></span>%<span class="var">t4</span> &lt;== %<span class="var">x29</span><br/>
+<span class="in1"></span>%<span class="var">t5</span> &lt;== %<span class="var">x30</span><br/>
+<span class="in1"></span>%<span class="var">t6</span> &lt;== %<span class="var">x31</span><br/>
+<br/>
+<span class="keyword">#</span> <span class="var">splitting</span> <span class="var">special</span> <span class="var">chars</span> <span class="var">sequences</span><br/>
+<br/>
+<span class="in1"></span>*) &lt;== `* )<br/>
+<span class="in1"></span>:( &lt;== : (<br/>
+<span class="in1"></span>(( &lt;== ( (<br/>
+<span class="in1"></span>)) &lt;== ) )<br/>
+<br/>
+<span class="keyword">#</span> <span class="var">CSR</span> <span class="var">registers</span><br/>
+<br/>
+<span class="in1"></span>%<span class="var">mtvec</span> &lt;== @<span class="var">csr</span>:<span class="var">$305</span><br/>
+<span class="in1"></span>%<span class="var">mhartid</span> &lt;== @<span class="var">csr</span>:<span class="var">$f14</span><br/>
+<br/>
+<span class="keyword">#</span> <span class="var">arithemitc</span> <span class="var">operations</span><br/>
+<br/>
+<span class="in1"></span>(@<span class="var">num</span>) &lt;== @<span class="num">1</span><br/>
+<span class="in1"></span>@<span class="var">num</span> &lt;&lt; @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> &gt;&gt; @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> * @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> / @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> + @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> - @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> <span class="var">and</span> @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> <span class="var">or</span> @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span>@<span class="var">num</span> <span class="var">xor</span> @<span class="var">num</span> &lt;== @<span class="var">arithmetic</span><br/>
+<span class="in1"></span><span class="var">complement</span> @<span class="var">num</span> &lt;== (@<span class="num">1</span> <span class="var">xor</span> <span class="num">0</span>)<br/>
+<br/>
+<span class="keyword">#</span> <span class="var">instruction</span> <span class="var">types</span><br/>
+<br/>
+<span class="in1"></span><span class="fn">r_type</span>(@<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">reg</span>, @<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">num</span>) ; &lt;== @<span class="var">raw</span>: (@<span class="num">2</span> &lt;&lt; <span class="num">25</span> <span class="var">or</span> @<span class="num">4</span>:<span class="var">value</span> &lt;&lt; <span class="num">20</span> <span class="var">or</span> @<span class="num">6</span>:<span class="var">value</span> &lt;&lt; <span class="num">15</span> <span class="var">or</span> @<span class="num">8</span> &lt;&lt; <span class="num">12</span> <span class="var">or</span> @<span class="num">10</span>:<span class="var">value</span> &lt;&lt; <span class="num">7</span> <span class="var">or</span> @<span class="num">12</span>)<br/>
+<span class="in1"></span><span class="fn">i_type</span>(@<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">num</span>) ; &lt;== @<span class="var">raw</span>: (@<span class="num">2</span> &lt;&lt; <span class="num">20</span> <span class="var">or</span> @<span class="num">4</span>:<span class="var">value</span> &lt;&lt; <span class="num">15</span> <span class="var">or</span> @<span class="num">6</span> &lt;&lt; <span class="num">12</span> <span class="var">or</span> @<span class="num">8</span>:<span class="var">value</span> &lt;&lt; <span class="num">7</span> <span class="var">or</span> @<span class="num">10</span>)<br/>
+<span class="in1"></span><span class="fn">b_type</span>(@<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">reg</span>, @<span class="var">num</span>, @<span class="var">num</span>) ; &lt;== @<span class="var">raw</span>: ((@<span class="num">2</span> <span class="var">and</span> <span class="var">$1000</span>) &lt;&lt; (<span class="num">31</span> - <span class="num">12</span>) <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$7e0</span>) &lt;&lt; (<span class="num">25</span> - <span class="num">5</span>) <span class="var">or</span> @<span class="num">4</span>:<span class="var">value</span> &lt;&lt; <span class="num">20</span> <span class="var">or</span> @<span class="num">6</span>:<span class="var">value</span> &lt;&lt; <span class="num">15</span> <span class="var">or</span> @<span class="num">8</span> &lt;&lt; <span class="num">12</span> <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$1e</span>) &lt;&lt; (<span class="num">8</span> - <span class="num">1</span>) <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$800</span>) &gt;&gt; (<span class="num">11</span> - <span class="num">7</span>) <span class="var">or</span> @<span class="num">10</span>)<br/>
+<span class="in1"></span><span class="fn">u_type</span>(@<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">num</span>) ; &lt;== @<span class="var">raw</span>: (@<span class="num">2</span> <span class="var">or</span> @<span class="num">4</span>:<span class="var">value</span> &lt;&lt; <span class="num">7</span> <span class="var">or</span> @<span class="num">6</span>)<br/>
+<span class="in1"></span><span class="fn">j_type</span>(@<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">num</span>) ; &lt;== @<span class="var">raw</span>: ((@<span class="num">2</span> <span class="var">and</span> <span class="var">$100000</span>) &lt;&lt; (<span class="num">31</span> - <span class="num">20</span>) <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$7fe</span>) &lt;&lt; (<span class="num">21</span> - <span class="num">1</span>) <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$800</span>) &lt;&lt; (<span class="num">20</span> - <span class="num">11</span>) <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$ff000</span>) <span class="var">or</span> @<span class="num">4</span>:<span class="var">value</span> &lt;&lt; <span class="num">7</span> <span class="var">or</span> @<span class="num">6</span>)<br/>
+<span class="in1"></span><span class="fn">s_type</span>(@<span class="var">num</span>, @<span class="var">reg</span>, @<span class="var">reg</span>, @<span class="var">num</span>, @<span class="var">num</span>) ; &lt;== @<span class="var">raw</span>: ((@<span class="num">2</span> <span class="var">and</span> <span class="var">$fe0</span>) &lt;&lt; (<span class="num">25</span> - <span class="num">5</span>) <span class="var">or</span> @<span class="num">4</span>:<span class="var">value</span> &lt;&lt; <span class="num">20</span> <span class="var">or</span> @<span class="num">6</span>:<span class="var">value</span> &lt;&lt; <span class="num">15</span> <span class="var">or</span> @<span class="num">8</span> &lt;&lt; <span class="num">12</span> <span class="var">or</span> (@<span class="num">2</span> <span class="var">and</span> <span class="var">$1f</span>) &lt;&lt; <span class="num">7</span> <span class="var">or</span> @<span class="num">10</span>)<br/>
+<br/>
+<span class="keyword">#</span> <span class="var">instructions</span><br/>
+<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- - @<span class="var">num</span> &lt;== @<span class="num">0</span> &lt;- (<span class="num">0</span> - @<span class="num">3</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">num</span> &lt;== <span class="fn">big_assign</span>(@<span class="num">0</span>, @<span class="num">2</span> <span class="var">and</span> <span class="var">$fffff800</span>) ; <span class="fn">small_assign</span>(@<span class="num">0</span>, @<span class="num">2</span>)<br/>
+<span class="in1"></span><span class="fn">big_assign</span>(@<span class="var">reg</span>, <span class="var">$00000000</span>) &lt;==<br/>
+<span class="in1"></span><span class="fn">big_assign</span>(@<span class="var">reg</span>, <span class="var">$fffff800</span>) &lt;==<br/>
+<span class="in1"></span><span class="fn">big_assign</span>(@<span class="var">reg</span>, @<span class="var">num</span>) &lt;== <span class="fn">u_type</span>(@<span class="num">4</span> <span class="var">and</span> <span class="var">$fffff000</span>, @<span class="num">2</span>, <span class="var">$37</span>)<br/>
+<span class="in1"></span><span class="fn">small_assign</span>(@<span class="var">reg</span>, <span class="num">0</span>) &lt;== @<span class="num">2</span> &lt;- %<span class="var">zero</span> + <span class="num">0</span><br/>
+<span class="in1"></span><span class="fn">small_assign</span>(@<span class="var">reg</span>, @<span class="var">num</span>) &lt;== <span class="var">small_masked_assign</span> (@<span class="num">2</span>, @<span class="num">4</span> <span class="var">and</span> <span class="var">$fff</span>)<br/>
+<span class="in1"></span><span class="fn">small_masked_assign</span>(@<span class="var">reg</span>, <span class="num">0</span>) &lt;==<br/>
+<span class="in1"></span><span class="fn">small_masked_assign</span>(@<span class="var">reg</span>, @<span class="var">num</span>) &lt;== @<span class="num">2</span> &lt;- %<span class="var">zero</span> + @<span class="num">4</span><br/>
+<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> + @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$0</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> - @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$20</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$0</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> + @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$0</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> - @<span class="var">num</span> &lt;== @<span class="num">0</span> &lt;- @<span class="num">2</span> + (<span class="num">0</span> - @<span class="num">4</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> <span class="var">and</span> @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$7</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> <span class="var">or</span> @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$6</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">csr</span> &lt;== <span class="fn">i_type</span>(@<span class="num">2</span>:<span class="var">value</span>, %<span class="var">zero</span>, <span class="var">$2</span>, @<span class="num">0</span>, <span class="var">$73</span>)<br/>
+<span class="in1"></span>@<span class="var">csr</span> &lt;- @<span class="var">reg</span> ; &lt;== <span class="fn">i_type</span>(@<span class="num">0</span>:<span class="var">value</span>, @<span class="num">2</span>, <span class="var">$1</span>, %<span class="var">zero</span>, <span class="var">$73</span>) ;<br/>
+<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- [@<span class="var">reg</span> + @<span class="var">num</span>] &lt;== <span class="fn">i_type</span>(@<span class="num">5</span>, @<span class="num">3</span>, <span class="var">$2</span>, @<span class="num">0</span>, <span class="var">$03</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- [@<span class="var">reg</span>] &lt;== @<span class="num">0</span> &lt;- [@<span class="num">3</span> + <span class="num">0</span>]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- [@<span class="var">reg</span> - @<span class="var">num</span>] &lt;== @<span class="num">0</span> &lt;- [@<span class="num">3</span> + (<span class="num">0</span> - @<span class="num">5</span>)]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">b</span> [@<span class="var">reg</span> + @<span class="var">num</span>] &lt;== <span class="fn">i_type</span>(@<span class="num">6</span>, @<span class="num">4</span>, <span class="var">$0</span>, @<span class="num">0</span>, <span class="var">$03</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">b</span> [@<span class="var">reg</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">b</span> [@<span class="num">4</span> + <span class="num">0</span>]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">b</span> [@<span class="var">reg</span> - @<span class="var">num</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">b</span> [@<span class="num">4</span> + (<span class="num">0</span> - @<span class="num">6</span>)]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">h</span> [@<span class="var">reg</span> + @<span class="var">num</span>] &lt;== <span class="fn">i_type</span>(@<span class="num">6</span>, @<span class="num">4</span>, <span class="var">$1</span>, @<span class="num">0</span>, <span class="var">$03</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">h</span> [@<span class="var">reg</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">h</span> [@<span class="num">4</span> + <span class="num">0</span>]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">h</span> [@<span class="var">reg</span> - @<span class="var">num</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">h</span> [@<span class="num">4</span> + (<span class="num">0</span> - @<span class="num">6</span>)]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">bu</span> [@<span class="var">reg</span> + @<span class="var">num</span>] &lt;== <span class="fn">i_type</span>(@<span class="num">6</span>, @<span class="num">4</span>, <span class="var">$4</span>, @<span class="num">0</span>, <span class="var">$03</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">bu</span> [@<span class="var">reg</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">bu</span> [@<span class="num">4</span> + <span class="num">0</span>]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">bu</span> [@<span class="var">reg</span> - @<span class="var">num</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">bu</span> [@<span class="num">4</span> + (<span class="num">0</span> - @<span class="num">6</span>)]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">hu</span> [@<span class="var">reg</span> + @<span class="var">num</span>] &lt;== <span class="fn">i_type</span>(@<span class="num">6</span>, @<span class="num">4</span>, <span class="var">$5</span>, @<span class="num">0</span>, <span class="var">$03</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">hu</span> [@<span class="var">reg</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">hu</span> [@<span class="num">4</span> + <span class="num">0</span>]<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;-<span class="var">hu</span> [@<span class="var">reg</span> - @<span class="var">num</span>] &lt;== @<span class="num">0</span> &lt;-<span class="var">hu</span> [@<span class="num">4</span> + (<span class="num">0</span> - @<span class="num">6</span>)]<br/>
+<br/>
+<span class="in1"></span>[@<span class="var">reg</span> + @<span class="var">num</span>] &lt;- @<span class="var">reg</span> &lt;== <span class="fn">s_type</span>(@<span class="num">3</span>, @<span class="num">6</span>, @<span class="num">1</span>, <span class="var">$2</span>, <span class="var">$23</span>)<br/>
+<span class="in1"></span>[@<span class="var">reg</span>] &lt;- @<span class="var">reg</span> &lt;== [@<span class="num">1</span> + <span class="num">0</span>] &lt;- @<span class="num">4</span><br/>
+<span class="in1"></span>[@<span class="var">reg</span> - @<span class="var">num</span>] &lt;- @<span class="var">reg</span> &lt;== [@<span class="num">1</span> + (<span class="num">0</span> - @<span class="num">3</span>) &lt;- @<span class="num">6</span><br/>
+<span class="in1"></span>[@<span class="var">reg</span> + @<span class="var">num</span>] &lt;-<span class="var">b</span> @<span class="var">reg</span> &lt;== <span class="fn">s_type</span>(@<span class="num">3</span>, @<span class="num">7</span>, @<span class="num">1</span>, <span class="var">$0</span>, <span class="var">$23</span>)<br/>
+<span class="in1"></span>[@<span class="var">reg</span>] &lt;-<span class="var">b</span> @<span class="var">reg</span> &lt;== [@<span class="num">1</span> + <span class="num">0</span>] &lt;-<span class="var">b</span> @<span class="num">5</span><br/>
+<span class="in1"></span>[@<span class="var">reg</span> - @<span class="var">num</span>] &lt;-<span class="var">b</span> @<span class="var">reg</span> &lt;== [@<span class="num">1</span> + (<span class="num">0</span> - @<span class="num">3</span>) &lt;-<span class="var">b</span> @<span class="num">7</span><br/>
+<span class="in1"></span>[@<span class="var">reg</span> + @<span class="var">num</span>] &lt;-<span class="var">h</span> @<span class="var">reg</span> &lt;== <span class="fn">s_type</span>(@<span class="num">3</span>, @<span class="num">7</span>, @<span class="num">1</span>, <span class="var">$1</span>, <span class="var">$23</span>)<br/>
+<span class="in1"></span>[@<span class="var">reg</span>] &lt;-<span class="var">h</span> @<span class="var">reg</span> &lt;== [@<span class="num">1</span> + <span class="num">0</span>] &lt;-<span class="var">h</span> @<span class="num">5</span><br/>
+<span class="in1"></span>[@<span class="var">reg</span> - @<span class="var">num</span>] &lt;-<span class="var">h</span> @<span class="var">reg</span> &lt;== [@<span class="num">1</span> + (<span class="num">0</span> - @<span class="num">3</span>) &lt;-<span class="var">h</span> @<span class="num">7</span><br/>
+<br/>
+<span class="in1"></span><span class="var">goto</span> @<span class="var">num</span> &lt;== %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + ( @<span class="num">1</span> - `* )<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> @<span class="var">str</span> <span class="num">0</span>: &lt;== <span class="keyword">if</span> @<span class="num">1</span> @<span class="num">2</span> %<span class="var">zero</span>:<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &lt; @<span class="var">reg</span>: %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">b_type</span>(@<span class="num">9</span>, @<span class="num">3</span>, @<span class="num">1</span>, <span class="var">$4</span>, <span class="var">$63</span>)<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &gt; @<span class="var">reg</span>: &lt;== <span class="keyword">if</span> @<span class="num">3</span> &lt; @<span class="num">1</span>:<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &gt;= @<span class="var">reg</span>: %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">b_type</span>(@<span class="num">9</span>, @<span class="num">3</span>, @<span class="num">1</span>, <span class="var">$5</span>, <span class="var">$63</span>)<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &lt;= @<span class="var">reg</span>: &lt;== <span class="keyword">if</span> @<span class="num">3</span> &gt;= @<span class="num">1</span>:<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &lt;<span class="var">u</span> @<span class="var">reg</span>: %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">b_type</span>(@<span class="num">9</span>, @<span class="num">3</span>, @<span class="num">1</span>, <span class="var">$6</span>, <span class="var">$63</span>)<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &gt;<span class="var">u</span> @<span class="var">reg</span>: &lt;== <span class="keyword">if</span> @<span class="num">3</span> &lt;<span class="var">u</span> @<span class="num">1</span>:<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &gt;=<span class="var">u</span> @<span class="var">reg</span>: %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">b_type</span>(@<span class="num">9</span>, @<span class="num">3</span>, @<span class="num">1</span>, <span class="var">$7</span>, <span class="var">$63</span>)<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> &lt;=<span class="var">u</span> @<span class="var">reg</span>: &lt;== <span class="keyword">if</span> @<span class="num">3</span> &gt;=<span class="var">u</span> @<span class="num">1</span>:<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> = @<span class="var">reg</span>: %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">b_type</span>(@<span class="num">9</span>, @<span class="num">3</span>, @<span class="num">1</span>, <span class="var">$0</span>, <span class="var">$63</span>)<br/>
+<span class="in1"></span><span class="keyword">if</span> @<span class="var">reg</span> != @<span class="var">reg</span>: %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">b_type</span>(@<span class="num">9</span>, @<span class="num">3</span>, @<span class="num">1</span>, <span class="var">$1</span>, <span class="var">$63</span>)<br/>
+<br/>
+<span class="in1"></span>%<span class="var">pc</span> &lt;- %<span class="var">pc</span> - @<span class="var">num</span> &lt;== %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + (<span class="num">0</span> - @<span class="num">4</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">j_type</span>(@<span class="num">8</span>, @<span class="num">0</span>, <span class="var">$6f</span>)<br/>
+<span class="in1"></span>%<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== %<span class="var">zero</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + @<span class="num">4</span><br/>
+<span class="in1"></span>%<span class="var">pc</span> &lt;- %<span class="var">pc</span> ; &lt;== %<span class="var">pc</span> &lt;- %<span class="var">pc</span> + <span class="num">0</span> ;<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- @<span class="var">reg</span> + @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">8</span>, @<span class="num">6</span>, <span class="var">$0</span>, @<span class="num">0</span>, <span class="var">$67</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- @<span class="var">reg</span> - @<span class="var">num</span> &lt;== @<span class="num">0</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- @<span class="num">6</span> + (<span class="num">0</span> - @<span class="num">8</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- @<span class="var">reg</span> ; &lt;== @<span class="num">0</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- @<span class="num">6</span> + <span class="num">0</span> ;<br/>
+<span class="in1"></span>%<span class="var">pc</span> &lt;- @<span class="var">reg</span> &lt;== %<span class="var">zero</span> &lt;- %<span class="var">pc</span>, %<span class="var">pc</span> &lt;- @<span class="num">2</span> + <span class="num">0</span><br/>
+<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span> + @<span class="var">num</span> &lt;== <span class="fn">big_pc</span>(@<span class="num">4</span> <span class="var">and</span> <span class="var">$fffff800</span>, @<span class="num">0</span>) ; <span class="fn">small_pc</span>(@<span class="num">0</span>, @<span class="num">4</span>, @<span class="num">4</span> <span class="var">and</span> <span class="var">$fff</span>, @<span class="num">4</span> <span class="var">and</span> <span class="var">$80000000</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span> - @<span class="var">num</span> &lt;== @<span class="num">0</span> &lt;- %<span class="var">pc</span> + (<span class="num">0</span> - @<span class="num">4</span>)<br/>
+<span class="in1"></span><span class="fn">big_pc</span>(<span class="var">$fffff800</span>, @<span class="var">reg</span>) &lt;== <span class="fn">big_pc</span>(<span class="num">0</span>, @<span class="num">4</span>)<br/>
+<span class="in1"></span><span class="fn">big_pc</span>(@<span class="var">num</span>, @<span class="var">reg</span>) &lt;== <span class="fn">u_type</span>(@<span class="num">2</span> <span class="var">and</span> <span class="var">$fffff000</span>, @<span class="num">4</span>, <span class="var">$17</span>)<br/>
+<span class="in1"></span><span class="fn">small_pc</span>(@<span class="var">reg</span>, @<span class="var">num</span>, <span class="num">0</span>, <span class="num">0</span>) &lt;==<br/>
+<span class="in1"></span><span class="fn">small_pc</span>(@<span class="var">reg</span>, @<span class="var">num</span>, @<span class="var">num</span>, @<span class="var">num</span>) &lt;== @<span class="num">2</span> &lt;- @<span class="num">2</span> + @<span class="num">4</span><br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- %<span class="var">pc</span> ; &lt;== @<span class="num">0</span> &lt;- %<span class="var">pc</span> + <span class="num">0</span> ;<br/>
+<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &lt; @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$2</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &lt;<span class="var">u</span> @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">5</span>, @<span class="num">2</span>, <span class="var">$3</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> <span class="var">xor</span> @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$4</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &lt; @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$2</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &lt;<span class="var">u</span> @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">5</span>, @<span class="num">2</span>, <span class="var">$3</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> <span class="var">xor</span> @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$4</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- <span class="var">complement</span> @<span class="var">reg</span> &lt;== @<span class="num">0</span> &lt;- @<span class="num">3</span> <span class="var">xor</span> <span class="num">0</span><br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> != <span class="num">0</span> &lt;== @<span class="num">0</span> &lt;- %<span class="var">zero</span> &lt;<span class="var">u</span> @<span class="num">2</span><br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &gt; @<span class="var">reg</span> &lt;== @<span class="num">0</span> &lt;- @<span class="num">4</span> &lt; @<span class="num">2</span><br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &gt;<span class="var">u</span> @<span class="var">reg</span> &lt;== @<span class="num">0</span> &lt;- @<span class="num">5</span> &lt;<span class="var">u</span> @<span class="num">2</span><br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> <span class="var">and</span> @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$f</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> <span class="var">or</span> @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$e</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &lt;&lt; @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span> <span class="var">and</span> <span class="var">$1f</span>, @<span class="num">2</span>, <span class="var">$1</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &gt;&gt; @<span class="var">num</span> &lt;== <span class="fn">i_type</span>(@<span class="num">4</span> <span class="var">and</span> <span class="var">$1f</span>, @<span class="num">2</span>, <span class="var">$5</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &gt;&gt;&gt; @<span class="var">num</span> &lt;== <span class="fn">i_type</span>((@<span class="num">4</span> <span class="var">and</span> <span class="var">$1f</span>) <span class="var">or</span> <span class="var">$200</span>, @<span class="num">2</span>, <span class="var">$5</span>, @<span class="num">0</span>, <span class="var">$13</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &lt;&lt; @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$1</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &gt;&gt; @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$0</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$5</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> &gt;&gt;&gt; @<span class="var">reg</span> &lt;== <span class="fn">r_type</span>(<span class="var">$20</span>, @<span class="num">4</span>, @<span class="num">2</span>, <span class="var">$5</span>, @<span class="num">0</span>, <span class="var">$33</span>)<br/>
+<span class="in1"></span>@<span class="var">reg</span> &lt;- @<span class="var">reg</span> ; &lt;== @<span class="num">0</span> &lt;- @<span class="num">2</span> + <span class="num">0</span> ;<br/>
+<br/>
+<span class="in1"></span><span class="fn">fence</span>(@<span class="var">num</span>, @<span class="var">num</span>) &lt;== <span class="fn">i_type</span>(@<span class="num">2</span> &lt;&lt; <span class="num">4</span> <span class="var">or</span> @<span class="num">4</span>, %<span class="var">zero</span>, <span class="var">$0</span>, %<span class="var">zero</span>, <span class="var">$0f</span>)<br/>
+<span class="in1"></span><span class="var">fence</span>.<span class="var">i</span> &lt;== <span class="fn">i_type</span>(<span class="num">0</span>, %<span class="var">zero</span>, <span class="var">$1</span>, %<span class="var">zero</span>, <span class="var">$0f</span>)<br/>
+<br/>
+<span class="in1"></span><span class="var">trap</span> &lt;== <span class="fn">i_type</span>(<span class="var">$0</span>, %<span class="var">zero</span>, <span class="num">0</span>, %<span class="var">zero</span>, <span class="var">$73</span>)<br/>
+<span class="in1"></span><span class="keyword">break</span> &lt;== <span class="fn">i_type</span>(<span class="var">$1</span>, %<span class="var">zero</span>, <span class="num">0</span>, %<span class="var">zero</span>, <span class="var">$73</span>)<br/>
+<br/>
+<span class="keyword">#</span> <span class="var">pseudo</span>-<span class="var">instructions</span><br/>
+<br/>
+<span class="in1"></span><span class="var">nop</span> &lt;== %<span class="var">x0</span> &lt;- %<span class="var">x0</span> + <span class="num">0</span><br/>
+<br/>
+<span class="keyword">#</span> <span class="var">basic</span> <span class="var">extensions</span><br/>
+<span class="in1"></span><br/>
+<span class="in1"></span>@<span class="var">str</span>: &lt;== @<span class="num">0</span> &lt;== `*<br/>
+<span class="in1"></span><span class="var">raw</span> @<span class="var">num</span> &lt;== @<span class="var">raw</span>:@<span class="num">1</span><br/>
+<span class="in1"></span>@<span class="var">reg</span> =&gt; @<span class="var">str</span> &lt;== @<span class="num">2</span> &lt;== @<span class="num">0</span> `. @<span class="num">0</span><br/>
+<span class="macro">@End(<span class="name">file: default.ll</span>)</span><br/>
+</code></div>
+</div>
+</body>
+</html>

@@ -14,7 +14,7 @@ all: .hx_run
 
 clean:
 	@echo RM
-	@rm -f .hx-run $(GENs)
+	@rm -f .hx_run $(GENs)
 	@make -f Makefile.build clean
 
 %.list: %.hex

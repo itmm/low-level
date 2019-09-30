@@ -11,7 +11,7 @@ tests: ll echo-as.hex
 		echo "passed"
 
 default.h: default.ll
-	@echo default.ll
+	@echo BUILD $@
 	@(echo "std::string setup {"; \
 		sed -e 's/#.*//' -e 's/^\s*//' <$^ | \
 			grep -v '^$$' | \
