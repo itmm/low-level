@@ -15,32 +15,38 @@
 	#include <vector>
 	#include <sstream>
 
-#line 4 "item.x"
+#line 5 "item.x"
 
 	
-#line 16 "item.x"
+#line 19 "item.x"
 
 	enum class Item_Type {
 		t_type, t_instance, t_string
 	};
 
-#line 5 "item.x"
+#line 6 "item.x"
 ;
 	class Item {
 		private:
 			
-#line 24 "item.x"
+#line 33 "item.x"
 
 	Item_Type _type;
+
+#line 40 "item.x"
+
 	int _escapes;
+
+#line 48 "item.x"
+
 	int _value;
 	std::string _str;
 
-#line 8 "item.x"
+#line 9 "item.x"
 ;
 		public:
 			
-#line 33 "item.x"
+#line 58 "item.x"
 
 	Item(Item_Type type,
 		const std::string &str,
@@ -51,52 +57,16 @@
 		_value { value }, _str { str }
 	{ }
 
-#line 46 "item.x"
-
-	void write(std::ostream &out) const {
-		switch (_type) {
-			
-#line 56 "item.x"
-
-	case Item_Type::t_type:
-		out << '@' << _str;
-		break;
-
-#line 64 "item.x"
-
-	case Item_Type::t_instance:
-		if (_str == "num") {
-			out << '$' << std::hex <<
-				_value << std::dec;
-		} else if (_str == "reg") {
-			out << "%x" << _value;
-		} else {
-			out << '@' << _str << ":$" <<
-				std::hex << _value <<
-				std::dec;
-		}
-		break;
-
-#line 81 "item.x"
-
-	case Item_Type::t_string:
-		out << _str;
-
-#line 49 "item.x"
-;
-		}
-	}
-
-#line 88 "item.x"
+#line 75 "item.x"
 
 	bool matches(const Item &in) const {
 		switch (_type) {
 			
-#line 99 "item.x"
+#line 87 "item.x"
 
 	case Item_Type::t_type: {
 		
-#line 108 "item.x"
+#line 97 "item.x"
 
 	if (in._type == Item_Type::t_type &&
 		in._str == _str
@@ -104,7 +74,7 @@
 		return true;
 	}
 
-#line 118 "item.x"
+#line 109 "item.x"
 
 	if (in._type ==
 			Item_Type::t_instance &&
@@ -113,7 +83,7 @@
 		return true;
 	}
 
-#line 129 "item.x"
+#line 122 "item.x"
 
 	if (in._type == Item_Type::t_string &&
 		_str == "str"
@@ -121,12 +91,12 @@
 		return true;
 	}
 
-#line 101 "item.x"
+#line 89 "item.x"
 ;
 		return false;
 	}
 
-#line 139 "item.x"
+#line 134 "item.x"
 
 	case Item_Type::t_instance: {
 		return in._type ==
@@ -135,7 +105,7 @@
 			in._value == _value;
 	}
 
-#line 150 "item.x"
+#line 148 "item.x"
 
 	case Item_Type::t_string: {
 		return in._type ==
@@ -143,7 +113,7 @@
 			in._str == _str;
 	}
 
-#line 91 "item.x"
+#line 78 "item.x"
 ;
 		}
 		return false;
@@ -155,113 +125,257 @@
 		return _escapes;
 	}
 
-#line 168 "item.x"
+#line 169 "item.x"
 
 	Item_Type type() const {
 		return _type;
 	}
 
-#line 176 "item.x"
+#line 178 "item.x"
 
 	const std::string &str() const {
 		return _str;
 	}
 
-#line 184 "item.x"
+#line 187 "item.x"
 
 	int value() const { return _value; }
 
-#line 10 "item.x"
+#line 11 "item.x"
 ;
 	};
 
-#line 190 "item.x"
+#line 197 "item.x"
 
 	std::ostream &operator<<(
 		std::ostream &out,
 		const Item &item
 	) {
-		item.write(out);
+		switch (item.type()) {
+			
+#line 212 "item.x"
+
+	case Item_Type::t_type:
+		out << '@' << item.str();
+		break;
+
+#line 221 "item.x"
+
+	case Item_Type::t_instance:
+		if (item.str() == "num") {
+			out << '$' << std::hex <<
+				item.value() << std::dec;
+		} else if (item.str() == "reg") {
+			out << "%x" << item.value();
+		} else {
+			out << '@' << item.str() <<
+				":$" << std::hex <<
+				item.value() << std::dec;
+		}
+		break;
+
+#line 241 "item.x"
+
+	case Item_Type::t_string:
+		out << item.str();
+
+#line 203 "item.x"
+;
+		}
 		return out;
 	}
 
-#line 8 "macros.x"
+#line 10 "macro.x"
 
 	using Items = std::vector<Item>;
+
+#line 17 "macro.x"
+
 	class Macro {
 		private:
-			Items _pattern;
-			Items _replacement;
+			
+#line 29 "macro.x"
+
+	Items _pattern;
+	Items _replacement;
+
+#line 20 "macro.x"
+;
 		public:
-			Macro(
-				Items &&pattern,
-				Items &&replacement
-			):
-				_pattern { std::move(pattern) },
-				_replacement { std::move(replacement) }
-			{ }
-			const Items &pattern() const {
-				return _pattern;
-			}
-			const Items &replacement() const {
-				return _replacement;
-			}
+			
+#line 37 "macro.x"
+
+	Macro(
+		Items &&pattern, Items &&repl
+	):
+		_pattern { std::move(pattern) },
+		_replacement { std::move(repl) }
+	{ }
+
+#line 49 "macro.x"
+
+	const Items &pattern() const {
+		return _pattern;
+	}
+
+#line 58 "macro.x"
+
+	const Items &replacement() const {
+		return _replacement;
+	}
+
+#line 22 "macro.x"
+;
 	};
 
-#line 33 "macros.x"
+#line 10 "macros.x"
 
 	class Macros {
 		private:
-			Macros *_parent;
-			using Container = std::vector<Macro>;
-			Container _macros;
-		public:
-			Macros(Macros *parent): _parent { parent } {}
 			
-			class Iterator {
-				private:
-					Macros *_macros;
-					Container::iterator _cur;
-					void fix() {
-						if (_macros && _cur == _macros->_macros.end()) {
-							if (_macros->_parent) {
-								_macros = _macros->_parent;
-								_cur = _macros->_macros.begin();
-							} else {
-								_macros = nullptr;
-							}
-						}
-					}
-				public:
-					Iterator(Macros *macros, Container::iterator cur):
-						_macros { macros },
-						_cur { cur }
-					{ fix() ;}
-					Macro &operator*() { return *_cur; }
-					Macro *operator->() { return &*_cur; }
-					const Macro &operator*() const { return *_cur; }
-					const Macro *operator->() const { return &*_cur; }
-					Iterator &operator++() {
-						++_cur;
-						fix();
-						return *this;
-					}
-					bool operator!=(const Iterator &o) const {
-						return o._macros != _macros || (_macros != nullptr && o._cur != _cur);
-					}
-			};
+#line 22 "macros.x"
 
-			Iterator begin() {
-				return { this , _macros.begin() };
-			}
+	Macros *_parent;
 
-			Iterator end() {
-				return { nullptr, Container::iterator { } };
-			}
+#line 29 "macros.x"
 
-			void emplace_back(Items &&pattern, Items &&replacement) {
-				_macros.emplace_back(std::move(pattern), std::move(replacement));
-			}
+	using Container = std::vector<Macro>;
+	Container _macros;
+
+#line 13 "macros.x"
+;
+		public:
+			
+#line 37 "macros.x"
+
+	Macros(Macros *parent):
+		_parent { parent }
+	{ }
+
+#line 6 "iterator.x"
+
+	class Iterator {
+		private:
+			
+#line 18 "iterator.x"
+
+	Macros *_macros;
+	Container::iterator _cur;
+
+#line 27 "iterator.x"
+
+	void fix() {
+		
+#line 37 "iterator.x"
+
+	while (_macros &&
+		_cur == _macros->_macros.end()
+	) {
+		if (_macros->_parent) {
+			
+#line 53 "iterator.x"
+
+	_macros = _macros->_parent;
+	_cur = _macros->_macros.begin();
+
+#line 42 "iterator.x"
+;
+		} else {
+			_macros = nullptr;
+		}
+	}
+
+#line 29 "iterator.x"
+;
+	}
+
+#line 9 "iterator.x"
+;
+		public:
+			
+#line 61 "iterator.x"
+
+	Iterator(Macros *macros,
+		Container::iterator cur
+	):
+		_macros { macros },
+		_cur { cur }
+	{ fix() ;}
+
+#line 74 "iterator.x"
+
+	Macro &operator*() { return *_cur; }
+
+#line 81 "iterator.x"
+
+	Macro *operator->() { return &*_cur; }
+
+#line 88 "iterator.x"
+
+	const Macro &operator*() const {
+		return *_cur;
+	}
+
+#line 97 "iterator.x"
+
+	const Macro *operator->() const {
+		return &*_cur;
+	}
+
+#line 106 "iterator.x"
+
+	Iterator &operator++() {
+		++_cur;
+		fix();
+		return *this;
+	}
+
+#line 117 "iterator.x"
+
+	bool operator!=(
+		const Iterator &o
+	) const {
+		return o._macros != _macros || (
+			_macros != nullptr &&
+			o._cur != _cur
+		);
+	}
+
+#line 11 "iterator.x"
+;
+	};
+
+#line 55 "macros.x"
+
+	Iterator begin() {
+		return {
+			this, _macros.begin()
+		};
+	}
+
+#line 66 "macros.x"
+
+	Iterator end() {
+		return {
+			nullptr,
+			Container::iterator { }
+		};
+	}
+
+#line 78 "macros.x"
+
+	void emplace_back(
+		Items &&pattern,
+		Items &&replacement
+	) {
+		_macros.emplace_back(
+			std::move(pattern),
+			std::move(replacement)
+		);
+	}
+
+#line 15 "macros.x"
+;
 	};
 
 #line 46 "start.x"

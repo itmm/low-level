@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Macros Iterator</title>
+<link rel="stylesheet" type="text/css" href="slides/slides.css"></head>
+<body>
+<h1>Macros Iterator</h1>
+<div class="slides">
+<div>
+<div>
+<h1>Macros Iterator</h1>
+</div>
+<ul><li>
+iterates over all <code><span class="type">Macro</span></code>s in a <code><span class="type">Macros</span></code> instance
+</li><li>
+and over the elements of the parent instances
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@Add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="keyword">class</span> <span class="type">Iterator</span> {<br/>
+<span class="in2"></span><span class="keyword">private</span>:<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">privates</span>)</span>;<br/>
+<span class="in2"></span><span class="keyword">public</span>:<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">publics</span>)</span>;<br/>
+<span class="in1"></span>};<br/>
+<span class="macro">@End(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+<code><span class="keyword">class</span></code> has <code><span class="keyword">public</span></code> and <code><span class="keyword">private</span></code> elements
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">privates</span>)</span><br/>
+<span class="in1"></span><span class="type">Macros</span> *<span class="var">_macros</span>;<br/>
+<span class="in1"></span><span class="type">Container</span>::<span class="var">iterator</span> <span class="var">_cur</span>;<br/>
+<span class="macro">@end(<span class="name">privates</span>)</span><br/>
+</code></div>
+<ul><li>
+contains a pointer to the <code><span class="type">Macros</span></code> instance
+</li><li>
+and an iterator in the current <code><span class="type">Macros</span></code> instance
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">privates</span>)</span><br/>
+<span class="in1"></span><span class="type">void</span> <span class="fn">fix</span>() {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">fix</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">privates</span>)</span><br/>
+</code></div>
+<ul><li>
+ensures that the iterator points to the correct entries after an  increment
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">fix</span>)</span><br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">_macros</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">_cur</span> == <span class="var">_macros</span>-&gt;<span class="var">_macros</span>.<span class="fn">end</span>()<br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">_macros</span>-&gt;<span class="var">_parent</span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">jump to next</span>)</span>;<br/>
+<span class="in2"></span>} <span class="keyword">else</span> {<br/>
+<span class="in3"></span><span class="var">_macros</span> = <span class="num">nullptr</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">fix</span>)</span><br/>
+</code></div>
+<ul><li>
+if the end of a collection is reached and there is a parent instance,  the iterator moves to the next instance
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">jump to next</span>)</span><br/>
+<span class="in1"></span><span class="var">_macros</span> = <span class="var">_macros</span>-&gt;<span class="var">_parent</span>;<br/>
+<span class="in1"></span><span class="var">_cur</span> = <span class="var">_macros</span>-&gt;<span class="var">_macros</span>.<span class="fn">begin</span>();<br/>
+<span class="macro">@end(<span class="name">jump to next</span>)</span><br/>
+</code></div>
+<ul><li>
+sets the iterator to the first element in the next instance
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="fn">Iterator</span>(<span class="type">Macros</span> *<span class="var">macros</span>,<br/>
+<span class="in2"></span><span class="type">Container</span>::<span class="var">iterator</span> <span class="var">cur</span><br/>
+<span class="in1"></span>):<br/>
+<span class="in2"></span><span class="var">_macros</span> { <span class="var">macros</span> },<br/>
+<span class="in2"></span><span class="var">_cur</span> { <span class="var">cur</span> }<br/>
+<span class="in1"></span>{ <span class="fn">fix</span>() ;}<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+the constructor initializes to the first element in the passed  instance
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="type">Macro</span> &amp;<span class="var">operator</span>*() { <span class="keyword">return</span> *<span class="var">_cur</span>; }<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+get current <code><span class="type">Macro</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="type">Macro</span> *<span class="var">operator</span>-&gt;() { <span class="keyword">return</span> &amp;*<span class="var">_cur</span>; }<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+get current <code><span class="type">Macro</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Macro</span> &amp;<span class="var">operator</span>*() <span class="type">const</span> {<br/>
+<span class="in2"></span><span class="keyword">return</span> *<span class="var">_cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+get current <code><span class="type">const</span> <span class="type">Macro</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Macro</span> *<span class="var">operator</span>-&gt;() <span class="type">const</span> {<br/>
+<span class="in2"></span><span class="keyword">return</span> &amp;*<span class="var">_cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+get current <code><span class="type">const</span> <span class="type">Macro</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="type">Iterator</span> &amp;<span class="var">operator</span>++() {<br/>
+<span class="in2"></span>++<span class="var">_cur</span>;<br/>
+<span class="in2"></span><span class="fn">fix</span>();<br/>
+<span class="in2"></span><span class="keyword">return</span> *<span class="var">this</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+move to next <code><span class="type">Macro</span></code>
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">publics</span>)</span><br/>
+<span class="in1"></span><span class="type">bool</span> <span class="var">operator</span>!=(<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">Iterator</span> &amp;<span class="var">o</span><br/>
+<span class="in1"></span>) <span class="type">const</span> {<br/>
+<span class="in2"></span><span class="keyword">return</span> <span class="var">o</span>.<span class="var">_macros</span> != <span class="var">_macros</span> || (<br/>
+<span class="in3"></span><span class="var">_macros</span> != <span class="num">nullptr</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">o</span>.<span class="var">_cur</span> != <span class="var">_cur</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">publics</span>)</span><br/>
+</code></div>
+<ul><li>
+compare two iterators
+</li></ul>
+</div>
+</body>
+</html>
