@@ -16,8 +16,8 @@
 
 ```
 @def(privates)
-	Macros *_macros;
-	Container::iterator _cur;
+	const Macros *_macros;
+	Container::const_iterator _cur;
 @end(privates)
 ```
 * contains a pointer to the `Macros` instance
@@ -59,8 +59,8 @@
 
 ```
 @def(publics)
-	Iterator(Macros *macros,
-		Container::iterator cur
+	Iterator(const Macros *macros,
+		Container::const_iterator cur
 	):
 		_macros { macros },
 		_cur { cur }
@@ -69,20 +69,6 @@
 ```
 * the constructor initializes to the first element in the passed
   instance
-
-```
-@add(publics)
-	Macro &operator*() { return *_cur; }
-@end(publics)
-```
-* get current `Macro`
-
-```
-@add(publics)
-	Macro *operator->() { return &*_cur; }
-@end(publics)
-```
-* get current `Macro`
 
 ```
 @add(publics)

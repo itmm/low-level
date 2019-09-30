@@ -35,8 +35,8 @@ and over the elements of the parent instances
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">privates</span>)</span><br/>
-<span class="in1"></span><span class="type">Macros</span> *<span class="var">_macros</span>;<br/>
-<span class="in1"></span><span class="type">Container</span>::<span class="var">iterator</span> <span class="var">_cur</span>;<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">Macros</span> *<span class="var">_macros</span>;<br/>
+<span class="in1"></span><span class="type">Container</span>::<span class="var">const_iterator</span> <span class="var">_cur</span>;<br/>
 <span class="macro">@end(<span class="name">privates</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -89,8 +89,8 @@ sets the iterator to the first element in the next instance
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">publics</span>)</span><br/>
-<span class="in1"></span><span class="fn">Iterator</span>(<span class="type">Macros</span> *<span class="var">macros</span>,<br/>
-<span class="in2"></span><span class="type">Container</span>::<span class="var">iterator</span> <span class="var">cur</span><br/>
+<span class="in1"></span><span class="fn">Iterator</span>(<span class="type">const</span> <span class="type">Macros</span> *<span class="var">macros</span>,<br/>
+<span class="in2"></span><span class="type">Container</span>::<span class="var">const_iterator</span> <span class="var">cur</span><br/>
 <span class="in1"></span>):<br/>
 <span class="in2"></span><span class="var">_macros</span> { <span class="var">macros</span> },<br/>
 <span class="in2"></span><span class="var">_cur</span> { <span class="var">cur</span> }<br/>
@@ -99,26 +99,6 @@ sets the iterator to the first element in the next instance
 </code></div>
 <ul><li>
 the constructor initializes to the first element in the passed  instance
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">publics</span>)</span><br/>
-<span class="in1"></span><span class="type">Macro</span> &amp;<span class="var">operator</span>*() { <span class="keyword">return</span> *<span class="var">_cur</span>; }<br/>
-<span class="macro">@end(<span class="name">publics</span>)</span><br/>
-</code></div>
-<ul><li>
-get current <code><span class="type">Macro</span></code>
-</li></ul>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">publics</span>)</span><br/>
-<span class="in1"></span><span class="type">Macro</span> *<span class="var">operator</span>-&gt;() { <span class="keyword">return</span> &amp;*<span class="var">_cur</span>; }<br/>
-<span class="macro">@end(<span class="name">publics</span>)</span><br/>
-</code></div>
-<ul><li>
-get current <code><span class="type">Macro</span></code>
 </li></ul>
 </div>
 <div><div>

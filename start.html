@@ -201,6 +201,9 @@ code size is the size of the array
 <span class="in2"></span><span class="type">int</span> <span class="fn">get_code</span>(<span class="type">int</span> <span class="var">pos</span>) <span class="type">const</span> {<br/>
 <span class="in3"></span><span class="keyword">return</span> <span class="var">code</span>[<span class="var">pos</span>];<br/>
 <span class="in2"></span>}<br/>
+<span class="in2"></span><span class="type">int</span> &amp;<span class="fn">mod_code</span>(<span class="type">int</span> <span class="var">pos</span>) {<br/>
+<span class="in3"></span><span class="keyword">return</span> <span class="var">code</span>[<span class="var">pos</span>];<br/>
+<span class="in2"></span>}<br/>
 <span class="macro">@end(<span class="name">code storage impl</span>)</span><br/>
 </code></div>
 <ul><li>
@@ -975,6 +978,11 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@inc(<span class="name"><a href="default.html">default.x</a></span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@inc(<span class="name"><a href="forward.html">forward.x</a></span>)</span><br/>
 </code></div>
 </div>
 </body>

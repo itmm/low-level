@@ -86,7 +86,7 @@ this iterator also iterates over the parent elements
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">publics</span>)</span><br/>
-<span class="in1"></span><span class="type">Iterator</span> <span class="fn">begin</span>() {<br/>
+<span class="in1"></span><span class="type">Iterator</span> <span class="fn">begin</span>() <span class="type">const</span> {<br/>
 <span class="in2"></span><span class="keyword">return</span> {<br/>
 <span class="in3"></span><span class="var">this</span>, <span class="var">_macros</span>.<span class="fn">begin</span>()<br/>
 <span class="in2"></span>};<br/>
@@ -100,7 +100,7 @@ this iterator also iterates over the parent elements
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">publics</span>)</span><br/>
-<span class="in1"></span><span class="type">Iterator</span> <span class="fn">end</span>() {<br/>
+<span class="in1"></span><span class="type">Iterator</span> <span class="fn">end</span>() <span class="type">const</span> {<br/>
 <span class="in2"></span><span class="keyword">return</span> {<br/>
 <span class="in3"></span><span class="num">nullptr</span>,<br/>
 <span class="in3"></span><span class="type">Container</span>::<span class="var">iterator</span> { }<br/>

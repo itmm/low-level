@@ -53,7 +53,7 @@
 
 ```
 @add(publics)
-	Iterator begin() {
+	Iterator begin() const {
 		return {
 			this, _macros.begin()
 		};
@@ -64,7 +64,7 @@
 
 ```
 @add(publics)
-	Iterator end() {
+	Iterator end() const {
 		return {
 			nullptr,
 			Container::iterator { }

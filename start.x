@@ -140,6 +140,9 @@ the machine code.
 		int get_code(int pos) const {
 			return code[pos];
 		}
+		int &mod_code(int pos) {
+			return code[pos];
+		}
 @end(code storage impl)
 ```
 * machine instructions can be accessed directly from the array
@@ -839,5 +842,9 @@ restart:
 
 ```
 @inc(default.x)
+```
+
+```
+@inc(forward.x)
 ```
 
