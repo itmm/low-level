@@ -473,7 +473,7 @@
 	State(): _macros { setup_symbols() } { }
 	State(Macros *parent): _macros { parent } { }
 
-#line 124 "forward.x"
+#line 133 "forward.x"
 
 	void fix_forwards() {
 		_forwards.fill(_macros, *this);
@@ -704,6 +704,15 @@ restart:
 		if (label.type() == Item_Type::t_string) {
 			_forwards.emplace_back(
 				Forward::Cmd_Style::j_type, code_size(), label.str(), true
+			);
+			continue;
+		}
+	}
+	if (e.str() == "fwdcndgoto") {
+		const auto &label { items[k + 6] };
+		if (label.type() == Item_Type::t_string) {
+			_forwards.emplace_back(
+				Forward::Cmd_Style::b_type, code_size(), label.str(), true
 			);
 			continue;
 		}
@@ -1281,7 +1290,7 @@ restart:
 #line 412 "start.x"
 
 
-#line 132 "forward.x"
+#line 141 "forward.x"
 
 	s.fix_forwards();
 

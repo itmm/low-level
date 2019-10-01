@@ -221,6 +221,7 @@
 	raw @num <== @raw:@1
 	@reg => @str <== @2 <== @0 `. @0
 
+	if @reg @str @reg: goto @str ; <== @fwdcndgoto if @1 @2 @3: %pc `<- %pc + 0 ;
 	goto @str ; <== @fwdgoto ; %pc <- %pc + 0 ;
 @End(file: default.ll)
 ```

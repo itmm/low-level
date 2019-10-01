@@ -117,6 +117,15 @@
 			continue;
 		}
 	}
+	if (e.str() == "fwdcndgoto") {
+		const auto &label { items[k + 6] };
+		if (label.type() == Item_Type::t_string) {
+			_forwards.emplace_back(
+				Forward::Cmd_Style::b_type, code_size(), label.str(), true
+			);
+			continue;
+		}
+	}
 @End(special macros)
 ```
 
