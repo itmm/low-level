@@ -182,4 +182,5 @@ std::string setup {
 	"@str: <== @0 <== `*\n"
 	"raw @num <== @raw:@1\n"
 	"@reg => @str <== @2 <== @0 `. @0\n"
+	"goto @str ; <== @fwdgoto ; %pc <- %pc + 0 ;\n"
 };

@@ -85,9 +85,11 @@
 <span class="in4"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"can't expand "</span> &lt;&lt; <span class="var">f</span>.<span class="fn">name</span>() &lt;&lt; <span class="str">'\n'</span>;<br/>
 <span class="in4"></span><span class="keyword">continue</span>;<br/>
 <span class="in3"></span>}<br/>
+<br/>
 <span class="in3"></span><span class="keyword">if</span> (<span class="var">f</span>.<span class="fn">relative</span>()) {<br/>
-<span class="in4"></span><span class="var">value</span> = <span class="var">f</span>.<span class="fn">position</span>() - <span class="var">value</span>;<br/>
+<span class="in4"></span><span class="var">value</span> = <span class="var">value</span> - <span class="num">4</span> * <span class="var">f</span>.<span class="fn">position</span>() - <span class="num">0x20010000</span>;<br/>
 <span class="in3"></span>}<br/>
+<br/>
 <span class="in3"></span><span class="keyword">switch</span> (<span class="var">f</span>.<span class="fn">style</span>()) {<br/>
 <span class="in4"></span><span class="keyword">case</span> <span class="type">Forward</span>::<span class="type">Cmd_Style</span>::<span class="var">i_type</span>:<br/>
 <span class="in5"></span><span class="var">state</span>.<span class="fn">mod_code</span>(<span class="var">f</span>.<span class="fn">position</span>()) |= <span class="var">value</span> &lt;&lt; <span class="num">20</span>;<br/>
@@ -110,6 +112,44 @@
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">needed by main</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@Add(<span class="name">private state</span>)</span><br/>
+<span class="in1"></span><span class="type">Forwards</span> <span class="var">_forwards</span>;<br/>
+<span class="macro">@End(<span class="name">private state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@Def(<span class="name">special macros</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">str</span>() == <span class="str">"fwdgoto"</span>) {<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">label</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">1</span>] };<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">label</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span>) {<br/>
+<span class="in3"></span><span class="var">_forwards</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in4"></span><span class="type">Forward</span>::<span class="type">Cmd_Style</span>::<span class="var">j_type</span>, <span class="fn">code_size</span>(), <span class="var">label</span>.<span class="fn">str</span>(), <span class="num">true</span><br/>
+<span class="in3"></span>);<br/>
+<span class="in3"></span><span class="keyword">continue</span>;<br/>
+<span class="in2"></span>}<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@End(<span class="name">special macros</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@Add(<span class="name">public state</span>)</span><br/>
+<span class="in1"></span><span class="type">void</span> <span class="fn">fix_forwards</span>() {<br/>
+<span class="in2"></span><span class="var">_forwards</span>.<span class="fn">fill</span>(<span class="var">_macros</span>, *<span class="var">this</span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@End(<span class="name">public state</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@Add(<span class="name">main</span>)</span><br/>
+<span class="in1"></span><span class="var">s</span>.<span class="fn">fix_forwards</span>();<br/>
+<span class="macro">@End(<span class="name">main</span>)</span><br/>
 </code></div>
 </div>
 </body>

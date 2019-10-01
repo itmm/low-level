@@ -71,9 +71,11 @@
 				std::cerr << "can't expand " << f.name() << '\n';
 				continue;
 			}
+
 			if (f.relative()) {
-				value = f.position() - value;
+				value = value - 4 * f.position() - 0x20010000;
 			}
+
 			switch (f.style()) {
 				case Forward::Cmd_Style::i_type:
 					state.mod_code(f.position()) |= value << 20;
@@ -97,3 +99,38 @@
 	}
 @End(needed by main)
 ```
+
+```
+@Add(private state)
+	Forwards _forwards;
+@End(private state)
+```
+
+```
+@Def(special macros)
+	if (e.str() == "fwdgoto") {
+		const auto &label { items[k + 1] };
+		if (label.type() == Item_Type::t_string) {
+			_forwards.emplace_back(
+				Forward::Cmd_Style::j_type, code_size(), label.str(), true
+			);
+			continue;
+		}
+	}
+@End(special macros)
+```
+
+```
+@Add(public state)
+	void fix_forwards() {
+		_forwards.fill(_macros, *this);
+	}
+@End(public state)
+```
+
+```
+@Add(main)
+	s.fix_forwards();
+@End(main)
+```
+

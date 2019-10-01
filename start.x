@@ -741,6 +741,7 @@ restart:
 						}
 					}
 				}
+				@Put(special macros);
 			}
 			items.emplace(
 				items.begin() + i, e.type(), e.str(), e.value(), e.escapes() - 1

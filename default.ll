@@ -217,3 +217,5 @@
 	@str: <== @0 <== `*
 	raw @num <== @raw:@1
 	@reg => @str <== @2 <== @0 `. @0
+
+	goto @str ; <== @fwdgoto ; %pc <- %pc + 0 ;

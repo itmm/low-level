@@ -424,6 +424,10 @@
 	Macros _macros;
 	static Macros *setup_symbols();
 
+#line 104 "forward.x"
+
+	Forwards _forwards;
+
 #line 48 "start.x"
 
 		public:
@@ -468,6 +472,12 @@
 
 	State(): _macros { setup_symbols() } { }
 	State(Macros *parent): _macros { parent } { }
+
+#line 124 "forward.x"
+
+	void fix_forwards() {
+		_forwards.fill(_macros, *this);
+	}
 
 #line 50 "start.x"
 
@@ -686,6 +696,21 @@ restart:
 						}
 					}
 				}
+				
+#line 110 "forward.x"
+
+	if (e.str() == "fwdgoto") {
+		const auto &label { items[k + 1] };
+		if (label.type() == Item_Type::t_string) {
+			_forwards.emplace_back(
+				Forward::Cmd_Style::j_type, code_size(), label.str(), true
+			);
+			continue;
+		}
+	}
+
+#line 744 "start.x"
+;
 			}
 			items.emplace(
 				items.begin() + i, e.type(), e.str(), e.value(), e.escapes() - 1
@@ -696,16 +721,16 @@ restart:
 		goto restart;
 	}
 } 
-#line 757 "start.x"
+#line 758 "start.x"
  {
 	const auto &ni { items[i] };
 	if (ni.type() == Item_Type::t_string) {
 		
-#line 766 "start.x"
+#line 767 "start.x"
 
 	if (ni.str() == "*" && ni.escapes() <= 0) {
 		
-#line 774 "start.x"
+#line 775 "start.x"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -716,11 +741,11 @@ restart:
 	);
 	goto restart;
 
-#line 768 "start.x"
+#line 769 "start.x"
 ;
 	}
 
-#line 760 "start.x"
+#line 761 "start.x"
 ;
 	}
 } 
@@ -731,13 +756,13 @@ restart:
 			++macro;
 		}
 		
-#line 808 "start.x"
+#line 809 "start.x"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
 		if (a.type() == Item_Type::t_string && a.str() == "<==" && a.escapes() <= 0) {
 			
-#line 819 "start.x"
+#line 820 "start.x"
 
 	Items value;
 	unsigned last { items.size() - 1 }; // skip last ;
@@ -760,7 +785,7 @@ restart:
 		items.begin(), items.begin() + last
 	);
 
-#line 812 "start.x"
+#line 813 "start.x"
 ;
 		}
 	}
@@ -768,7 +793,7 @@ restart:
 #line 618 "start.x"
 ;
 		
-#line 787 "start.x"
+#line 788 "start.x"
 
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
@@ -915,9 +940,11 @@ restart:
 				std::cerr << "can't expand " << f.name() << '\n';
 				continue;
 			}
+
 			if (f.relative()) {
-				value = f.position() - value;
+				value = value - 4 * f.position() - 0x20010000;
 			}
+
 			switch (f.style()) {
 				case Forward::Cmd_Style::i_type:
 					state.mod_code(f.position()) |= value << 20;
@@ -1253,6 +1280,10 @@ restart:
 
 #line 412 "start.x"
 
+
+#line 132 "forward.x"
+
+	s.fix_forwards();
 
 #line 16 "hex.x"
 
