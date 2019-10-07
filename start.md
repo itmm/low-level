@@ -266,7 +266,7 @@ These syntax trees are then transformed into machine code.
 ```
 
 ```
-@inc(macros.x)
+@inc(macros.md)
 ```
 
 ```
@@ -842,10 +842,10 @@ restart:
 ```
 
 ```
-@inc(default.x)
+@inc(default.md)
 ```
 
 ```
-@inc(forward.x)
+@inc(forward.md)
 ```
 

@@ -2,7 +2,7 @@
 * collection of `Macro`s
 
 ```
-@inc(macro.x)
+@inc(macro.md)
 ```
 * needs `Macro`
 
@@ -46,7 +46,7 @@
 
 
 ```
-@inc(iterator.x)
+@inc(iterator.md)
 ```
 * needs `Iterator` class for `Macros`
 * this iterator also iterates over the parent elements

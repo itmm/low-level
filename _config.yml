@@ -1,0 +1,1 @@
+exclude: [default.md, forward.md, goal.md, hex.md, index.md, item.md, iterator.md, macro.md, macros.md, start.md]

@@ -132,19 +132,19 @@ Here is an example for computing the sum over the first `100` integers:
   Rev. B experimental board
 
 ```
-@inc(goal.x)
+@inc(goal.md)
 ```
 * complete low-level program to implement a simple echo-client over the
   UART serial interface
 * this is the reference to guide the development of low-level
 
 ```
-@inc(start.x)
+@inc(start.md)
 ```
 * start with the low-level assembler source code layout
 
 ```
-@inc(hex.x)
+@inc(hex.md)
 ```
 * write binary in Intel HEX format
 

@@ -1,52 +1,52 @@
 
-#line 5 "start.x"
+#line 5 "start.md"
 
 	#include <iostream>
 	
-#line 23 "start.x"
+#line 23 "start.md"
 
 	
-#line 45 "start.x"
+#line 45 "start.md"
 
 	
-#line 60 "start.x"
+#line 60 "start.md"
 
 	#include <string>
 	#include <vector>
 	#include <sstream>
 
-#line 5 "item.x"
+#line 5 "item.md"
 
 	
-#line 19 "item.x"
+#line 19 "item.md"
 
 	enum class Item_Type {
 		t_type, t_instance, t_string
 	};
 
-#line 6 "item.x"
+#line 6 "item.md"
 ;
 	class Item {
 		private:
 			
-#line 33 "item.x"
+#line 33 "item.md"
 
 	Item_Type _type;
 
-#line 40 "item.x"
+#line 40 "item.md"
 
 	int _escapes;
 
-#line 48 "item.x"
+#line 48 "item.md"
 
 	int _value;
 	std::string _str;
 
-#line 9 "item.x"
+#line 9 "item.md"
 ;
 		public:
 			
-#line 58 "item.x"
+#line 58 "item.md"
 
 	Item(Item_Type type,
 		const std::string &str,
@@ -57,16 +57,16 @@
 		_value { value }, _str { str }
 	{ }
 
-#line 75 "item.x"
+#line 75 "item.md"
 
 	bool matches(const Item &in) const {
 		switch (_type) {
 			
-#line 87 "item.x"
+#line 87 "item.md"
 
 	case Item_Type::t_type: {
 		
-#line 97 "item.x"
+#line 97 "item.md"
 
 	if (in._type == Item_Type::t_type &&
 		in._str == _str
@@ -74,7 +74,7 @@
 		return true;
 	}
 
-#line 109 "item.x"
+#line 109 "item.md"
 
 	if (in._type ==
 			Item_Type::t_instance &&
@@ -83,7 +83,7 @@
 		return true;
 	}
 
-#line 122 "item.x"
+#line 122 "item.md"
 
 	if (in._type == Item_Type::t_string &&
 		_str == "str"
@@ -91,12 +91,12 @@
 		return true;
 	}
 
-#line 89 "item.x"
+#line 89 "item.md"
 ;
 		return false;
 	}
 
-#line 134 "item.x"
+#line 134 "item.md"
 
 	case Item_Type::t_instance: {
 		return in._type ==
@@ -105,7 +105,7 @@
 			in._value == _value;
 	}
 
-#line 148 "item.x"
+#line 148 "item.md"
 
 	case Item_Type::t_string: {
 		return in._type ==
@@ -113,39 +113,39 @@
 			in._str == _str;
 	}
 
-#line 78 "item.x"
+#line 78 "item.md"
 ;
 		}
 		return false;
 	}
 
-#line 160 "item.x"
+#line 160 "item.md"
 
 	int escapes() const {
 		return _escapes;
 	}
 
-#line 169 "item.x"
+#line 169 "item.md"
 
 	Item_Type type() const {
 		return _type;
 	}
 
-#line 178 "item.x"
+#line 178 "item.md"
 
 	const std::string &str() const {
 		return _str;
 	}
 
-#line 187 "item.x"
+#line 187 "item.md"
 
 	int value() const { return _value; }
 
-#line 11 "item.x"
+#line 11 "item.md"
 ;
 	};
 
-#line 197 "item.x"
+#line 197 "item.md"
 
 	std::ostream &operator<<(
 		std::ostream &out,
@@ -153,13 +153,13 @@
 	) {
 		switch (item.type()) {
 			
-#line 212 "item.x"
+#line 212 "item.md"
 
 	case Item_Type::t_type:
 		out << '@' << item.str();
 		break;
 
-#line 221 "item.x"
+#line 221 "item.md"
 
 	case Item_Type::t_instance:
 		if (item.str() == "num") {
@@ -174,36 +174,36 @@
 		}
 		break;
 
-#line 241 "item.x"
+#line 241 "item.md"
 
 	case Item_Type::t_string:
 		out << item.str();
 
-#line 203 "item.x"
+#line 203 "item.md"
 ;
 		}
 		return out;
 	}
 
-#line 10 "macro.x"
+#line 10 "macro.md"
 
 	using Items = std::vector<Item>;
 
-#line 17 "macro.x"
+#line 17 "macro.md"
 
 	class Macro {
 		private:
 			
-#line 29 "macro.x"
+#line 29 "macro.md"
 
 	Items _pattern;
 	Items _replacement;
 
-#line 20 "macro.x"
+#line 20 "macro.md"
 ;
 		public:
 			
-#line 37 "macro.x"
+#line 37 "macro.md"
 
 	Macro(
 		Items &&pattern, Items &&repl
@@ -212,88 +212,88 @@
 		_replacement { std::move(repl) }
 	{ }
 
-#line 49 "macro.x"
+#line 49 "macro.md"
 
 	const Items &pattern() const {
 		return _pattern;
 	}
 
-#line 58 "macro.x"
+#line 58 "macro.md"
 
 	const Items &replacement() const {
 		return _replacement;
 	}
 
-#line 22 "macro.x"
+#line 22 "macro.md"
 ;
 	};
 
-#line 10 "macros.x"
+#line 10 "macros.md"
 
 	class Macros {
 		private:
 			
-#line 22 "macros.x"
+#line 22 "macros.md"
 
 	Macros *_parent;
 
-#line 29 "macros.x"
+#line 29 "macros.md"
 
 	using Container = std::vector<Macro>;
 	Container _macros;
 
-#line 13 "macros.x"
+#line 13 "macros.md"
 ;
 		public:
 			
-#line 37 "macros.x"
+#line 37 "macros.md"
 
 	Macros(Macros *parent):
 		_parent { parent }
 	{ }
 
-#line 6 "iterator.x"
+#line 6 "iterator.md"
 
 	class Iterator {
 		private:
 			
-#line 18 "iterator.x"
+#line 18 "iterator.md"
 
 	const Macros *_macros;
 	Container::const_iterator _cur;
 
-#line 27 "iterator.x"
+#line 27 "iterator.md"
 
 	void fix() {
 		
-#line 37 "iterator.x"
+#line 37 "iterator.md"
 
 	while (_macros &&
 		_cur == _macros->_macros.end()
 	) {
 		if (_macros->_parent) {
 			
-#line 53 "iterator.x"
+#line 53 "iterator.md"
 
 	_macros = _macros->_parent;
 	_cur = _macros->_macros.begin();
 
-#line 42 "iterator.x"
+#line 42 "iterator.md"
 ;
 		} else {
 			_macros = nullptr;
 		}
 	}
 
-#line 29 "iterator.x"
+#line 29 "iterator.md"
 ;
 	}
 
-#line 9 "iterator.x"
+#line 9 "iterator.md"
 ;
 		public:
 			
-#line 61 "iterator.x"
+#line 61 "iterator.md"
 
 	Iterator(const Macros *macros,
 		Container::const_iterator cur
@@ -302,19 +302,19 @@
 		_cur { cur }
 	{ fix() ;}
 
-#line 74 "iterator.x"
+#line 74 "iterator.md"
 
 	const Macro &operator*() const {
 		return *_cur;
 	}
 
-#line 83 "iterator.x"
+#line 83 "iterator.md"
 
 	const Macro *operator->() const {
 		return &*_cur;
 	}
 
-#line 92 "iterator.x"
+#line 92 "iterator.md"
 
 	Iterator &operator++() {
 		++_cur;
@@ -322,7 +322,7 @@
 		return *this;
 	}
 
-#line 103 "iterator.x"
+#line 103 "iterator.md"
 
 	bool operator!=(
 		const Iterator &o
@@ -333,11 +333,11 @@
 		);
 	}
 
-#line 11 "iterator.x"
+#line 11 "iterator.md"
 ;
 	};
 
-#line 55 "macros.x"
+#line 55 "macros.md"
 
 	Iterator begin() const {
 		return {
@@ -345,7 +345,7 @@
 		};
 	}
 
-#line 66 "macros.x"
+#line 66 "macros.md"
 
 	Iterator end() const {
 		return {
@@ -354,7 +354,7 @@
 		};
 	}
 
-#line 78 "macros.x"
+#line 78 "macros.md"
 
 	void emplace_back(
 		Items &&pattern,
@@ -366,11 +366,11 @@
 		);
 	}
 
-#line 15 "macros.x"
+#line 15 "macros.md"
 ;
 	};
 
-#line 4 "forward.x"
+#line 4 "forward.md"
 
 	class Forward {
 		public:
@@ -411,42 +411,42 @@
 			);
 	};
 
-#line 46 "start.x"
+#line 46 "start.md"
 ;
 	class State {
 			
-#line 95 "start.x"
+#line 95 "start.md"
 
 	void add_machine(int instr);
 
-#line 273 "start.x"
+#line 273 "start.md"
 
 	Macros _macros;
 	static Macros *setup_symbols();
 
-#line 104 "forward.x"
+#line 104 "forward.md"
 
 	Forwards _forwards;
 
-#line 48 "start.x"
+#line 48 "start.md"
 
 		public:
 			
-#line 69 "start.x"
+#line 69 "start.md"
 
 	void add_line(
 		const std::string &line
 	);
 
-#line 111 "start.x"
+#line 111 "start.md"
 
 	
-#line 118 "start.x"
+#line 118 "start.md"
 
 	private:
 		std::vector<int> code;
 
-#line 126 "start.x"
+#line 126 "start.md"
 
 	public:
 		int code_size() const {
@@ -455,7 +455,7 @@
 			);
 		}
 
-#line 138 "start.x"
+#line 138 "start.md"
 
 	public:
 		int get_code(int pos) const {
@@ -465,46 +465,46 @@
 			return code[pos];
 		}
 
-#line 112 "start.x"
+#line 112 "start.md"
 
 
-#line 294 "start.x"
+#line 294 "start.md"
 
 	State(): _macros { setup_symbols() } { }
 	State(Macros *parent): _macros { parent } { }
 
-#line 133 "forward.x"
+#line 133 "forward.md"
 
 	void fix_forwards() {
 		_forwards.fill(_macros, *this);
 	}
 
-#line 50 "start.x"
+#line 50 "start.md"
 
 	};
 	
-#line 78 "start.x"
+#line 78 "start.md"
 
 	
-#line 30 "start.x"
+#line 30 "start.md"
 
 	#include <cassert>
 
-#line 244 "start.x"
+#line 244 "start.md"
 
 	#include <cctype>
 
-#line 263 "start.x"
+#line 263 "start.md"
 
 	#include <map>
 
-#line 79 "start.x"
+#line 79 "start.md"
 
 	void State::add_line(
 		const std::string &line
 	) {
 		
-#line 313 "start.x"
+#line 313 "start.md"
 
 	std::vector<Item> items;
 	auto end { line.end() };
@@ -571,7 +571,7 @@
 	}
 	items.emplace_back(Item_Type::t_string, ";", 0, 0);
 	
-#line 599 "start.x"
+#line 599 "start.md"
 
 restart:
 	if (log) {
@@ -587,7 +587,7 @@ restart:
 			unsigned i = 0;
 			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 634 "start.x"
+#line 634 "start.md"
 
 	if (i + 2 < items.size()) {
 		const auto &t { items[i] };
@@ -610,7 +610,7 @@ restart:
 		}
 	}
 
-#line 659 "start.x"
+#line 659 "start.md"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -697,7 +697,7 @@ restart:
 					}
 				}
 				
-#line 110 "forward.x"
+#line 110 "forward.md"
 
 	if (e.str() == "fwdgoto") {
 		const auto &label { items[k + 1] };
@@ -718,7 +718,7 @@ restart:
 		}
 	}
 
-#line 744 "start.x"
+#line 744 "start.md"
 ;
 			}
 			items.emplace(
@@ -730,16 +730,16 @@ restart:
 		goto restart;
 	}
 } 
-#line 758 "start.x"
+#line 758 "start.md"
  {
 	const auto &ni { items[i] };
 	if (ni.type() == Item_Type::t_string) {
 		
-#line 767 "start.x"
+#line 767 "start.md"
 
 	if (ni.str() == "*" && ni.escapes() <= 0) {
 		
-#line 775 "start.x"
+#line 775 "start.md"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -750,28 +750,28 @@ restart:
 	);
 	goto restart;
 
-#line 769 "start.x"
+#line 769 "start.md"
 ;
 	}
 
-#line 761 "start.x"
+#line 761 "start.md"
 ;
 	}
 } 
-#line 613 "start.x"
+#line 613 "start.md"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 809 "start.x"
+#line 809 "start.md"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
 		if (a.type() == Item_Type::t_string && a.str() == "<==" && a.escapes() <= 0) {
 			
-#line 820 "start.x"
+#line 820 "start.md"
 
 	Items value;
 	unsigned last { items.size() - 1 }; // skip last ;
@@ -794,15 +794,15 @@ restart:
 		items.begin(), items.begin() + last
 	);
 
-#line 813 "start.x"
+#line 813 "start.md"
 ;
 		}
 	}
 
-#line 618 "start.x"
+#line 618 "start.md"
 ;
 		
-#line 788 "start.x"
+#line 788 "start.md"
 
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
@@ -821,7 +821,7 @@ restart:
 		);
 	}
 
-#line 619 "start.x"
+#line 619 "start.md"
 ;
 	}
 	if (! items.empty()) {
@@ -834,33 +834,33 @@ restart:
 		std::cerr << "]\n";
 	}
 
-#line 378 "start.x"
+#line 378 "start.md"
 ;
 
-#line 83 "start.x"
+#line 83 "start.md"
 ;
 	}
 
-#line 102 "start.x"
+#line 102 "start.md"
 
 	void State::add_machine(int instr) {
 		
-#line 151 "start.x"
+#line 151 "start.md"
 
 	code.push_back(instr);
 
-#line 104 "start.x"
+#line 104 "start.md"
 
 	}
 
-#line 280 "start.x"
+#line 280 "start.md"
 
 	Macros *State::setup_symbols() {
 		static State s { nullptr };
 		static bool initialized { false };
 		if (! initialized) {
 			
-#line 301 "start.x"
+#line 301 "start.md"
 
 	#include "default.h"
 	std::istringstream in { setup };
@@ -870,24 +870,24 @@ restart:
 		s.add_line(l);
 	}
 
-#line 285 "start.x"
+#line 285 "start.md"
 ;
 			initialized = true;
 		}
 		return &s._macros;
 	}
 
-#line 52 "start.x"
+#line 52 "start.md"
 ;
 
-#line 158 "start.x"
+#line 158 "start.md"
 
 	void assert_line(
 		const char *line,
 		int expected
 	) {
 		
-#line 198 "start.x"
+#line 198 "start.md"
 
 	State s;
 	s.add_line(line);
@@ -903,11 +903,11 @@ restart:
 	}
 	assert(s.get_code(0) == expected);
 
-#line 163 "start.x"
+#line 163 "start.md"
 ;
 	}
 
-#line 218 "start.x"
+#line 218 "start.md"
 
 	void assert_line_2(const char *line, int exp1, int exp2) {
 		State s;
@@ -921,7 +921,7 @@ restart:
 		assert(s.get_code(1) == exp2);
 	}
 
-#line 47 "forward.x"
+#line 47 "forward.md"
 
 	void Forwards::fill(
 		const Macros &macros,
@@ -976,19 +976,19 @@ restart:
 		}
 	}
 
-#line 24 "start.x"
+#line 24 "start.md"
 
 
-#line 4 "hex.x"
+#line 4 "hex.md"
 
 	
-#line 30 "hex.x"
+#line 30 "hex.md"
 
 	void write_byte(
 		std::ostream &out, int b
 	) {
 		
-#line 106 "hex.x"
+#line 106 "hex.md"
 
 	static const char map[] {
 		"0123456789ABCDEF"
@@ -996,11 +996,11 @@ restart:
 	out << map[(b >> 4) & 0xf];
 	out << map[b & 0xf];
 
-#line 34 "hex.x"
+#line 34 "hex.md"
 ;
 	}
 
-#line 40 "hex.x"
+#line 40 "hex.md"
 
 	void write_word(
 		std::ostream &out, int w
@@ -1009,16 +1009,16 @@ restart:
 		write_byte(out, w);
 	}
 
-#line 5 "hex.x"
+#line 5 "hex.md"
 ;
 	std::ostream &operator<<(
 		std::ostream &out, const State &s
 	) {
 		
-#line 22 "hex.x"
+#line 22 "hex.md"
 
 	
-#line 51 "hex.x"
+#line 51 "hex.md"
 
 	int base = 0x20010000;
 	out << ":02000004";
@@ -1028,10 +1028,10 @@ restart:
 	write_byte(out, -sum);
 	out << "\r\n";
 
-#line 23 "hex.x"
+#line 23 "hex.md"
 ;
 	
-#line 63 "hex.x"
+#line 63 "hex.md"
 
 	int len = s.code_size();
 	int c = 0;
@@ -1058,10 +1058,10 @@ restart:
 		out << "\r\n";
 	}
 
-#line 24 "hex.x"
+#line 24 "hex.md"
 ;
 	
-#line 92 "hex.x"
+#line 92 "hex.md"
 
 	sum =  9;
 	out << ":04000005";
@@ -1073,24 +1073,24 @@ restart:
 	out << "\r\n";
 	out << ":00000001FF\r\n";
 
-#line 25 "hex.x"
+#line 25 "hex.md"
 ;
 
-#line 9 "hex.x"
+#line 9 "hex.md"
 ;
 		return out;
 	}
 
-#line 7 "start.x"
+#line 7 "start.md"
 ;
 	int main(
 		int argc, const char *argv[]
 	) {
 		
-#line 171 "start.x"
+#line 171 "start.md"
 
 	
-#line 178 "start.x"
+#line 178 "start.md"
 
 	assert_line(
 		"raw $87654321", 0x87654321
@@ -1108,7 +1108,7 @@ restart:
 		"raw ($20010010 - $20010020)", -0x10
 	);
 
-#line 251 "start.x"
+#line 251 "start.md"
 
 	assert_line(
 		"%x4 <- %x2 + %x3", 0x00310233
@@ -1117,25 +1117,25 @@ restart:
 		"%a0 <- %a1 - %a2", 0x40c58533
 	);
 
-#line 383 "start.x"
+#line 383 "start.md"
 
 	assert_line(
 		"%pc <- %pc", 0x0000006f
 	);
 
-#line 393 "start.x"
+#line 393 "start.md"
 
 	assert_line(
 		"%pc <- %pc - 28", 0xfe5ff06f
 	);
 
-#line 402 "start.x"
+#line 402 "start.md"
 
 	assert_line(
 		"%pc <- %pc - 32", 0xfe1ff06f
 	);
 
-#line 429 "start.x"
+#line 429 "start.md"
 
 	assert_line(
 		"%x5 <- %x5 and $ff", 0x0ff2f293
@@ -1144,7 +1144,7 @@ restart:
 		"%a0 <- %a1 and %a2", 0x00c5f533
 	);
 
-#line 440 "start.x"
+#line 440 "start.md"
 
 	assert_line(
 		"%x5 <- %x5 or $1", 0x0012e293
@@ -1153,13 +1153,13 @@ restart:
 		"%a0 <- %a1 or %a2", 0x00c5e533
 	);
 
-#line 451 "start.x"
+#line 451 "start.md"
 
 	assert_line(
 		"%x6 <- %x6 or $1", 0x00136313
 	);
 
-#line 459 "start.x"
+#line 459 "start.md"
 
 	assert_line(
 		"%a0 <- %a1 xor $ff", 0x0ff5c513
@@ -1171,25 +1171,25 @@ restart:
 		"%a0 <- complement %a1", 0x0005c513
 	);
 
-#line 473 "start.x"
+#line 473 "start.md"
 
 	assert_line(
 		"%x11 <- $0d", 0x00d00593
 	);
 
-#line 481 "start.x"
+#line 481 "start.md"
 
 	assert_line(
 		"%x12 <- $0a", 0x00a00613
 	);
 
-#line 489 "start.x"
+#line 489 "start.md"
 
 	assert_line(
 		"%x10 <- $1013000", 0x1013537
 	);
 
-#line 497 "start.x"
+#line 497 "start.md"
 
 	assert_line(
 		"%x5 <- %pc", 0x00000297
@@ -1201,84 +1201,84 @@ restart:
 		"%x5 <- %pc - $20", 0x00000297, 0xfe028293
 	);
 
-#line 511 "start.x"
+#line 511 "start.md"
 
 	assert_line(
 		"%mtvec <- %x5", 0x30529073
 	);
 
-#line 519 "start.x"
+#line 519 "start.md"
 
 	assert_line(
 		"%x5 <- %mhartid", 0xf14022f3
 	);
 
-#line 527 "start.x"
+#line 527 "start.md"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc - 4",
 		0xfe02cee3
 	);
 
-#line 536 "start.x"
+#line 536 "start.md"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
 
-#line 545 "start.x"
+#line 545 "start.md"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc - 28",
 		0xfeb292e3
 	);
 
-#line 554 "start.x"
+#line 554 "start.md"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 563 "start.x"
+#line 563 "start.md"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 572 "start.x"
+#line 572 "start.md"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 581 "start.x"
+#line 581 "start.md"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 590 "start.x"
+#line 590 "start.md"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
 		0x00552423
 	);
 
-#line 172 "start.x"
+#line 172 "start.md"
 
 
-#line 11 "start.x"
+#line 11 "start.md"
 
 		
-#line 411 "start.x"
+#line 411 "start.md"
 
 	
-#line 418 "start.x"
+#line 418 "start.md"
 
 	State s;
 	std::string l;
@@ -1287,17 +1287,17 @@ restart:
 		s.add_line(l);
 	}
 
-#line 412 "start.x"
+#line 412 "start.md"
 
 
-#line 141 "forward.x"
+#line 141 "forward.md"
 
 	s.fix_forwards();
 
-#line 16 "hex.x"
+#line 16 "hex.md"
 
 	std::cout << s;
 
-#line 12 "start.x"
+#line 12 "start.md"
 
 	}

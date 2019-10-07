@@ -20,7 +20,7 @@ default.h: default.ll
 
 ll: default.h
 
-SOURCEs := $(shell hx-srcs.sh *.x)
+SOURCEs := $(shell hx-srcs.sh)
 GENs := $(shell hx-files.sh $(SOURCEs))
 CPPs := $(filter %.cpp, $(GENs))
 

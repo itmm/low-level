@@ -2,7 +2,7 @@
 * `class` for handling macros
 
 ```
-@inc(item.x)
+@inc(item.md)
 ```
 * needs `Item`
 
