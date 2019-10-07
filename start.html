@@ -253,6 +253,9 @@ group local tests in a fragment
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+simple raw value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -262,6 +265,9 @@ group local tests in a fragment
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+positive difference as raw value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -271,6 +277,9 @@ group local tests in a fragment
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+negative difference as raw value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -281,6 +290,9 @@ group local tests in a fragment
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+positive difference of addresses
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -291,6 +303,9 @@ group local tests in a fragment
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+negative difference of addresses
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -307,6 +322,11 @@ group local tests in a fragment
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">assert line</span>)</span><br/>
 </code></div>
+<ul><li>
+parses the line
+</li><li>
+and asserts that only one machine instruction is generated
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -326,9 +346,9 @@ group local tests in a fragment
 <span class="macro">@end(<span class="name">assert line</span>)</span><br/>
 </code></div>
 <ul><li>
-instantiate a state and let it parse the line
+checks that the generated instruction is as expected
 </li><li>
-sadly this test fails right now
+otherwise both instructions are logged
 </li></ul>
 </div>
 <div><div>
@@ -342,6 +362,9 @@ sadly this test fails right now
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by main</span>)</span><br/>
 </code></div>
+<ul><li>
+asserts that the line generates two expected machine instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -358,6 +381,13 @@ sadly this test fails right now
 <span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) == <span class="var">exp2</span>);<br/>
 <span class="macro">@end(<span class="name">assert line 2</span>)</span><br/>
 </code></div>
+<ul><li>
+parses line
+</li><li>
+and checks that two machine instructions are generated
+</li><li>
+and they have the expected values
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -369,6 +399,9 @@ sadly this test fails right now
 <span class="in2"></span><span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) &lt;&lt; <span class="type">std</span>::<span class="var">dec</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
 <span class="macro">@end(<span class="name">assert line 2 err</span>)</span><br/>
 </code></div>
+<ul><li>
+if the values do not match, the values are logged
+</li></ul>
 </div>
 </div>
 <p>Before this test can pass the state must have the ability to parse the source line.
@@ -417,19 +450,39 @@ the first test checks that a simple register add can be parsed
 <span class="in1"></span><span class="keyword">#include</span> &lt;<span class="type">map</span>&gt;<br/>
 <span class="macro">@end(<span class="name">needed by add line</span>)</span><br/>
 </code></div>
+<ul><li>
+needs <code><span class="type">std</span>::<span class="type">map</span></code>
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@inc(<span class="name"><a href="macros.html">macros.md</a></span>)</span><br/>
 </code></div>
+<ul><li>
+define <code><span class="type">Macros</span></code> <code><span class="keyword">class</span></code>
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">private state</span>)</span><br/>
 <span class="in1"></span><span class="type">Macros</span> <span class="var">_macros</span>;<br/>
+<span class="macro">@end(<span class="name">private state</span>)</span><br/>
+</code></div>
+<ul><li>
+locally defined <code><span class="type">Macro</span></code>s
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">private state</span>)</span><br/>
 <span class="in1"></span><span class="keyword">static</span> <span class="type">Macros</span> *<span class="fn">setup_symbols</span>();<br/>
 <span class="macro">@end(<span class="name">private state</span>)</span><br/>
 </code></div>
+<ul><li>
+generates static default <code><span class="type">Macros</span></code>
+</li><li>
+they need to be parsed only once
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -445,6 +498,9 @@ the first test checks that a simple register add can be parsed
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">state impl</span>)</span><br/>
 </code></div>
+<ul><li>
+generates static default <code><span class="type">Macros</span></code>
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -457,6 +513,11 @@ the first test checks that a simple register add can be parsed
 <span class="in1"></span>{ }<br/>
 <span class="macro">@end(<span class="name">public state</span>)</span><br/>
 </code></div>
+<ul><li>
+the <code><span class="type">State</span></code> may be initialized with a parent state
+</li><li>
+or with the default symbols
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -470,13 +531,38 @@ the first test checks that a simple register add can be parsed
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">setup symbols</span>)</span><br/>
 </code></div>
+<ul><li>
+include source for default macros as character array
+</li><li>
+parse these line by line
+</li><li>
+the result is stored in a static <code><span class="type">State</span></code> instance
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">add line</span>)</span><br/>
 <span class="in1"></span><span class="type">std</span>::<span class="type">vector</span>&lt;<span class="type">Item</span>&gt; <span class="var">items</span>;<br/>
+<span class="macro">@end(<span class="name">add line</span>)</span><br/>
+</code></div>
+<ul><li>
+line tokens are stored as <code><span class="type">Item</span></code>s
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line</span>)</span><br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">end</span> { <span class="var">line</span>.<span class="fn">end</span>() };<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">cur</span> { <span class="var">line</span>.<span class="fn">begin</span>() };<br/>
+<span class="macro">@end(<span class="name">add line</span>)</span><br/>
+</code></div>
+<ul><li>
+short hands to current position and end of the line
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line</span>)</span><br/>
 <span class="in1"></span><span class="type">bool</span> <span class="var">log</span> { <span class="num">false</span> };<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; *<span class="var">cur</span> == <span class="str">'!'</span>) {<br/>
 <span class="in2"></span><span class="var">log</span> = <span class="num">true</span>;<br/>
@@ -484,6 +570,9 @@ the first test checks that a simple register add can be parsed
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line</span>)</span><br/>
 </code></div>
+<ul><li>
+if the first character is <code>!</code> the expansion of this line will be logged
+</li></ul>
 </div>
 <div><div>
 <code>

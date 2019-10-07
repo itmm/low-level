@@ -181,6 +181,7 @@ the machine code.
 	);
 @end(unit-tests)
 ```
+* simple raw value
 
 ```
 @add(unit-tests)
@@ -189,6 +190,7 @@ the machine code.
 	);
 @end(unit-tests)
 ```
+* positive difference as raw value
 
 ```
 @add(unit-tests)
@@ -197,6 +199,7 @@ the machine code.
 	);
 @end(unit-tests)
 ```
+* negative difference as raw value
 
 ```
 @add(unit-tests)
@@ -206,6 +209,7 @@ the machine code.
 	);
 @end(unit-tests)
 ```
+* positive difference of addresses
 
 ```
 @add(unit-tests)
@@ -215,6 +219,7 @@ the machine code.
 	);
 @end(unit-tests)
 ```
+* negative difference of addresses
 
 ```
 @def(assert line)
@@ -230,6 +235,8 @@ the machine code.
 	}
 @end(assert line)
 ```
+* parses the line
+* and asserts that only one machine instruction is generated
 
 ```
 @add(assert line)
@@ -247,8 +254,8 @@ the machine code.
 	assert(s.get_code(0) == expected);
 @end(assert line)
 ```
-* instantiate a state and let it parse the line
-* sadly this test fails right now
+* checks that the generated instruction is as expected
+* otherwise both instructions are logged
 
 ```
 @add(needed by main)
@@ -260,6 +267,7 @@ the machine code.
 	}
 @end(needed by main)
 ```
+* asserts that the line generates two expected machine instructions
 
 ```
 @def(assert line 2)
@@ -275,6 +283,9 @@ the machine code.
 	assert(s.get_code(1) == exp2);
 @end(assert line 2)
 ```
+* parses line
+* and checks that two machine instructions are generated
+* and they have the expected values
 
 ```
 @def(assert line 2 err)
@@ -285,6 +296,7 @@ the machine code.
 		s.get_code(1) << std::dec << "\n";
 @end(assert line 2 err)
 ```
+* if the values do not match, the values are logged
 
 Before this test can pass the state must have the ability to parse the
 source line.
@@ -320,17 +332,27 @@ These syntax trees are then transformed into machine code.
 	#include <map>
 @end(needed by add line)
 ```
+* needs `std::map`
 
 ```
 @inc(macros.md)
 ```
+* define `Macros` `class`
 
 ```
 @add(private state)
 	Macros _macros;
+@end(private state)
+```
+* locally defined `Macro`s
+
+```
+@add(private state)
 	static Macros *setup_symbols();
 @end(private state)
 ```
+* generates static default `Macros`
+* they need to be parsed only once
 
 ```
 @add(state impl)
@@ -345,6 +367,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(state impl)
 ```
+* generates static default `Macros`
 
 ```
 @add(public state)
@@ -356,6 +379,8 @@ These syntax trees are then transformed into machine code.
 	{ }
 @end(public state)
 ```
+* the `State` may be initialized with a parent state
+* or with the default symbols
 
 ```
 @def(setup symbols)
@@ -368,12 +393,27 @@ These syntax trees are then transformed into machine code.
 	}
 @end(setup symbols)
 ```
+* include source for default macros as character array
+* parse these line by line
+* the result is stored in a static `State` instance
 
 ```
 @def(add line)
 	std::vector<Item> items;
+@end(add line)
+```
+* line tokens are stored as `Item`s
+
+```
+@add(add line)
 	auto end { line.end() };
 	auto cur { line.begin() };
+@end(add line)
+```
+* short hands to current position and end of the line
+
+```
+@add(add line)
 	bool log { false };
 	if (cur < end && *cur == '!') {
 		log = true;
@@ -381,6 +421,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line)
 ```
+* if the first character is `!` the expansion of this line will be logged
 
 ```
 @add(add line)
