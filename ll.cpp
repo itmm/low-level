@@ -419,7 +419,7 @@
 
 	void add_machine(int instr);
 
-#line 273 "start.md"
+#line 329 "start.md"
 
 	Macros _macros;
 	static Macros *setup_symbols();
@@ -468,10 +468,14 @@
 #line 112 "start.md"
 
 
-#line 294 "start.md"
+#line 350 "start.md"
 
-	State(): _macros { setup_symbols() } { }
-	State(Macros *parent): _macros { parent } { }
+	State():
+		_macros { setup_symbols() }
+	{ }
+	State(Macros *parent):
+		_macros { parent }
+	{ }
 
 #line 133 "forward.md"
 
@@ -490,11 +494,11 @@
 
 	#include <cassert>
 
-#line 244 "start.md"
+#line 300 "start.md"
 
 	#include <cctype>
 
-#line 263 "start.md"
+#line 319 "start.md"
 
 	#include <map>
 
@@ -504,7 +508,7 @@
 		const std::string &line
 	) {
 		
-#line 313 "start.md"
+#line 373 "start.md"
 
 	std::vector<Item> items;
 	auto end { line.end() };
@@ -514,64 +518,161 @@
 		log = true;
 		++cur;
 	}
-	for (;;) {
-		while (cur < end && *cur <= ' ') {
-			++cur;
-		}
-		if (cur == end) { break; }
 
-		int escapes { 0 };
-		while (cur < end && *cur == '`') {
-			++escapes;
-			++cur;
-		}
-		auto begin { cur };
-		if (isalpha(*cur) || *cur == '_' || *cur == '%') {
-			while (cur < end && (isalnum(*cur) || *cur == '_' || *cur == '%')) {
-				++cur;
-			}
-			items.emplace_back(Item_Type::t_string, std::string { begin, cur }, 0, escapes);
-		} else if (isdigit(*cur)) {
-			int value { 0 };
-			while (cur < end && isdigit(*cur)) {
-				value = value * 10 + (*cur++ - '0');
-			}
-			items.emplace_back(Item_Type::t_instance, "num", value, escapes);
-		} else if (*cur == '#') {
-			break;
-		} else if (*cur == '@') {
-			++cur;
-			std::string name;
-			while (cur < end && isalnum(*cur)) {
-				name += *cur++;
-			}
-			items.emplace_back(Item_Type::t_type, name, 0, escapes);
-		} else if (*cur == '$') {
-			++cur;
-			int value { 0 };
-			while (cur < end && isxdigit(*cur)) {
-				int digit;
-				if (isdigit(*cur)) {
-					digit = *cur - '0';
-				} else if (*cur <= 'F') {
-					digit = *cur - 'A' + 10;
-				} else {
-					digit = *cur - 'a' + 10;
-				}
-				value = value * 16 + digit;
-				++cur;
-			}
-			items.emplace_back(Item_Type::t_instance, "num", value, escapes);
-		} else if (ispunct(*cur)) {
-			while (cur < end && ispunct(*cur) && *cur != '$' && *cur != '#' && *cur != '@' && *cur != '_' && *cur != '%' && *cur != '`') {
-				++cur;
-			}
-			items.emplace_back(Item_Type::t_string, std::string { begin, cur }, 0, escapes);
-		}
+#line 386 "start.md"
+
+	for (;;) {
+		
+#line 394 "start.md"
+
+	while (cur < end && *cur <= ' ') {
+		++cur;
 	}
-	items.emplace_back(Item_Type::t_string, ";", 0, 0);
+	if (cur == end) { break; }
+
+#line 403 "start.md"
+
+	int escapes { 0 };
+	while (cur < end && *cur == '`') {
+		++escapes;
+		++cur;
+	}
+
+#line 413 "start.md"
+
+	auto begin { cur };
+	if (isalpha(*cur) || *cur == '_' ||
+		*cur == '%'
+	) {
+		
+#line 424 "start.md"
+
+	while (cur < end && (
+		isalnum(*cur) || *cur == '_' ||
+			*cur == '%')
+	) {
+		++cur;
+	}
+	items.emplace_back(
+		Item_Type::t_string,
+		std::string { begin, cur },
+		0, escapes
+	);
+
+#line 418 "start.md"
+;
+	}
+
+#line 440 "start.md"
+
+	else if (isdigit(*cur)) {
+		
+#line 448 "start.md"
+
+	int value { 0 };
+	while (cur < end && isdigit(*cur)) {
+		value =
+			value * 10 + (*cur++ - '0');
+	}
+	items.emplace_back(
+		Item_Type::t_instance, "num",
+		value, escapes
+	);
+
+#line 442 "start.md"
+;
+	}
+
+#line 462 "start.md"
+
+	else if (*cur == '#') {
+		break;
+	}
+
+#line 470 "start.md"
+
+	else if (*cur == '@') {
+		++cur; std::string name;
+		while (
+			cur < end && isalnum(*cur)
+		) {
+			name += *cur++;
+		}
+		items.emplace_back(
+			Item_Type::t_type, name,
+			0,escapes
+		);
+	}
+
+#line 487 "start.md"
+
+	else if (*cur == '$') {
+		
+#line 495 "start.md"
+
+	++cur;
+	int value { 0 };
+	while (cur < end && isxdigit(*cur)) {
+		
+#line 510 "start.md"
+
+	int digit;
+	if (isdigit(*cur)) {
+		digit = *cur - '0';
+	} else if (*cur <= 'F') {
+		digit = *cur - 'A' + 10;
+	} else {
+		digit = *cur - 'a' + 10;
+	}
+	value = value * 16 + digit;
+
+#line 499 "start.md"
+;
+		++cur;
+	}
+	items.emplace_back(
+		Item_Type::t_instance, "num",
+		value, escapes
+	);
+
+#line 489 "start.md"
+;
+	}
+
+#line 524 "start.md"
+
+	else if (ispunct(*cur)) {
+		
+#line 532 "start.md"
+
+	while (cur < end && ispunct(*cur) &&
+		*cur != '$' && *cur != '#' &&
+		*cur != '@' && *cur != '_' &&
+		*cur != '%' && *cur != '`'
+	) {
+		++cur;
+	}
+	items.emplace_back(
+		Item_Type::t_string,
+		std::string { begin, cur },
+		0, escapes
+	);
+
+#line 526 "start.md"
+;
+	}
+
+#line 388 "start.md"
+;
+	}
+
+#line 549 "start.md"
+
+	items.emplace_back(
+		Item_Type::t_string, ";", 0, 0
+	);
 	
-#line 599 "start.md"
+#line 797 "start.md"
 
 restart:
 	if (log) {
@@ -581,45 +682,97 @@ restart:
 		}
 		std::cerr << "}\n";
 	}
+
+#line 810 "start.md"
+
 	if (items.size()) {
 		auto macro { _macros.begin() };
 		while (macro != _macros.end()) {
 			unsigned i = 0;
 			while (i + macro->pattern().size() <= items.size()) {
 				
-#line 634 "start.md"
+#line 842 "start.md"
 
 	if (i + 2 < items.size()) {
 		const auto &t { items[i] };
 		const auto &c { items[i + 1] };
 		const auto &v { items[i + 2] };
-		if (c.type() == Item_Type::t_string && c.str() == ":") {
-			if (t.type() == Item_Type::t_type && v.type() == Item_Type::t_instance && v.str() == "num") {
-				std::string type { t.str() };
-				int value { v.value() };
-				items.erase(items.begin() + i, items.begin() + i + 3);
-				items.emplace(items.begin() + i, Item_Type::t_instance, type, value, 0);
-				goto restart;
-			}
-			if (t.type() == Item_Type::t_instance && v.type() == Item_Type::t_string && v.str() == "value") {
-				int value { t.value() };
-				items.erase(items.begin() + i, items.begin() + i + 3);
-				items.emplace(items.begin() + i, Item_Type::t_instance, "num", value, 0);
-				goto restart;
-			}
+		if (c.type() ==
+				Item_Type::t_string &&
+			c.str() == ":"
+		) {
+			
+#line 858 "start.md"
+
+	if (t.type() == Item_Type::t_type &&
+		v.type() == Item_Type::t_instance
+			&& v.str() == "num"
+	) {
+		
+#line 870 "start.md"
+
+	std::string type { t.str() };
+	int value { v.value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+	items.emplace(items.begin() + i,
+		Item_Type::t_instance, type,
+		value, 0
+	);
+
+#line 863 "start.md"
+;
+		goto restart;
+	}
+
+#line 884 "start.md"
+
+	if (t.type() == Item_Type::t_instance
+			&& v.type() ==
+				Item_Type::t_string &&
+		v.str() == "value"
+	) {
+		
+#line 897 "start.md"
+
+	int value { t.value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+	items.emplace(items.begin() + i,
+		Item_Type::t_instance, "num",
+		value, 0
+	);
+
+#line 890 "start.md"
+;
+		goto restart;
+	}
+
+#line 851 "start.md"
+;
 		}
 	}
 
-#line 659 "start.md"
+#line 910 "start.md"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
 	auto e { macro->pattern().end() };
-	for (int j = 0; matches && p != e; ++p, ++j) {
-		matches = matches && (i + j < items.size());
-		matches = matches && p->matches(items[i + j]);
-		matches = matches && p->escapes() <= 0;
+	for (int j = 0; matches && p != e;
+		++p, ++j
+	) {
+		matches = matches &&
+			(i + j < items.size());
+		matches = matches &&
+			p->matches(items[i + j]);
+		matches = matches &&
+			p->escapes() <= 0;
 	}
+
+#line 928 "start.md"
+
 	if (matches) {
 		auto k { i };
 		i += macro->pattern().size();
@@ -718,7 +871,7 @@ restart:
 		}
 	}
 
-#line 744 "start.md"
+#line 1005 "start.md"
 ;
 			}
 			items.emplace(
@@ -730,16 +883,16 @@ restart:
 		goto restart;
 	}
 } 
-#line 758 "start.md"
+#line 1019 "start.md"
  {
 	const auto &ni { items[i] };
 	if (ni.type() == Item_Type::t_string) {
 		
-#line 767 "start.md"
+#line 1028 "start.md"
 
 	if (ni.str() == "*" && ni.escapes() <= 0) {
 		
-#line 775 "start.md"
+#line 1036 "start.md"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
@@ -750,28 +903,28 @@ restart:
 	);
 	goto restart;
 
-#line 769 "start.md"
+#line 1030 "start.md"
 ;
 	}
 
-#line 761 "start.md"
+#line 1022 "start.md"
 ;
 	}
 } 
-#line 613 "start.md"
+#line 816 "start.md"
 ;
 				++i;
 			}
 			++macro;
 		}
 		
-#line 809 "start.md"
+#line 1070 "start.md"
 
 	for (unsigned i = 1; i < items.size(); ++i) {
 		const auto &a { items[i] };
 		if (a.type() == Item_Type::t_string && a.str() == "<==" && a.escapes() <= 0) {
 			
-#line 820 "start.md"
+#line 1081 "start.md"
 
 	Items value;
 	unsigned last { items.size() - 1 }; // skip last ;
@@ -794,15 +947,15 @@ restart:
 		items.begin(), items.begin() + last
 	);
 
-#line 813 "start.md"
+#line 1074 "start.md"
 ;
 		}
 	}
 
-#line 618 "start.md"
+#line 821 "start.md"
 ;
 		
-#line 788 "start.md"
+#line 1049 "start.md"
 
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
@@ -821,9 +974,12 @@ restart:
 		);
 	}
 
-#line 619 "start.md"
+#line 822 "start.md"
 ;
 	}
+
+#line 828 "start.md"
+
 	if (! items.empty()) {
 		std::cerr <<
 			"cant expand fully [" <<
@@ -834,7 +990,7 @@ restart:
 		std::cerr << "]\n";
 	}
 
-#line 378 "start.md"
+#line 553 "start.md"
 ;
 
 #line 83 "start.md"
@@ -853,14 +1009,14 @@ restart:
 
 	}
 
-#line 280 "start.md"
+#line 336 "start.md"
 
 	Macros *State::setup_symbols() {
 		static State s { nullptr };
 		static bool initialized { false };
 		if (! initialized) {
 			
-#line 301 "start.md"
+#line 361 "start.md"
 
 	#include "default.h"
 	std::istringstream in { setup };
@@ -870,7 +1026,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 285 "start.md"
+#line 341 "start.md"
 ;
 			initialized = true;
 		}
@@ -887,19 +1043,31 @@ restart:
 		int expected
 	) {
 		
-#line 198 "start.md"
+#line 220 "start.md"
 
 	State s;
 	s.add_line(line);
 	if (s.code_size() != 1) {
-		std::cerr << "assert failed in [" << line << "]\n";
-		std::cerr << "got " << s.code_size() << " elements\n";
+		std::cerr <<
+			"assert failed in [" <<
+			line << "]\n";
+		std::cerr << "got " <<
+			s.code_size() <<
+			" elements\n";
 	}
+
+#line 235 "start.md"
+
 	assert(s.code_size() == 1);
 	if (s.get_code(0) != expected) {
-		std::cerr << "assert failed in [" << line << "]\n";
-		std::cerr << "EXP " << std::hex << expected << "\n";
-		std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
+		std::cerr <<
+			"assert failed in [" <<
+			line << "]\n";
+		std::cerr << "EXP " <<
+			std::hex << expected << "\n";
+		std::cerr << "GOT " <<
+			s.get_code(0) << std::dec <<
+			"\n";
 	}
 	assert(s.get_code(0) == expected);
 
@@ -907,18 +1075,38 @@ restart:
 ;
 	}
 
-#line 218 "start.md"
+#line 254 "start.md"
 
-	void assert_line_2(const char *line, int exp1, int exp2) {
-		State s;
-		s.add_line(line);
-		assert(s.code_size() == 2);
-		if (s.get_code(0) != exp1 || s.get_code(1) != exp2) {
-	 		std::cerr << "EXP " << std::hex << exp1 << ", " << exp2 << "\n";
-			std::cerr << "GOT " << s.get_code(0) << ", " << s.get_code(1) << std::dec << "\n";
-	 	}
-		assert(s.get_code(0) == exp1);
-		assert(s.get_code(1) == exp2);
+	void assert_line_2(
+		const char *line, int exp1,
+		int exp2
+	) {
+		
+#line 265 "start.md"
+
+	State s;
+	s.add_line(line);
+	assert(s.code_size() == 2);
+	if (s.get_code(0) != exp1 ||
+		s.get_code(1) != exp2
+	) {
+		
+#line 280 "start.md"
+
+	std::cerr << "EXP " << std::hex <<
+		exp1 << ", " << exp2 << "\n";
+	std::cerr << "GOT " <<
+		s.get_code(0) << ", " <<
+		s.get_code(1) << std::dec << "\n";
+
+#line 272 "start.md"
+;
+	}
+	assert(s.get_code(0) == exp1);
+	assert(s.get_code(1) == exp2);
+
+#line 259 "start.md"
+;
 	}
 
 #line 47 "forward.md"
@@ -1095,20 +1283,34 @@ restart:
 	assert_line(
 		"raw $87654321", 0x87654321
 	);
+
+#line 186 "start.md"
+
 	assert_line(
 		"raw (1000 - 200)", 800
 	);
+
+#line 194 "start.md"
+
 	assert_line(
 		"raw (200 - 1000)", -800
 	);
+
+#line 202 "start.md"
+
 	assert_line(
-		"raw ($20010020 - $20010010)", 0x10
-	);
-	assert_line(
-		"raw ($20010010 - $20010020)", -0x10
+		"raw ($20010020 - $20010010)",
+		0x10
 	);
 
-#line 251 "start.md"
+#line 211 "start.md"
+
+	assert_line(
+		"raw ($20010010 - $20010020)",
+		-0x10
+	);
+
+#line 307 "start.md"
 
 	assert_line(
 		"%x4 <- %x2 + %x3", 0x00310233
@@ -1117,25 +1319,25 @@ restart:
 		"%a0 <- %a1 - %a2", 0x40c58533
 	);
 
-#line 383 "start.md"
+#line 558 "start.md"
 
 	assert_line(
 		"%pc <- %pc", 0x0000006f
 	);
 
-#line 393 "start.md"
+#line 568 "start.md"
 
 	assert_line(
 		"%pc <- %pc - 28", 0xfe5ff06f
 	);
 
-#line 402 "start.md"
+#line 577 "start.md"
 
 	assert_line(
 		"%pc <- %pc - 32", 0xfe1ff06f
 	);
 
-#line 429 "start.md"
+#line 604 "start.md"
 
 	assert_line(
 		"%x5 <- %x5 and $ff", 0x0ff2f293
@@ -1144,7 +1346,7 @@ restart:
 		"%a0 <- %a1 and %a2", 0x00c5f533
 	);
 
-#line 440 "start.md"
+#line 615 "start.md"
 
 	assert_line(
 		"%x5 <- %x5 or $1", 0x0012e293
@@ -1153,116 +1355,131 @@ restart:
 		"%a0 <- %a1 or %a2", 0x00c5e533
 	);
 
-#line 451 "start.md"
+#line 626 "start.md"
 
 	assert_line(
 		"%x6 <- %x6 or $1", 0x00136313
 	);
 
-#line 459 "start.md"
+#line 634 "start.md"
 
 	assert_line(
 		"%a0 <- %a1 xor $ff", 0x0ff5c513
 	);
+
+#line 642 "start.md"
+
 	assert_line(
 		"%a0 <- %a1 xor %a2", 0x00c5c533
 	);
+
+#line 650 "start.md"
+
 	assert_line(
-		"%a0 <- complement %a1", 0x0005c513
+		"%a0 <- complement %a1",
+		0x0005c513
 	);
 
-#line 473 "start.md"
+#line 659 "start.md"
 
 	assert_line(
 		"%x11 <- $0d", 0x00d00593
 	);
 
-#line 481 "start.md"
+#line 667 "start.md"
 
 	assert_line(
 		"%x12 <- $0a", 0x00a00613
 	);
 
-#line 489 "start.md"
+#line 675 "start.md"
 
 	assert_line(
 		"%x10 <- $1013000", 0x1013537
 	);
 
-#line 497 "start.md"
+#line 683 "start.md"
 
 	assert_line(
 		"%x5 <- %pc", 0x00000297
 	);
+
+#line 691 "start.md"
+
 	assert_line_2(
-		"%x5 <- %pc + $20", 0x00000297, 0x02028293
-	);
-	assert_line_2(
-		"%x5 <- %pc - $20", 0x00000297, 0xfe028293
+		"%x5 <- %pc + $20",
+		0x00000297, 0x02028293
 	);
 
-#line 511 "start.md"
+#line 700 "start.md"
+
+	assert_line_2(
+		"%x5 <- %pc - $20",
+		0x00000297, 0xfe028293
+	);
+
+#line 709 "start.md"
 
 	assert_line(
 		"%mtvec <- %x5", 0x30529073
 	);
 
-#line 519 "start.md"
+#line 717 "start.md"
 
 	assert_line(
 		"%x5 <- %mhartid", 0xf14022f3
 	);
 
-#line 527 "start.md"
+#line 725 "start.md"
 
 	assert_line(
 		"if %x5 < 0: %pc <- %pc - 4",
 		0xfe02cee3
 	);
 
-#line 536 "start.md"
+#line 734 "start.md"
 
 	assert_line(
 		"if %x5 = 0: %pc <- %pc - 12",
 		0xfe028ae3
 	);
 
-#line 545 "start.md"
+#line 743 "start.md"
 
 	assert_line(
 		"if %x5 != %x11: %pc <- %pc - 28",
 		0xfeb292e3
 	);
 
-#line 554 "start.md"
+#line 752 "start.md"
 
 	assert_line(
 		"if %x5 != 0: %pc <- %pc + 0",
 		0x00029063
 	);
 
-#line 563 "start.md"
+#line 761 "start.md"
 
 	assert_line(
 		"%x6 <- [%x10]",
 		0x00052303
 	);
 
-#line 572 "start.md"
+#line 770 "start.md"
 
 	assert_line(
 		"%x5 <- [%x10 + $04]",
 		0x00452283
 	);
 
-#line 581 "start.md"
+#line 779 "start.md"
 
 	assert_line(
 		"[%x10] <- %x12",
 		0x00c52023
 	);
 
-#line 590 "start.md"
+#line 788 "start.md"
 
 	assert_line(
 		"[%x10 + $08] <- %x5",
@@ -1275,10 +1492,10 @@ restart:
 #line 11 "start.md"
 
 		
-#line 411 "start.md"
+#line 586 "start.md"
 
 	
-#line 418 "start.md"
+#line 593 "start.md"
 
 	State s;
 	std::string l;
@@ -1287,7 +1504,7 @@ restart:
 		s.add_line(l);
 	}
 
-#line 412 "start.md"
+#line 587 "start.md"
 
 
 #line 141 "forward.md"

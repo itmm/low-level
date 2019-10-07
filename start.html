@@ -251,17 +251,43 @@ group local tests in a fragment
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"raw $87654321"</span>, <span class="num">0x87654321</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"raw (1000 - 200)"</span>, <span class="num">800</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"raw (200 - 1000)"</span>, -<span class="num">800</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"raw ($20010020 - $20010010)"</span>, <span class="num">0x10</span><br/>
+<span class="in2"></span><span class="str">"raw ($20010020 - $20010010)"</span>,<br/>
+<span class="in2"></span><span class="num">0x10</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"raw ($20010010 - $20010020)"</span>, -<span class="num">0x10</span><br/>
+<span class="in2"></span><span class="str">"raw ($20010010 - $20010020)"</span>,<br/>
+<span class="in2"></span>-<span class="num">0x10</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -272,14 +298,29 @@ group local tests in a fragment
 <span class="in1"></span><span class="type">State</span> <span class="var">s</span>;<br/>
 <span class="in1"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">line</span>);<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">s</span>.<span class="fn">code_size</span>() != <span class="num">1</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"assert failed in ["</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"got "</span> &lt;&lt; <span class="var">s</span>.<span class="fn">code_size</span>() &lt;&lt; <span class="str">" elements\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="str">"assert failed in ["</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"got "</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="var">s</span>.<span class="fn">code_size</span>() &lt;&lt;<br/>
+<span class="in3"></span><span class="str">" elements\n"</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">assert line</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">assert line</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">code_size</span>() == <span class="num">1</span>);<br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) != <span class="var">expected</span>) {<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"assert failed in ["</span> &lt;&lt; <span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"EXP "</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">expected</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
-<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"GOT "</span> &lt;&lt; <span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) &lt;&lt; <span class="type">std</span>::<span class="var">dec</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="str">"assert failed in ["</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="var">line</span> &lt;&lt; <span class="str">"]\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"EXP "</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">expected</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"GOT "</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) &lt;&lt; <span class="type">std</span>::<span class="var">dec</span> &lt;&lt;<br/>
+<span class="in3"></span><span class="str">"\n"</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) == <span class="var">expected</span>);<br/>
 <span class="macro">@end(<span class="name">assert line</span>)</span><br/>
@@ -293,18 +334,40 @@ sadly this test fails right now
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">needed by main</span>)</span><br/>
-<span class="in1"></span><span class="type">void</span> <span class="fn">assert_line_2</span>(<span class="type">const</span> <span class="type">char</span> *<span class="var">line</span>, <span class="type">int</span> <span class="var">exp1</span>, <span class="type">int</span> <span class="var">exp2</span>) {<br/>
-<span class="in2"></span><span class="type">State</span> <span class="var">s</span>;<br/>
-<span class="in2"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">line</span>);<br/>
-<span class="in2"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">code_size</span>() == <span class="num">2</span>);<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) != <span class="var">exp1</span> || <span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) != <span class="var">exp2</span>) {<br/>
-<span class="in1"></span> 		<span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"EXP "</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt; <span class="var">exp1</span> &lt;&lt; <span class="str">", "</span> &lt;&lt; <span class="var">exp2</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"GOT "</span> &lt;&lt; <span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) &lt;&lt; <span class="str">", "</span> &lt;&lt; <span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) &lt;&lt; <span class="type">std</span>::<span class="var">dec</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
-<span class="in1"></span> 	}<br/>
-<span class="in2"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) == <span class="var">exp1</span>);<br/>
-<span class="in2"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) == <span class="var">exp2</span>);<br/>
+<span class="in1"></span><span class="type">void</span> <span class="fn">assert_line_2</span>(<br/>
+<span class="in2"></span><span class="type">const</span> <span class="type">char</span> *<span class="var">line</span>, <span class="type">int</span> <span class="var">exp1</span>,<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">exp2</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">assert line 2</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by main</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">assert line 2</span>)</span><br/>
+<span class="in1"></span><span class="type">State</span> <span class="var">s</span>;<br/>
+<span class="in1"></span><span class="var">s</span>.<span class="fn">add_line</span>(<span class="var">line</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">code_size</span>() == <span class="num">2</span>);<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) != <span class="var">exp1</span> ||<br/>
+<span class="in2"></span><span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) != <span class="var">exp2</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">assert line 2 err</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) == <span class="var">exp1</span>);<br/>
+<span class="in1"></span><span class="fn">assert</span>(<span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) == <span class="var">exp2</span>);<br/>
+<span class="macro">@end(<span class="name">assert line 2</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">assert line 2 err</span>)</span><br/>
+<span class="in1"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"EXP "</span> &lt;&lt; <span class="type">std</span>::<span class="var">hex</span> &lt;&lt;<br/>
+<span class="in2"></span><span class="var">exp1</span> &lt;&lt; <span class="str">", "</span> &lt;&lt; <span class="var">exp2</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
+<span class="in1"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"GOT "</span> &lt;&lt;<br/>
+<span class="in2"></span><span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">0</span>) &lt;&lt; <span class="str">", "</span> &lt;&lt;<br/>
+<span class="in2"></span><span class="var">s</span>.<span class="fn">get_code</span>(<span class="num">1</span>) &lt;&lt; <span class="type">std</span>::<span class="var">dec</span> &lt;&lt; <span class="str">"\n"</span>;<br/>
+<span class="macro">@end(<span class="name">assert line 2 err</span>)</span><br/>
 </code></div>
 </div>
 </div>
@@ -386,8 +449,12 @@ the first test checks that a simple register add can be parsed
 <div><div>
 <code>
 <span class="macro">@add(<span class="name">public state</span>)</span><br/>
-<span class="in1"></span><span class="fn">State</span>(): <span class="var">_macros</span> { <span class="fn">setup_symbols</span>() } { }<br/>
-<span class="in1"></span><span class="fn">State</span>(<span class="type">Macros</span> *<span class="var">parent</span>): <span class="var">_macros</span> { <span class="var">parent</span> } { }<br/>
+<span class="in1"></span><span class="fn">State</span>():<br/>
+<span class="in2"></span><span class="var">_macros</span> { <span class="fn">setup_symbols</span>() }<br/>
+<span class="in1"></span>{ }<br/>
+<span class="in1"></span><span class="fn">State</span>(<span class="type">Macros</span> *<span class="var">parent</span>):<br/>
+<span class="in2"></span><span class="var">_macros</span> { <span class="var">parent</span> }<br/>
+<span class="in1"></span>{ }<br/>
 <span class="macro">@end(<span class="name">public state</span>)</span><br/>
 </code></div>
 </div>
@@ -415,62 +482,192 @@ the first test checks that a simple register add can be parsed
 <span class="in2"></span><span class="var">log</span> = <span class="num">true</span>;<br/>
 <span class="in2"></span>++<span class="var">cur</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line</span>)</span><br/>
 <span class="in1"></span><span class="keyword">for</span> (;;) {<br/>
-<span class="in2"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; *<span class="var">cur</span> &lt;= <span class="str">' '</span>) {<br/>
-<span class="in3"></span>++<span class="var">cur</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">cur</span> == <span class="var">end</span>) { <span class="keyword">break</span>; }<br/>
-<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">escapes</span> { <span class="num">0</span> };<br/>
-<span class="in2"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; *<span class="var">cur</span> == <span class="str">'`'</span>) {<br/>
-<span class="in3"></span>++<span class="var">escapes</span>;<br/>
-<span class="in3"></span>++<span class="var">cur</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="type">auto</span> <span class="var">begin</span> { <span class="var">cur</span> };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="fn">isalpha</span>(*<span class="var">cur</span>) || *<span class="var">cur</span> == <span class="str">'_'</span> || *<span class="var">cur</span> == <span class="str">'%'</span>) {<br/>
-<span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; (<span class="fn">isalnum</span>(*<span class="var">cur</span>) || *<span class="var">cur</span> == <span class="str">'_'</span> || *<span class="var">cur</span> == <span class="str">'%'</span>)) {<br/>
-<span class="in4"></span>++<span class="var">cur</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_string</span>, <span class="type">std</span>::<span class="type">string</span> { <span class="var">begin</span>, <span class="var">cur</span> }, <span class="num">0</span>, <span class="var">escapes</span>);<br/>
-<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
-<span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
-<span class="in4"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">10</span> + (*<span class="var">cur</span>++ - <span class="str">'0'</span>);<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">value</span>, <span class="var">escapes</span>);<br/>
-<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'#'</span>) {<br/>
-<span class="in3"></span><span class="keyword">break</span>;<br/>
-<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'@'</span>) {<br/>
-<span class="in3"></span>++<span class="var">cur</span>;<br/>
-<span class="in3"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">name</span>;<br/>
-<span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isalnum</span>(*<span class="var">cur</span>)) {<br/>
-<span class="in4"></span><span class="var">name</span> += *<span class="var">cur</span>++;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_type</span>, <span class="var">name</span>, <span class="num">0</span>, <span class="var">escapes</span>);<br/>
-<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'$'</span>) {<br/>
-<span class="in3"></span>++<span class="var">cur</span>;<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
-<span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isxdigit</span>(*<span class="var">cur</span>)) {<br/>
-<span class="in4"></span><span class="type">int</span> <span class="var">digit</span>;<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
-<span class="in5"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'0'</span>;<br/>
-<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> &lt;= <span class="str">'F'</span>) {<br/>
-<span class="in5"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'A'</span> + <span class="num">10</span>;<br/>
-<span class="in4"></span>} <span class="keyword">else</span> {<br/>
-<span class="in5"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'a'</span> + <span class="num">10</span>;<br/>
-<span class="in4"></span>}<br/>
-<span class="in4"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">16</span> + <span class="var">digit</span>;<br/>
-<span class="in4"></span>++<span class="var">cur</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">value</span>, <span class="var">escapes</span>);<br/>
-<span class="in2"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">ispunct</span>(*<span class="var">cur</span>)) {<br/>
-<span class="in3"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">ispunct</span>(*<span class="var">cur</span>) &amp;&amp; *<span class="var">cur</span> != <span class="str">'$'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'#'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'@'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'_'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'%'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'`'</span>) {<br/>
-<span class="in4"></span>++<span class="var">cur</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_string</span>, <span class="type">std</span>::<span class="type">string</span> { <span class="var">begin</span>, <span class="var">cur</span> }, <span class="num">0</span>, <span class="var">escapes</span>);<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">add line loop</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
-<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<span class="type">Item_Type</span>::<span class="var">t_string</span>, <span class="str">";"</span>, <span class="num">0</span>, <span class="num">0</span>);<br/>
+<span class="macro">@end(<span class="name">add line</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; *<span class="var">cur</span> &lt;= <span class="str">' '</span>) {<br/>
+<span class="in2"></span>++<span class="var">cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">cur</span> == <span class="var">end</span>) { <span class="keyword">break</span>; }<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">escapes</span> { <span class="num">0</span> };<br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; *<span class="var">cur</span> == <span class="str">'`'</span>) {<br/>
+<span class="in2"></span>++<span class="var">escapes</span>;<br/>
+<span class="in2"></span>++<span class="var">cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="type">auto</span> <span class="var">begin</span> { <span class="var">cur</span> };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="fn">isalpha</span>(*<span class="var">cur</span>) || *<span class="var">cur</span> == <span class="str">'_'</span> ||<br/>
+<span class="in2"></span>*<span class="var">cur</span> == <span class="str">'%'</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">read ident</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">read ident</span>)</span><br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; (<br/>
+<span class="in2"></span><span class="fn">isalnum</span>(*<span class="var">cur</span>) || *<span class="var">cur</span> == <span class="str">'_'</span> ||<br/>
+<span class="in3"></span>*<span class="var">cur</span> == <span class="str">'%'</span>)<br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span>++<span class="var">cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_string</span>,<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> { <span class="var">begin</span>, <span class="var">cur</span> },<br/>
+<span class="in2"></span><span class="num">0</span>, <span class="var">escapes</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">read ident</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">read number</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">read number</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in2"></span><span class="var">value</span> =<br/>
+<span class="in3"></span><span class="var">value</span> * <span class="num">10</span> + (*<span class="var">cur</span>++ - <span class="str">'0'</span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in2"></span><span class="var">value</span>, <span class="var">escapes</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">read number</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'#'</span>) {<br/>
+<span class="in2"></span><span class="keyword">break</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'@'</span>) {<br/>
+<span class="in2"></span>++<span class="var">cur</span>; <span class="type">std</span>::<span class="type">string</span> <span class="var">name</span>;<br/>
+<span class="in2"></span><span class="keyword">while</span> (<br/>
+<span class="in3"></span><span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isalnum</span>(*<span class="var">cur</span>)<br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="var">name</span> += *<span class="var">cur</span>++;<br/>
+<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_type</span>, <span class="var">name</span>,<br/>
+<span class="in3"></span><span class="num">0</span>,<span class="var">escapes</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> == <span class="str">'$'</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">read hex num</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">read hex num</span>)</span><br/>
+<span class="in1"></span>++<span class="var">cur</span>;<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">value</span> { <span class="num">0</span> };<br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">isxdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">next hex digit</span>)</span>;<br/>
+<span class="in2"></span>++<span class="var">cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in2"></span><span class="var">value</span>, <span class="var">escapes</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">read hex num</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">next hex digit</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">digit</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in2"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'0'</span>;<br/>
+<span class="in1"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (*<span class="var">cur</span> &lt;= <span class="str">'F'</span>) {<br/>
+<span class="in2"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'A'</span> + <span class="num">10</span>;<br/>
+<span class="in1"></span>} <span class="keyword">else</span> {<br/>
+<span class="in2"></span><span class="var">digit</span> = *<span class="var">cur</span> - <span class="str">'a'</span> + <span class="num">10</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">16</span> + <span class="var">digit</span>;<br/>
+<span class="macro">@end(<span class="name">next hex digit</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line loop</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="fn">ispunct</span>(*<span class="var">cur</span>)) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">read punct</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">read punct</span>)</span><br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">cur</span> &lt; <span class="var">end</span> &amp;&amp; <span class="fn">ispunct</span>(*<span class="var">cur</span>) &amp;&amp;<br/>
+<span class="in2"></span>*<span class="var">cur</span> != <span class="str">'$'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'#'</span> &amp;&amp;<br/>
+<span class="in2"></span>*<span class="var">cur</span> != <span class="str">'@'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'_'</span> &amp;&amp;<br/>
+<span class="in2"></span>*<span class="var">cur</span> != <span class="str">'%'</span> &amp;&amp; *<span class="var">cur</span> != <span class="str">'`'</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span>++<span class="var">cur</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_string</span>,<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="type">string</span> { <span class="var">begin</span>, <span class="var">cur</span> },<br/>
+<span class="in2"></span><span class="num">0</span>, <span class="var">escapes</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">read punct</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">add line</span>)</span><br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace_back</span>(<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_string</span>, <span class="str">";"</span>, <span class="num">0</span>, <span class="num">0</span><br/>
+<span class="in1"></span>);<br/>
 <span class="in1"></span><span class="macro">@put(<span class="name">expand</span>)</span>;<br/>
 <span class="macro">@end(<span class="name">add line</span>)</span><br/>
 </code></div>
@@ -572,11 +769,24 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%a0 &lt;- %a1 xor $ff"</span>, <span class="num">0x0ff5c513</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%a0 &lt;- %a1 xor %a2"</span>, <span class="num">0x00c5c533</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
-<span class="in2"></span><span class="str">"%a0 &lt;- complement %a1"</span>, <span class="num">0x0005c513</span><br/>
+<span class="in2"></span><span class="str">"%a0 &lt;- complement %a1"</span>,<br/>
+<span class="in2"></span><span class="num">0x0005c513</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -614,11 +824,25 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x5 &lt;- %pc"</span>, <span class="num">0x00000297</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x5 &lt;- %pc + $20"</span>, <span class="num">0x00000297</span>, <span class="num">0x02028293</span><br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %pc + $20"</span>,<br/>
+<span class="in2"></span><span class="num">0x00000297</span>, <span class="num">0x02028293</span><br/>
 <span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line_2</span>(<br/>
-<span class="in2"></span><span class="str">"%x5 &lt;- %pc - $20"</span>, <span class="num">0x00000297</span>, <span class="num">0xfe028293</span><br/>
+<span class="in2"></span><span class="str">"%x5 &lt;- %pc - $20"</span>,<br/>
+<span class="in2"></span><span class="num">0x00000297</span>, <span class="num">0xfe028293</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
@@ -732,6 +956,12 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt; <span class="str">"}\n"</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">expand</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">expand</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">items</span>.<span class="fn">size</span>()) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">macro</span> { <span class="var">_macros</span>.<span class="fn">begin</span>() };<br/>
 <span class="in2"></span><span class="keyword">while</span> (<span class="var">macro</span> != <span class="var">_macros</span>.<span class="fn">end</span>()) {<br/>
@@ -745,6 +975,12 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="macro">@put(<span class="name">handle define</span>)</span>;<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">consume machine instrs</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">expand</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">expand</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (! <span class="var">items</span>.<span class="fn">empty</span>()) {<br/>
 <span class="in2"></span><span class="type">std</span>::<span class="var">cerr</span> &lt;&lt;<br/>
 <span class="in3"></span><span class="str">"cant expand fully ["</span> &lt;&lt;<br/>
@@ -764,23 +1000,70 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">t</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">c</span> { <span class="var">items</span>[<span class="var">i</span> + <span class="num">1</span>] };<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">v</span> { <span class="var">items</span>[<span class="var">i</span> + <span class="num">2</span>] };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">c</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">c</span>.<span class="fn">str</span>() == <span class="str">":"</span>) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp; <span class="var">v</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">v</span>.<span class="fn">str</span>() == <span class="str">"num"</span>) {<br/>
-<span class="in4"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">type</span> { <span class="var">t</span>.<span class="fn">str</span>() };<br/>
-<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">v</span>.<span class="fn">value</span>() };<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>);<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="var">type</span>, <span class="var">value</span>, <span class="num">0</span>);<br/>
-<span class="in4"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">v</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">v</span>.<span class="fn">str</span>() == <span class="str">"value"</span>) {<br/>
-<span class="in4"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">t</span>.<span class="fn">value</span>() };<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span>);<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">value</span>, <span class="num">0</span>);<br/>
-<span class="in4"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
-<span class="in3"></span>}<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">c</span>.<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">c</span>.<span class="fn">str</span>() == <span class="str">":"</span><br/>
+<span class="in2"></span>) {<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">expand type</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">expand type</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">v</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span><br/>
+<span class="in3"></span>&amp;&amp; <span class="var">v</span>.<span class="fn">str</span>() == <span class="str">"num"</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">expand num type</span>)</span>;<br/>
+<span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">expand type</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">expand num type</span>)</span><br/>
+<span class="in1"></span><span class="type">std</span>::<span class="type">string</span> <span class="var">type</span> { <span class="var">t</span>.<span class="fn">str</span>() };<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">v</span>.<span class="fn">value</span>() };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="var">type</span>,<br/>
+<span class="in2"></span><span class="var">value</span>, <span class="num">0</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">expand num type</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">expand type</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">t</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span><br/>
+<span class="in3"></span>&amp;&amp; <span class="var">v</span>.<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">v</span>.<span class="fn">str</span>() == <span class="str">"value"</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">expand str type</span>)</span>;<br/>
+<span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">expand type</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">expand str type</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">value</span> { <span class="var">t</span>.<span class="fn">value</span>() };<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span> + <span class="num">3</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in2"></span><span class="var">value</span>, <span class="num">0</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">expand str type</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -789,11 +1072,22 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="type">bool</span> <span class="var">matches</span> { <span class="num">true</span> };<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">p</span> { <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">begin</span>() };<br/>
 <span class="in1"></span><span class="type">auto</span> <span class="var">e</span> { <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">end</span>() };<br/>
-<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">matches</span> &amp;&amp; <span class="var">p</span> != <span class="var">e</span>; ++<span class="var">p</span>, ++<span class="var">j</span>) {<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; (<span class="var">i</span> + <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>());<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; <span class="var">p</span>-&gt;<span class="fn">matches</span>(<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp; <span class="var">p</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">matches</span> &amp;&amp; <span class="var">p</span> != <span class="var">e</span>;<br/>
+<span class="in2"></span>++<span class="var">p</span>, ++<span class="var">j</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
+<span class="in3"></span>(<span class="var">i</span> + <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>());<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">p</span>-&gt;<span class="fn">matches</span>(<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
+<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">p</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">matches</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">k</span> { <span class="var">i</span> };<br/>
 <span class="in2"></span><span class="var">i</span> += <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>();<br/>

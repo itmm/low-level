@@ -179,17 +179,39 @@ the machine code.
 	assert_line(
 		"raw $87654321", 0x87654321
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line(
 		"raw (1000 - 200)", 800
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line(
 		"raw (200 - 1000)", -800
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line(
-		"raw ($20010020 - $20010010)", 0x10
+		"raw ($20010020 - $20010010)",
+		0x10
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line(
-		"raw ($20010010 - $20010020)", -0x10
+		"raw ($20010010 - $20010020)",
+		-0x10
 	);
 @end(unit-tests)
 ```
@@ -199,14 +221,28 @@ the machine code.
 	State s;
 	s.add_line(line);
 	if (s.code_size() != 1) {
-		std::cerr << "assert failed in [" << line << "]\n";
-		std::cerr << "got " << s.code_size() << " elements\n";
+		std::cerr <<
+			"assert failed in [" <<
+			line << "]\n";
+		std::cerr << "got " <<
+			s.code_size() <<
+			" elements\n";
 	}
+@end(assert line)
+```
+
+```
+@add(assert line)
 	assert(s.code_size() == 1);
 	if (s.get_code(0) != expected) {
-		std::cerr << "assert failed in [" << line << "]\n";
-		std::cerr << "EXP " << std::hex << expected << "\n";
-		std::cerr << "GOT " << s.get_code(0) << std::dec << "\n";
+		std::cerr <<
+			"assert failed in [" <<
+			line << "]\n";
+		std::cerr << "EXP " <<
+			std::hex << expected << "\n";
+		std::cerr << "GOT " <<
+			s.get_code(0) << std::dec <<
+			"\n";
 	}
 	assert(s.get_code(0) == expected);
 @end(assert line)
@@ -216,18 +252,38 @@ the machine code.
 
 ```
 @add(needed by main)
-	void assert_line_2(const char *line, int exp1, int exp2) {
-		State s;
-		s.add_line(line);
-		assert(s.code_size() == 2);
-		if (s.get_code(0) != exp1 || s.get_code(1) != exp2) {
-	 		std::cerr << "EXP " << std::hex << exp1 << ", " << exp2 << "\n";
-			std::cerr << "GOT " << s.get_code(0) << ", " << s.get_code(1) << std::dec << "\n";
-	 	}
-		assert(s.get_code(0) == exp1);
-		assert(s.get_code(1) == exp2);
+	void assert_line_2(
+		const char *line, int exp1,
+		int exp2
+	) {
+		@put(assert line 2);
 	}
 @end(needed by main)
+```
+
+```
+@def(assert line 2)
+	State s;
+	s.add_line(line);
+	assert(s.code_size() == 2);
+	if (s.get_code(0) != exp1 ||
+		s.get_code(1) != exp2
+	) {
+		@put(assert line 2 err);
+	}
+	assert(s.get_code(0) == exp1);
+	assert(s.get_code(1) == exp2);
+@end(assert line 2)
+```
+
+```
+@def(assert line 2 err)
+	std::cerr << "EXP " << std::hex <<
+		exp1 << ", " << exp2 << "\n";
+	std::cerr << "GOT " <<
+		s.get_code(0) << ", " <<
+		s.get_code(1) << std::dec << "\n";
+@end(assert line 2 err)
 ```
 
 Before this test can pass the state must have the ability to parse the
@@ -292,8 +348,12 @@ These syntax trees are then transformed into machine code.
 
 ```
 @add(public state)
-	State(): _macros { setup_symbols() } { }
-	State(Macros *parent): _macros { parent } { }
+	State():
+		_macros { setup_symbols() }
+	{ }
+	State(Macros *parent):
+		_macros { parent }
+	{ }
 @end(public state)
 ```
 
@@ -319,62 +379,177 @@ These syntax trees are then transformed into machine code.
 		log = true;
 		++cur;
 	}
-	for (;;) {
-		while (cur < end && *cur <= ' ') {
-			++cur;
-		}
-		if (cur == end) { break; }
+@end(add line)
+```
 
-		int escapes { 0 };
-		while (cur < end && *cur == '`') {
-			++escapes;
-			++cur;
-		}
-		auto begin { cur };
-		if (isalpha(*cur) || *cur == '_' || *cur == '%') {
-			while (cur < end && (isalnum(*cur) || *cur == '_' || *cur == '%')) {
-				++cur;
-			}
-			items.emplace_back(Item_Type::t_string, std::string { begin, cur }, 0, escapes);
-		} else if (isdigit(*cur)) {
-			int value { 0 };
-			while (cur < end && isdigit(*cur)) {
-				value = value * 10 + (*cur++ - '0');
-			}
-			items.emplace_back(Item_Type::t_instance, "num", value, escapes);
-		} else if (*cur == '#') {
-			break;
-		} else if (*cur == '@') {
-			++cur;
-			std::string name;
-			while (cur < end && isalnum(*cur)) {
-				name += *cur++;
-			}
-			items.emplace_back(Item_Type::t_type, name, 0, escapes);
-		} else if (*cur == '$') {
-			++cur;
-			int value { 0 };
-			while (cur < end && isxdigit(*cur)) {
-				int digit;
-				if (isdigit(*cur)) {
-					digit = *cur - '0';
-				} else if (*cur <= 'F') {
-					digit = *cur - 'A' + 10;
-				} else {
-					digit = *cur - 'a' + 10;
-				}
-				value = value * 16 + digit;
-				++cur;
-			}
-			items.emplace_back(Item_Type::t_instance, "num", value, escapes);
-		} else if (ispunct(*cur)) {
-			while (cur < end && ispunct(*cur) && *cur != '$' && *cur != '#' && *cur != '@' && *cur != '_' && *cur != '%' && *cur != '`') {
-				++cur;
-			}
-			items.emplace_back(Item_Type::t_string, std::string { begin, cur }, 0, escapes);
-		}
+```
+@add(add line)
+	for (;;) {
+		@put(add line loop);
 	}
-	items.emplace_back(Item_Type::t_string, ";", 0, 0);
+@end(add line)
+```
+
+```
+@def(add line loop)
+	while (cur < end && *cur <= ' ') {
+		++cur;
+	}
+	if (cur == end) { break; }
+@end(add line loop)
+```
+
+```
+@add(add line loop)
+	int escapes { 0 };
+	while (cur < end && *cur == '`') {
+		++escapes;
+		++cur;
+	}
+@end(add line loop)
+```
+
+```
+@add(add line loop)
+	auto begin { cur };
+	if (isalpha(*cur) || *cur == '_' ||
+		*cur == '%'
+	) {
+		@put(read ident);
+	}
+@end(add line loop)
+```
+
+```
+@def(read ident)
+	while (cur < end && (
+		isalnum(*cur) || *cur == '_' ||
+			*cur == '%')
+	) {
+		++cur;
+	}
+	items.emplace_back(
+		Item_Type::t_string,
+		std::string { begin, cur },
+		0, escapes
+	);
+@end(read ident)
+```
+
+```
+@add(add line loop)
+	else if (isdigit(*cur)) {
+		@put(read number);
+	}
+@end(add line loop)
+```
+
+```
+@def(read number)
+	int value { 0 };
+	while (cur < end && isdigit(*cur)) {
+		value =
+			value * 10 + (*cur++ - '0');
+	}
+	items.emplace_back(
+		Item_Type::t_instance, "num",
+		value, escapes
+	);
+@end(read number)
+```
+
+```
+@add(add line loop)
+	else if (*cur == '#') {
+		break;
+	}
+@end(add line loop)
+```
+
+```
+@add(add line loop)
+	else if (*cur == '@') {
+		++cur; std::string name;
+		while (
+			cur < end && isalnum(*cur)
+		) {
+			name += *cur++;
+		}
+		items.emplace_back(
+			Item_Type::t_type, name,
+			0,escapes
+		);
+	}
+@end(add line loop)
+```
+
+```
+@add(add line loop)
+	else if (*cur == '$') {
+		@put(read hex num);
+	}
+@end(add line loop)
+```
+
+```
+@def(read hex num)
+	++cur;
+	int value { 0 };
+	while (cur < end && isxdigit(*cur)) {
+		@put(next hex digit);
+		++cur;
+	}
+	items.emplace_back(
+		Item_Type::t_instance, "num",
+		value, escapes
+	);
+@end(read hex num)
+```
+
+```
+@def(next hex digit)
+	int digit;
+	if (isdigit(*cur)) {
+		digit = *cur - '0';
+	} else if (*cur <= 'F') {
+		digit = *cur - 'A' + 10;
+	} else {
+		digit = *cur - 'a' + 10;
+	}
+	value = value * 16 + digit;
+@end(next hex digit)
+```
+
+```
+@add(add line loop)
+	else if (ispunct(*cur)) {
+		@put(read punct);
+	}
+@end(add line loop)
+```
+
+```
+@def(read punct)
+	while (cur < end && ispunct(*cur) &&
+		*cur != '$' && *cur != '#' &&
+		*cur != '@' && *cur != '_' &&
+		*cur != '%' && *cur != '`'
+	) {
+		++cur;
+	}
+	items.emplace_back(
+		Item_Type::t_string,
+		std::string { begin, cur },
+		0, escapes
+	);
+@end(read punct)
+```
+
+```
+@add(add line)
+	items.emplace_back(
+		Item_Type::t_string, ";", 0, 0
+	);
 	@put(expand);
 @end(add line)
 ```
@@ -460,11 +635,22 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%a0 <- %a1 xor $ff", 0x0ff5c513
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line(
 		"%a0 <- %a1 xor %a2", 0x00c5c533
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line(
-		"%a0 <- complement %a1", 0x0005c513
+		"%a0 <- complement %a1",
+		0x0005c513
 	);
 @end(unit-tests)
 ```
@@ -498,11 +684,23 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%x5 <- %pc", 0x00000297
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line_2(
-		"%x5 <- %pc + $20", 0x00000297, 0x02028293
+		"%x5 <- %pc + $20",
+		0x00000297, 0x02028293
 	);
+@end(unit-tests)
+```
+
+```
+@add(unit-tests)
 	assert_line_2(
-		"%x5 <- %pc - $20", 0x00000297, 0xfe028293
+		"%x5 <- %pc - $20",
+		0x00000297, 0xfe028293
 	);
 @end(unit-tests)
 ```
@@ -605,6 +803,11 @@ restart:
 		}
 		std::cerr << "}\n";
 	}
+@end(expand)
+```
+
+```
+@add(expand)
 	if (items.size()) {
 		auto macro { _macros.begin() };
 		while (macro != _macros.end()) {
@@ -618,6 +821,11 @@ restart:
 		@put(handle define);
 		@put(consume machine instrs);
 	}
+@end(expand)
+```
+
+```
+@add(expand)
 	if (! items.empty()) {
 		std::cerr <<
 			"cant expand fully [" <<
@@ -636,23 +844,66 @@ restart:
 		const auto &t { items[i] };
 		const auto &c { items[i + 1] };
 		const auto &v { items[i + 2] };
-		if (c.type() == Item_Type::t_string && c.str() == ":") {
-			if (t.type() == Item_Type::t_type && v.type() == Item_Type::t_instance && v.str() == "num") {
-				std::string type { t.str() };
-				int value { v.value() };
-				items.erase(items.begin() + i, items.begin() + i + 3);
-				items.emplace(items.begin() + i, Item_Type::t_instance, type, value, 0);
-				goto restart;
-			}
-			if (t.type() == Item_Type::t_instance && v.type() == Item_Type::t_string && v.str() == "value") {
-				int value { t.value() };
-				items.erase(items.begin() + i, items.begin() + i + 3);
-				items.emplace(items.begin() + i, Item_Type::t_instance, "num", value, 0);
-				goto restart;
-			}
+		if (c.type() ==
+				Item_Type::t_string &&
+			c.str() == ":"
+		) {
+			@put(expand type);
 		}
 	}
 @end(transform)
+```
+
+```
+@def(expand type)
+	if (t.type() == Item_Type::t_type &&
+		v.type() == Item_Type::t_instance
+			&& v.str() == "num"
+	) {
+		@put(expand num type);
+		goto restart;
+	}
+@end(expand type)
+```
+
+```
+@def(expand num type)
+	std::string type { t.str() };
+	int value { v.value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+	items.emplace(items.begin() + i,
+		Item_Type::t_instance, type,
+		value, 0
+	);
+@end(expand num type)
+```
+
+```
+@add(expand type)
+	if (t.type() == Item_Type::t_instance
+			&& v.type() ==
+				Item_Type::t_string &&
+		v.str() == "value"
+	) {
+		@put(expand str type);
+		goto restart;
+	}
+@end(expand type)
+```
+
+```
+@def(expand str type)
+	int value { t.value() };
+	items.erase(items.begin() + i,
+		items.begin() + i + 3
+	);
+	items.emplace(items.begin() + i,
+		Item_Type::t_instance, "num",
+		value, 0
+	);
+@end(expand str type)
 ```
 
 ```
@@ -660,11 +911,21 @@ restart:
 	bool matches { true };
 	auto p { macro->pattern().begin() };
 	auto e { macro->pattern().end() };
-	for (int j = 0; matches && p != e; ++p, ++j) {
-		matches = matches && (i + j < items.size());
-		matches = matches && p->matches(items[i + j]);
-		matches = matches && p->escapes() <= 0;
+	for (int j = 0; matches && p != e;
+		++p, ++j
+	) {
+		matches = matches &&
+			(i + j < items.size());
+		matches = matches &&
+			p->matches(items[i + j]);
+		matches = matches &&
+			p->escapes() <= 0;
 	}
+@end(transform)
+```
+
+```
+@add(transform)
 	if (matches) {
 		auto k { i };
 		i += macro->pattern().size();
