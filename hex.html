@@ -83,28 +83,42 @@
 <span class="in1"></span><span class="type">int</span> <span class="var">len</span> = <span class="var">s</span>.<span class="fn">code_size</span>();<br/>
 <span class="in1"></span><span class="type">int</span> <span class="var">c</span> = <span class="num">0</span>;<br/>
 <span class="in1"></span><span class="keyword">for</span> (; <span class="var">c</span> &lt; <span class="var">len</span>; <span class="var">c</span> += <span class="num">4</span>) {<br/>
-<span class="in2"></span><span class="var">out</span> &lt;&lt; <span class="str">':'</span>;<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">l</span> = ((<span class="var">c</span> + <span class="num">4</span> &gt; <span class="var">len</span>) ? (<span class="var">len</span> - <span class="var">c</span>) : <span class="num">4</span>);<br/>
-<span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">l</span> * <span class="num">4</span>);<br/>
-<span class="in2"></span><span class="var">sum</span> = <span class="var">l</span> * <span class="num">4</span>;<br/>
-<span class="in2"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">base</span> + <span class="var">c</span> * <span class="num">4</span>;<br/>
-<span class="in2"></span><span class="var">sum</span> += (<span class="var">addr</span> &gt;&gt; <span class="num">8</span>) + <span class="var">addr</span>;<br/>
-<span class="in2"></span><span class="fn">write_word</span>(<span class="var">out</span>, <span class="var">addr</span>);<br/>
-<span class="in2"></span><span class="var">out</span> &lt;&lt; <span class="str">"00"</span>;<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="var">l</span>; ++<span class="var">i</span>) {<br/>
-<span class="in3"></span><span class="type">int</span> <span class="var">m</span> = <span class="var">s</span>.<span class="fn">get_code</span>(<span class="var">c</span> + <span class="var">i</span>);<br/>
-<span class="in3"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
-<span class="in3"></span><span class="var">m</span> = <span class="var">m</span> &gt;&gt; <span class="num">8</span>;<br/>
-<span class="in3"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
-<span class="in3"></span><span class="var">m</span> = <span class="var">m</span> &gt;&gt; <span class="num">8</span>;<br/>
-<span class="in3"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
-<span class="in3"></span><span class="var">m</span> = <span class="var">m</span> &gt;&gt; <span class="num">8</span>;<br/>
-<span class="in3"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">write line</span>)</span>;<br/>
 <span class="in2"></span><span class="var">out</span> &lt;&lt; <span class="str">"\r\n"</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">write data</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">write line</span>)</span><br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">':'</span>;<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">l</span> =<br/>
+<span class="in2"></span>((<span class="var">c</span> + <span class="num">4</span> &gt; <span class="var">len</span>) ? (<span class="var">len</span> - <span class="var">c</span>) : <span class="num">4</span>);<br/>
+<span class="in1"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">l</span> * <span class="num">4</span>);<br/>
+<span class="in1"></span><span class="var">sum</span> = <span class="var">l</span> * <span class="num">4</span>;<br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">base</span> + <span class="var">c</span> * <span class="num">4</span>;<br/>
+<span class="in1"></span><span class="var">sum</span> += (<span class="var">addr</span> &gt;&gt; <span class="num">8</span>) + <span class="var">addr</span>;<br/>
+<span class="in1"></span><span class="fn">write_word</span>(<span class="var">out</span>, <span class="var">addr</span>);<br/>
+<span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">"00"</span>;<br/>
+<span class="macro">@end(<span class="name">write line</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">write line</span>)</span><br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">i</span> = <span class="num">0</span>; <span class="var">i</span> &lt; <span class="var">l</span>; ++<span class="var">i</span>) {<br/>
+<span class="in2"></span><span class="type">int</span> <span class="var">m</span> = <span class="var">s</span>.<span class="fn">get_code</span>(<span class="var">c</span> + <span class="var">i</span>);<br/>
+<span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
+<span class="in2"></span><span class="var">m</span> = <span class="var">m</span> &gt;&gt; <span class="num">8</span>;<br/>
+<span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
+<span class="in2"></span><span class="var">m</span> = <span class="var">m</span> &gt;&gt; <span class="num">8</span>;<br/>
+<span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
+<span class="in2"></span><span class="var">m</span> = <span class="var">m</span> &gt;&gt; <span class="num">8</span>;<br/>
+<span class="in2"></span><span class="fn">write_byte</span>(<span class="var">out</span>, <span class="var">m</span>); <span class="var">sum</span> += <span class="var">m</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
+<span class="macro">@end(<span class="name">write line</span>)</span><br/>
 </code></div>
 </div>
 <div><div>

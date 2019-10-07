@@ -64,28 +64,40 @@
 	int len = s.code_size();
 	int c = 0;
 	for (; c < len; c += 4) {
-		out << ':';
-		int l = ((c + 4 > len) ? (len - c) : 4);
-		write_byte(out, l * 4);
-		sum = l * 4;
-		int addr = base + c * 4;
-		sum += (addr >> 8) + addr;
-		write_word(out, addr);
-		out << "00";
-		for (int i = 0; i < l; ++i) {
-			int m = s.get_code(c + i);
-			write_byte(out, m); sum += m;
-			m = m >> 8;
-			write_byte(out, m); sum += m;
-			m = m >> 8;
-			write_byte(out, m); sum += m;
-			m = m >> 8;
-			write_byte(out, m); sum += m;
-		}
-		write_byte(out, -sum);
+		@put(write line);
 		out << "\r\n";
 	}
 @end(write data)
+```
+
+```
+@def(write line)
+	out << ':';
+	int l =
+		((c + 4 > len) ? (len - c) : 4);
+	write_byte(out, l * 4);
+	sum = l * 4;
+	int addr = base + c * 4;
+	sum += (addr >> 8) + addr;
+	write_word(out, addr);
+	out << "00";
+@end(write line)
+```
+
+```
+@add(write line)
+	for (int i = 0; i < l; ++i) {
+		int m = s.get_code(c + i);
+		write_byte(out, m); sum += m;
+		m = m >> 8;
+		write_byte(out, m); sum += m;
+		m = m >> 8;
+		write_byte(out, m); sum += m;
+		m = m >> 8;
+		write_byte(out, m); sum += m;
+	}
+	write_byte(out, -sum);
+@end(write line)
 ```
 
 ```

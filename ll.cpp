@@ -379,36 +379,88 @@
 				u_type, j_type
 			};
 		private:
-			Cmd_Style _style;
-			int _position;
-			std::string _name;
-			bool _relative;
+			
+#line 20 "forward.md"
+
+	Cmd_Style _style;
+	int _position;
+	std::string _name;
+	bool _relative;
+
+#line 12 "forward.md"
+;
 		public:
-			Forward(Cmd_Style style, int position, const std::string &name, bool relative):
-				_style { style }, _position { position }, _name { name }, _relative { relative }
-			{ }
-			Cmd_Style style() const { return _style; }
-			int position() const { return _position; }
-			std::string name() const { return _name; }
-			bool relative() const { return _relative; }
+			
+#line 29 "forward.md"
+
+	Forward(Cmd_Style style,int position,
+		const std::string &name,
+		bool relative
+	):
+		_style { style },
+		_position { position },
+		_name { name },
+		_relative { relative }
+	{ }
+
+#line 43 "forward.md"
+
+	Cmd_Style style() const {
+		return _style;
+	}
+	int position() const {
+		return _position;
+	}
+	std::string name() const {
+		return _name;
+	}
+	bool relative() const {
+		return _relative;
+	}
+
+#line 14 "forward.md"
+;
 	};
+
+#line 60 "forward.md"
+
 	class State;
 	class Forwards {
 		private:
-			using Container = std::vector<Forward>;
-			Container _forwards;
+			
+#line 72 "forward.md"
+
+	using Container =
+		std::vector<Forward>;
+	Container _forwards;
+
+#line 64 "forward.md"
+;
 		public:
-			void emplace_back(
-				Forward::Cmd_Style style, int position, const std::string &name, bool relative
-			) {
-				_forwards.emplace_back(
-					style, position, name, relative
-				);
-			}
-			void fill(
-				const Macros &macros,
-				State &state
-			);
+			
+#line 80 "forward.md"
+
+	void emplace_back(
+		Forward::Cmd_Style style,
+		int position,
+		const std::string &name,
+		bool relative
+	) {
+		_forwards.emplace_back(
+			style, position,
+			name, relative
+		);
+	}
+
+#line 96 "forward.md"
+
+	void fill(
+		const Macros &macros,
+		State &state
+	);
+
+#line 66 "forward.md"
+;
 	};
 
 #line 46 "start.md"
@@ -424,7 +476,7 @@
 	Macros _macros;
 	static Macros *setup_symbols();
 
-#line 104 "forward.md"
+#line 255 "forward.md"
 
 	Forwards _forwards;
 
@@ -477,7 +529,7 @@
 		_macros { parent }
 	{ }
 
-#line 133 "forward.md"
+#line 311 "forward.md"
 
 	void fix_forwards() {
 		_forwards.fill(_macros, *this);
@@ -688,10 +740,15 @@ restart:
 	if (items.size()) {
 		auto macro { _macros.begin() };
 		while (macro != _macros.end()) {
-			unsigned i = 0;
-			while (i + macro->pattern().size() <= items.size()) {
-				
-#line 842 "start.md"
+			
+#line 824 "start.md"
+
+	unsigned i = 0;
+	while (i + macro->pattern().size() <=
+		items.size()
+	) {
+		
+#line 850 "start.md"
 
 	if (i + 2 < items.size()) {
 		const auto &t { items[i] };
@@ -702,14 +759,14 @@ restart:
 			c.str() == ":"
 		) {
 			
-#line 858 "start.md"
+#line 866 "start.md"
 
 	if (t.type() == Item_Type::t_type &&
 		v.type() == Item_Type::t_instance
 			&& v.str() == "num"
 	) {
 		
-#line 870 "start.md"
+#line 878 "start.md"
 
 	std::string type { t.str() };
 	int value { v.value() };
@@ -721,12 +778,12 @@ restart:
 		value, 0
 	);
 
-#line 863 "start.md"
+#line 871 "start.md"
 ;
 		goto restart;
 	}
 
-#line 884 "start.md"
+#line 892 "start.md"
 
 	if (t.type() == Item_Type::t_instance
 			&& v.type() ==
@@ -734,7 +791,7 @@ restart:
 		v.str() == "value"
 	) {
 		
-#line 897 "start.md"
+#line 905 "start.md"
 
 	int value { t.value() };
 	items.erase(items.begin() + i,
@@ -745,17 +802,17 @@ restart:
 		value, 0
 	);
 
-#line 890 "start.md"
+#line 898 "start.md"
 ;
 		goto restart;
 	}
 
-#line 851 "start.md"
+#line 859 "start.md"
 ;
 		}
 	}
 
-#line 910 "start.md"
+#line 918 "start.md"
  {
 	bool matches { true };
 	auto p { macro->pattern().begin() };
@@ -763,222 +820,413 @@ restart:
 	for (int j = 0; matches && p != e;
 		++p, ++j
 	) {
-		matches = matches &&
-			(i + j < items.size());
-		matches = matches &&
-			p->matches(items[i + j]);
-		matches = matches &&
-			p->escapes() <= 0;
+		
+#line 931 "start.md"
+
+	matches = matches &&
+		(i + j < items.size());
+	matches = matches &&
+		p->matches(items[i + j]);
+	matches = matches &&
+		p->escapes() <= 0;
+
+#line 925 "start.md"
+;
 	}
 
-#line 928 "start.md"
+#line 942 "start.md"
 
 	if (matches) {
 		auto k { i };
 		i += macro->pattern().size();
-		for (const auto &e : macro->replacement()) {
-			if (e.type() == Item_Type::t_type && ! e.str().empty()) {
-				if (isdigit(e.str()[0])) {
-					int idx { std::stoi(e.str()) };
-					if (idx >= 0 && idx < (int) macro->pattern().size()) {
-						items.insert(
-							items.begin() + i, items[k + idx]
-						);
-						++i;
-						continue;
-					}
-				} else if (e.str() == "arithmetic") {
-					const auto &n1 { items[k + 0] };
-					const auto &op { items[k + 1] };
-					const auto &n2 { items[k + 2] };
-					if (n1.type() == Item_Type::t_instance && n1.str() == "num" && op.type() == Item_Type::t_string && n2.type() == Item_Type::t_instance && n2.str() == "num") {
-						if (op.str() == "+") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() + n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "-") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() - n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "*") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() * n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "/" && n2.value() != 0) {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() / n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "and") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() & n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "or") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() | n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "<<") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() << n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == ">>") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() >> n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "xor") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() ^ n2.value(), 0
-							);
-							++i;
-							continue;
-						}
-					}
-				}
-				
-#line 110 "forward.md"
+		
+#line 957 "start.md"
+
+	for (const auto &e :
+		macro->replacement()
+	) {
+		
+#line 967 "start.md"
+
+	if (e.type() == Item_Type::t_type &&
+		! e.str().empty()
+	) {
+		
+#line 983 "start.md"
+;
+	if (isdigit(e.str()[0])) {
+		
+#line 994 "start.md"
+
+	int idx { std::stoi(e.str()) };
+	if (idx >= 0 &&idx <
+		(int) macro->pattern().size()
+	) {
+		items.insert(items.begin() + i,
+			items[k + idx]
+		);
+		++i;
+		continue;
+	}
+
+#line 985 "start.md"
+;
+	} else if (e.str() == "arithmetic") {
+		
+#line 1009 "start.md"
+
+	const auto &n1 { items[k + 0] };
+	const auto &op { items[k + 1] };
+	const auto &n2 { items[k + 2] };
+	if (n1.type() == Item_Type::t_instance
+			&& n1.str() == "num" &&
+		op.type() == Item_Type::t_string
+			&& n2.type() ==
+				Item_Type::t_instance &&
+		n2.str() == "num"
+	) {
+		
+#line 1026 "start.md"
+
+	if (op.str() == "+") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() + n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1040 "start.md"
+
+	else if (op.str() == "-") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() - n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1054 "start.md"
+
+	else if (op.str() == "*") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() * n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1068 "start.md"
+
+	else if (op.str() == "/" &&
+		n2.value() != 0
+	) {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() / n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1084 "start.md"
+
+	else if (op.str() == "and") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() & n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1098 "start.md"
+
+	else if (op.str() == "or") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() | n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1112 "start.md"
+
+	else if (op.str() == "<<") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() << n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1126 "start.md"
+
+	else if (op.str() == ">>") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() >> n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1140 "start.md"
+
+	else if (op.str() == "xor") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() ^ n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+
+#line 1020 "start.md"
+;
+	}
+
+#line 987 "start.md"
+;
+	}
+	
+#line 261 "forward.md"
 
 	if (e.str() == "fwdgoto") {
-		const auto &label { items[k + 1] };
-		if (label.type() == Item_Type::t_string) {
-			_forwards.emplace_back(
-				Forward::Cmd_Style::j_type, code_size(), label.str(), true
-			);
-			continue;
-		}
-	}
-	if (e.str() == "fwdcndgoto") {
-		const auto &label { items[k + 6] };
-		if (label.type() == Item_Type::t_string) {
-			_forwards.emplace_back(
-				Forward::Cmd_Style::b_type, code_size(), label.str(), true
-			);
+		const auto &label {
+			items[k + 1]
+		};
+		if (label.type() ==
+			Item_Type::t_string
+		) {
+			
+#line 277 "forward.md"
+
+	_forwards.emplace_back(
+		Forward::Cmd_Style::j_type,
+		code_size(), label.str(), true
+	);
+
+#line 269 "forward.md"
+;
 			continue;
 		}
 	}
 
-#line 1005 "start.md"
+#line 286 "forward.md"
+
+	if (e.str() == "fwdcndgoto") {
+		const auto &label {
+			items[k + 6]
+		};
+		if (label.type() ==
+			Item_Type::t_string
+		) {
+			
+#line 302 "forward.md"
+
+	_forwards.emplace_back(
+		Forward::Cmd_Style::b_type,
+		code_size(), label.str(), true
+	);
+
+#line 294 "forward.md"
 ;
-			}
-			items.emplace(
-				items.begin() + i, e.type(), e.str(), e.value(), e.escapes() - 1
-			);
-			++i;
+			continue;
 		}
-		items.erase(items.begin() + k, items.begin() + k + macro->pattern().size());
+	}
+
+#line 989 "start.md"
+;
+
+#line 971 "start.md"
+;
+	}
+	items.emplace(
+		items.begin() + i, e.type(),
+		e.str(), e.value(),
+		e.escapes() - 1
+	);
+	++i;
+
+#line 961 "start.md"
+;
+	}
+
+#line 946 "start.md"
+;
+		items.erase(items.begin() + k,
+			items.begin() + k +
+				macro->pattern().size()
+		);
 		goto restart;
 	}
 } 
-#line 1019 "start.md"
+#line 1154 "start.md"
  {
 	const auto &ni { items[i] };
-	if (ni.type() == Item_Type::t_string) {
+	if (
+		ni.type() == Item_Type::t_string
+	) {
 		
-#line 1028 "start.md"
+#line 1165 "start.md"
 
-	if (ni.str() == "*" && ni.escapes() <= 0) {
+	if (
+		ni.str() == "*" &&
+		ni.escapes() <= 0
+	) {
 		
-#line 1036 "start.md"
+#line 1176 "start.md"
 
 	items.erase(items.begin() + i,
 		items.begin() + i + 1);
 	int addr = code.size() * 4 +
 		0x20010000;
 	items.emplace(items.begin() + i,
-		Item_Type::t_instance, "num", addr, 0
+		Item_Type::t_instance,
+		"num", addr, 0
 	);
 	goto restart;
 
-#line 1030 "start.md"
+#line 1170 "start.md"
 ;
 	}
 
-#line 1022 "start.md"
+#line 1159 "start.md"
 ;
 	}
 } 
-#line 816 "start.md"
+#line 829 "start.md"
 ;
-				++i;
-			}
+		++i;
+	}
+
+#line 814 "start.md"
+;
 			++macro;
 		}
 		
-#line 1070 "start.md"
+#line 1229 "start.md"
 
-	for (unsigned i = 1; i < items.size(); ++i) {
+	for (unsigned i = 1;
+		i < items.size(); ++i
+	) {
 		const auto &a { items[i] };
-		if (a.type() == Item_Type::t_string && a.str() == "<==" && a.escapes() <= 0) {
+		if (a.type() ==
+				Item_Type::t_string &&
+			a.str() == "<==" &&
+			a.escapes() <= 0
+		) {
 			
-#line 1081 "start.md"
+#line 1246 "start.md"
 
 	Items value;
-	unsigned last { items.size() - 1 }; // skip last ;
-	for (unsigned j = i + 1;
-		j < last; ++j
+	unsigned last { items.size() - 1 };
+
+#line 1254 "start.md"
+
+	for (
+		unsigned j = i + 1; j < last; ++j
 	) {
 		const auto &cur { items[j] };
-		if (cur.type() == Item_Type::t_string && cur.str() == "." && cur.escapes() <= 0) {
-			last = j; break;
-		}
+		
+#line 1266 "start.md"
+
+	if (cur.type() ==
+			Item_Type::t_string &&
+		cur.str() == "." &&
+		cur.escapes() <= 0
+	) {
+		last = j; break;
+	}
+
+#line 1259 "start.md"
+;
 		value.push_back(items[j]);
 	}
+
+#line 1278 "start.md"
+
 	Items p;
 	for (unsigned j = 0; j < i; ++j) {
 		p.push_back(items[j]);
 	}
-	_macros.emplace_back(std::move(p), std::move(value));
-	if (last < items.size()) { ++last; }
-	items.erase(
-		items.begin(), items.begin() + last
+	_macros.emplace_back(std::move(p),
+		std::move(value)
 	);
 
-#line 1074 "start.md"
+#line 1290 "start.md"
+
+	if (last < items.size()) { ++last; }
+	items.erase(
+		items.begin(),
+		items.begin() + last
+	);
+
+#line 1239 "start.md"
 ;
 		}
 	}
 
-#line 821 "start.md"
+#line 817 "start.md"
 ;
 		
-#line 1049 "start.md"
+#line 1190 "start.md"
 
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
-		if (mi.type() == Item_Type::t_string && mi.str() == ";") {
-			items.erase(
-				items.begin(),
-				items.begin() + 1
-			);
-			continue;
-		}
-		if (mi.type() != Item_Type::t_instance || mi.str() != "raw") { break; }
-		add_machine(mi.value());
+		
+#line 1200 "start.md"
+
+	if (mi.type() ==
+			Item_Type::t_string &&
+		mi.str() == ";"
+	) {
 		items.erase(
 			items.begin(),
 			items.begin() + 1
 		);
+		continue;
 	}
 
-#line 822 "start.md"
+#line 1193 "start.md"
+;
+		
+#line 1215 "start.md"
+
+	if (mi.type() !=
+			Item_Type::t_instance ||
+		mi.str() != "raw"
+	) { break; }
+	add_machine(mi.value());
+	items.erase(
+		items.begin(),
+		items.begin() + 1
+	);
+
+#line 1194 "start.md"
 ;
 	}
 
-#line 828 "start.md"
+#line 818 "start.md"
+;
+	}
+
+#line 836 "start.md"
 
 	if (! items.empty()) {
 		std::cerr <<
@@ -1109,59 +1357,138 @@ restart:
 ;
 	}
 
-#line 47 "forward.md"
+#line 105 "forward.md"
 
 	void Forwards::fill(
 		const Macros &macros,
 		State &state
 	) {
-		for (const auto &f : _forwards) {
-			bool found { false };
-			int value;
-			for (const auto &m : macros) {
-				if (m.pattern().size() == 1) {
-					const auto &p { *m.pattern().begin() };
-					if (p.type() == Item_Type::t_string && p.str() == f.name()) {
-						if (m.replacement().size() == 1) {
-							const auto &r { *m.replacement().begin() };
-							if (r.type() == Item_Type::t_instance && r.str() == "num") {
-								found = true;
-								value = r.value();
-								break;
-							}
-						}
-					}
-				}
-			}
-			if (! found) {
-				std::cerr << "can't expand " << f.name() << '\n';
-				continue;
-			}
+		
+#line 116 "forward.md"
 
-			if (f.relative()) {
-				value = value - 4 * f.position() - 0x20010000;
-			}
+	for (const auto &f : _forwards) {
+		bool found { false };
+		int value;
+		
+#line 126 "forward.md"
 
-			switch (f.style()) {
-				case Forward::Cmd_Style::i_type:
-					state.mod_code(f.position()) |= value << 20;
-					break;
-				case Forward::Cmd_Style::s_type:
-					state.mod_code(f.position()) |= ((value & 0xfe0) << (25 - 5)) | ((value & 0x1f) << 7);
-					break;
-				case Forward::Cmd_Style::b_type:
-					state.mod_code(f.position()) |= ((value & 0x1000) << (31 - 12)) | ((value & 0x7e0) << (25 - 5)) | ((value & 0x1e) << (8 - 1)) | ((value & 0x800) >> (11 - 7));
-					break;
-				case Forward::Cmd_Style::u_type:
-					state.mod_code(f.position()) |= value & 0xfffff000;
-					break;
-				case Forward::Cmd_Style::j_type:
-					state.mod_code(f.position()) |= ((value & 0x100000) << (31 - 20)) | ((value & 0x7fe) << (21 - 1)) | ((value & 0x800) << (20 - 11)) | (value & 0xff000);
-					break;
-				default:
-					std::cerr << "unimplemented mode\n";
-			}
+	for (const auto &m : macros) {
+		if (m.pattern().size() == 1) {
+			const auto &p {
+				*m.pattern().begin()
+			};
+			
+#line 139 "forward.md"
+
+	if (p.type() == Item_Type::t_string &&
+		p.str() == f.name()
+	) {
+		if (m.replacement().size() == 1) {
+			
+#line 151 "forward.md"
+
+	const auto &r {
+		*m.replacement().begin()
+	};
+	if (r.type() ==
+			Item_Type::t_instance &&
+		r.str() == "num"
+	) {
+		found = true;
+		value = r.value();
+		break;
+	}
+
+#line 144 "forward.md"
+;
 		}
+	}
+
+#line 132 "forward.md"
+;
+		}
+	}
+
+#line 167 "forward.md"
+
+	if (! found) {
+		std::cerr << "can't expand " <<
+			f.name() << '\n';
+		continue;
+	}
+
+#line 177 "forward.md"
+
+	if (f.relative()) {
+		value = value - 4 * f.position() -
+			0x20010000;
+	}
+
+#line 186 "forward.md"
+
+	switch (f.style()) {
+		
+#line 197 "forward.md"
+
+	case Forward::Cmd_Style::i_type:
+		state.mod_code(f.position()) |=
+			value << 20;
+		break;
+
+#line 206 "forward.md"
+
+	case Forward::Cmd_Style::s_type:
+		state.mod_code(f.position()) |=
+			((value & 0xfe0) <<
+				(25 - 5)) |
+			((value & 0x1f) << 7);
+		break;
+
+#line 217 "forward.md"
+
+	case Forward::Cmd_Style::b_type:
+		state.mod_code(f.position()) |=
+			((value & 0x1000) <<
+				(31 - 12)) |
+			((value & 0x7e0) <<
+				(25 - 5)) |
+			((value & 0x1e) << (8 - 1)) |
+			((value & 0x800) >> (11 - 7));
+		break;
+
+#line 231 "forward.md"
+
+	case Forward::Cmd_Style::u_type:
+		state.mod_code(f.position()) |=
+			value & 0xfffff000;
+		break;
+
+#line 240 "forward.md"
+
+	case Forward::Cmd_Style::j_type:
+		state.mod_code(f.position()) |=
+			((value & 0x100000) <<
+				(31 - 20)) |
+			((value & 0x7fe) <<
+				(21 - 1)) |
+			((value & 0x800) <<
+				(20 - 11)) |
+			(value & 0xff000);
+		break;
+
+#line 188 "forward.md"
+;
+		default:
+			std::cerr <<
+				"unimplemented mode\n";
+	}
+
+#line 120 "forward.md"
+;
+	}
+
+#line 110 "forward.md"
+;
 	}
 
 #line 24 "start.md"
@@ -1176,7 +1503,7 @@ restart:
 		std::ostream &out, int b
 	) {
 		
-#line 106 "hex.md"
+#line 118 "hex.md"
 
 	static const char map[] {
 		"0123456789ABCDEF"
@@ -1224,32 +1551,42 @@ restart:
 	int len = s.code_size();
 	int c = 0;
 	for (; c < len; c += 4) {
-		out << ':';
-		int l = ((c + 4 > len) ? (len - c) : 4);
-		write_byte(out, l * 4);
-		sum = l * 4;
-		int addr = base + c * 4;
-		sum += (addr >> 8) + addr;
-		write_word(out, addr);
-		out << "00";
-		for (int i = 0; i < l; ++i) {
-			int m = s.get_code(c + i);
-			write_byte(out, m); sum += m;
-			m = m >> 8;
-			write_byte(out, m); sum += m;
-			m = m >> 8;
-			write_byte(out, m); sum += m;
-			m = m >> 8;
-			write_byte(out, m); sum += m;
-		}
-		write_byte(out, -sum);
+		
+#line 74 "hex.md"
+
+	out << ':';
+	int l =
+		((c + 4 > len) ? (len - c) : 4);
+	write_byte(out, l * 4);
+	sum = l * 4;
+	int addr = base + c * 4;
+	sum += (addr >> 8) + addr;
+	write_word(out, addr);
+	out << "00";
+
+#line 88 "hex.md"
+
+	for (int i = 0; i < l; ++i) {
+		int m = s.get_code(c + i);
+		write_byte(out, m); sum += m;
+		m = m >> 8;
+		write_byte(out, m); sum += m;
+		m = m >> 8;
+		write_byte(out, m); sum += m;
+		m = m >> 8;
+		write_byte(out, m); sum += m;
+	}
+	write_byte(out, -sum);
+
+#line 67 "hex.md"
+;
 		out << "\r\n";
 	}
 
 #line 24 "hex.md"
 ;
 	
-#line 92 "hex.md"
+#line 104 "hex.md"
 
 	sum =  9;
 	out << ":04000005";
@@ -1507,7 +1844,7 @@ restart:
 #line 587 "start.md"
 
 
-#line 141 "forward.md"
+#line 319 "forward.md"
 
 	s.fix_forwards();
 

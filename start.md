@@ -811,17 +811,25 @@ restart:
 	if (items.size()) {
 		auto macro { _macros.begin() };
 		while (macro != _macros.end()) {
-			unsigned i = 0;
-			while (i + macro->pattern().size() <= items.size()) {
-				@put(transform);
-				++i;
-			}
+			@put(transform macro);
 			++macro;
 		}
 		@put(handle define);
 		@put(consume machine instrs);
 	}
 @end(expand)
+```
+
+```
+@def(transform macro)
+	unsigned i = 0;
+	while (i + macro->pattern().size() <=
+		items.size()
+	) {
+		@put(transform);
+		++i;
+	}
+@end(transform macro)
 ```
 
 ```
@@ -914,14 +922,20 @@ restart:
 	for (int j = 0; matches && p != e;
 		++p, ++j
 	) {
-		matches = matches &&
-			(i + j < items.size());
-		matches = matches &&
-			p->matches(items[i + j]);
-		matches = matches &&
-			p->escapes() <= 0;
+		@put(update matches);
 	}
 @end(transform)
+```
+
+```
+@def(update matches)
+	matches = matches &&
+		(i + j < items.size());
+	matches = matches &&
+		p->matches(items[i + j]);
+	matches = matches &&
+		p->escapes() <= 0;
+@end(update matches)
 ```
 
 ```
@@ -929,96 +943,219 @@ restart:
 	if (matches) {
 		auto k { i };
 		i += macro->pattern().size();
-		for (const auto &e : macro->replacement()) {
-			if (e.type() == Item_Type::t_type && ! e.str().empty()) {
-				if (isdigit(e.str()[0])) {
-					int idx { std::stoi(e.str()) };
-					if (idx >= 0 && idx < (int) macro->pattern().size()) {
-						items.insert(
-							items.begin() + i, items[k + idx]
-						);
-						++i;
-						continue;
-					}
-				} else if (e.str() == "arithmetic") {
-					const auto &n1 { items[k + 0] };
-					const auto &op { items[k + 1] };
-					const auto &n2 { items[k + 2] };
-					if (n1.type() == Item_Type::t_instance && n1.str() == "num" && op.type() == Item_Type::t_string && n2.type() == Item_Type::t_instance && n2.str() == "num") {
-						if (op.str() == "+") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() + n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "-") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() - n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "*") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() * n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "/" && n2.value() != 0) {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() / n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "and") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() & n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "or") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() | n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "<<") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() << n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == ">>") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() >> n2.value(), 0
-							);
-							++i;
-							continue;
-						} else if (op.str() == "xor") {
-							items.emplace(
-								items.begin() + i, Item_Type::t_instance, "num", n1.value() ^ n2.value(), 0
-							);
-							++i;
-							continue;
-						}
-					}
-				}
-				@Put(special macros);
-			}
-			items.emplace(
-				items.begin() + i, e.type(), e.str(), e.value(), e.escapes() - 1
-			);
-			++i;
-		}
-		items.erase(items.begin() + k, items.begin() + k + macro->pattern().size());
+		@put(do replacement);
+		items.erase(items.begin() + k,
+			items.begin() + k +
+				macro->pattern().size()
+		);
 		goto restart;
 	}
 } @end(transform)
 ```
 
 ```
+@def(do replacement)
+	for (const auto &e :
+		macro->replacement()
+	) {
+		@put(do replacement step);
+	}
+@end(do replacement)
+```
+
+```
+@def(do replacement step)
+	if (e.type() == Item_Type::t_type &&
+		! e.str().empty()
+	) {
+		@put(do type replacement);
+	}
+	items.emplace(
+		items.begin() + i, e.type(),
+		e.str(), e.value(),
+		e.escapes() - 1
+	);
+	++i;
+@end(do replacement step)
+```
+
+```
+@def(do type replacement);
+	if (isdigit(e.str()[0])) {
+		@put(do position replacement);
+	} else if (e.str() == "arithmetic") {
+		@put(do arithmetic replacement);
+	}
+	@Put(special macros);
+@end(do type replacement)
+```
+
+```
+@def(do position replacement)
+	int idx { std::stoi(e.str()) };
+	if (idx >= 0 &&idx <
+		(int) macro->pattern().size()
+	) {
+		items.insert(items.begin() + i,
+			items[k + idx]
+		);
+		++i;
+		continue;
+	}
+@end(do position replacement)
+```
+
+```
+@def(do arithmetic replacement)
+	const auto &n1 { items[k + 0] };
+	const auto &op { items[k + 1] };
+	const auto &n2 { items[k + 2] };
+	if (n1.type() == Item_Type::t_instance
+			&& n1.str() == "num" &&
+		op.type() == Item_Type::t_string
+			&& n2.type() ==
+				Item_Type::t_instance &&
+		n2.str() == "num"
+	) {
+		@put(do arithmetic op);
+	}
+@end(do arithmetic replacement)
+```
+
+```
+@def(do arithmetic op)
+	if (op.str() == "+") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() + n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "-") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() - n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "*") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() * n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "/" &&
+		n2.value() != 0
+	) {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() / n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "and") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() & n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "or") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() | n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "<<") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() << n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == ">>") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() >> n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
+@add(do arithmetic op)
+	else if (op.str() == "xor") {
+		items.emplace(
+			items.begin() + i,
+			Item_Type::t_instance, "num",
+			n1.value() ^ n2.value(), 0
+		);
+		++i;
+		continue;
+	}
+@end(do arithmetic op)
+```
+
+```
 @add(transform) {
 	const auto &ni { items[i] };
-	if (ni.type() == Item_Type::t_string) {
+	if (
+		ni.type() == Item_Type::t_string
+	) {
 		@put(transform named);
 	}
 } @end(transform)
@@ -1026,7 +1163,10 @@ restart:
 
 ```
 @def(transform named)
-	if (ni.str() == "*" && ni.escapes() <= 0) {
+	if (
+		ni.str() == "*" &&
+		ni.escapes() <= 0
+	) {
 		@put(transform cur addr);
 	}
 @end(transform named)
@@ -1039,7 +1179,8 @@ restart:
 	int addr = code.size() * 4 +
 		0x20010000;
 	items.emplace(items.begin() + i,
-		Item_Type::t_instance, "num", addr, 0
+		Item_Type::t_instance,
+		"num", addr, 0
 	);
 	goto restart;
 @end(transform cur addr)
@@ -1049,28 +1190,52 @@ restart:
 @def(consume machine instrs)
 	while (! items.empty()) {
 		const auto &mi { *items.begin() };
-		if (mi.type() == Item_Type::t_string && mi.str() == ";") {
-			items.erase(
-				items.begin(),
-				items.begin() + 1
-			);
-			continue;
-		}
-		if (mi.type() != Item_Type::t_instance || mi.str() != "raw") { break; }
-		add_machine(mi.value());
-		items.erase(
-			items.begin(),
-			items.begin() + 1
-		);
+		@put(consume separator);
+		@put(consume machine instr);
 	}
 @end(consume machine instrs)
 ```
 
 ```
+@def(consume separator)
+	if (mi.type() ==
+			Item_Type::t_string &&
+		mi.str() == ";"
+	) {
+		items.erase(
+			items.begin(),
+			items.begin() + 1
+		);
+		continue;
+	}
+@end(consume separator)
+```
+
+```
+@def(consume machine instr)
+	if (mi.type() !=
+			Item_Type::t_instance ||
+		mi.str() != "raw"
+	) { break; }
+	add_machine(mi.value());
+	items.erase(
+		items.begin(),
+		items.begin() + 1
+	);
+@end(consume machine instr)
+```
+
+```
 @def(handle define)
-	for (unsigned i = 1; i < items.size(); ++i) {
+	for (unsigned i = 1;
+		i < items.size(); ++i
+	) {
 		const auto &a { items[i] };
-		if (a.type() == Item_Type::t_string && a.str() == "<==" && a.escapes() <= 0) {
+		if (a.type() ==
+				Item_Type::t_string &&
+			a.str() == "<==" &&
+			a.escapes() <= 0
+		) {
 			@put(transform sym assign);
 		}
 	}
@@ -1080,24 +1245,53 @@ restart:
 ```
 @def(transform sym assign)
 	Items value;
-	unsigned last { items.size() - 1 }; // skip last ;
-	for (unsigned j = i + 1;
-		j < last; ++j
+	unsigned last { items.size() - 1 };
+@end(transform sym assign)
+```
+* skip last
+
+```
+@add(transform sym assign)
+	for (
+		unsigned j = i + 1; j < last; ++j
 	) {
 		const auto &cur { items[j] };
-		if (cur.type() == Item_Type::t_string && cur.str() == "." && cur.escapes() <= 0) {
-			last = j; break;
-		}
+		@put(break on end);
 		value.push_back(items[j]);
 	}
+@end(transform sym assign)
+```
+
+```
+@def(break on end)
+	if (cur.type() ==
+			Item_Type::t_string &&
+		cur.str() == "." &&
+		cur.escapes() <= 0
+	) {
+		last = j; break;
+	}
+@end(break on end)
+```
+
+```
+@add(transform sym assign)
 	Items p;
 	for (unsigned j = 0; j < i; ++j) {
 		p.push_back(items[j]);
 	}
-	_macros.emplace_back(std::move(p), std::move(value));
+	_macros.emplace_back(std::move(p),
+		std::move(value)
+	);
+@end(transform sym assign)
+```
+
+```
+@add(transform sym assign)
 	if (last < items.size()) { ++last; }
 	items.erase(
-		items.begin(), items.begin() + last
+		items.begin(),
+		items.begin() + last
 	);
 @end(transform sym assign)
 ```

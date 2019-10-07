@@ -965,17 +965,26 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">items</span>.<span class="fn">size</span>()) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">macro</span> { <span class="var">_macros</span>.<span class="fn">begin</span>() };<br/>
 <span class="in2"></span><span class="keyword">while</span> (<span class="var">macro</span> != <span class="var">_macros</span>.<span class="fn">end</span>()) {<br/>
-<span class="in3"></span><span class="type">unsigned</span> <span class="var">i</span> = <span class="num">0</span>;<br/>
-<span class="in3"></span><span class="keyword">while</span> (<span class="var">i</span> + <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>() &lt;= <span class="var">items</span>.<span class="fn">size</span>()) {<br/>
-<span class="in4"></span><span class="macro">@put(<span class="name">transform</span>)</span>;<br/>
-<span class="in4"></span>++<span class="var">i</span>;<br/>
-<span class="in3"></span>}<br/>
+<span class="in3"></span><span class="macro">@put(<span class="name">transform macro</span>)</span>;<br/>
 <span class="in3"></span>++<span class="var">macro</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">handle define</span>)</span>;<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">consume machine instrs</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">transform macro</span>)</span><br/>
+<span class="in1"></span><span class="type">unsigned</span> <span class="var">i</span> = <span class="num">0</span>;<br/>
+<span class="in1"></span><span class="keyword">while</span> (<span class="var">i</span> + <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>() &lt;=<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">size</span>()<br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">transform</span>)</span>;<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform macro</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1075,14 +1084,21 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">int</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">matches</span> &amp;&amp; <span class="var">p</span> != <span class="var">e</span>;<br/>
 <span class="in2"></span>++<span class="var">p</span>, ++<span class="var">j</span><br/>
 <span class="in1"></span>) {<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
-<span class="in3"></span>(<span class="var">i</span> + <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>());<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
-<span class="in3"></span><span class="var">p</span>-&gt;<span class="fn">matches</span>(<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
-<span class="in2"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
-<span class="in3"></span><span class="var">p</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">update matches</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">update matches</span>)</span><br/>
+<span class="in1"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
+<span class="in2"></span>(<span class="var">i</span> + <span class="var">j</span> &lt; <span class="var">items</span>.<span class="fn">size</span>());<br/>
+<span class="in1"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">p</span>-&gt;<span class="fn">matches</span>(<span class="var">items</span>[<span class="var">i</span> + <span class="var">j</span>]);<br/>
+<span class="in1"></span><span class="var">matches</span> = <span class="var">matches</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">p</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
+<span class="macro">@end(<span class="name">update matches</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
@@ -1091,87 +1107,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">matches</span>) {<br/>
 <span class="in2"></span><span class="type">auto</span> <span class="var">k</span> { <span class="var">i</span> };<br/>
 <span class="in2"></span><span class="var">i</span> += <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>();<br/>
-<span class="in2"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> : <span class="var">macro</span>-&gt;<span class="fn">replacement</span>()) {<br/>
-<span class="in3"></span><span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp; ! <span class="var">e</span>.<span class="fn">str</span>().<span class="fn">empty</span>()) {<br/>
-<span class="in4"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(<span class="var">e</span>.<span class="fn">str</span>()[<span class="num">0</span>])) {<br/>
-<span class="in5"></span><span class="type">int</span> <span class="var">idx</span> { <span class="type">std</span>::<span class="fn">stoi</span>(<span class="var">e</span>.<span class="fn">str</span>()) };<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">idx</span> &gt;= <span class="num">0</span> &amp;&amp; <span class="var">idx</span> &lt; (<span class="type">int</span>) <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>()) {<br/>
-<span class="in6"></span><span class="var">items</span>.<span class="fn">insert</span>(<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">items</span>[<span class="var">k</span> + <span class="var">idx</span>]<br/>
-<span class="in6"></span>);<br/>
-<span class="in6"></span>++<span class="var">i</span>;<br/>
-<span class="in6"></span><span class="keyword">continue</span>;<br/>
-<span class="in5"></span>}<br/>
-<span class="in4"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">str</span>() == <span class="str">"arithmetic"</span>) {<br/>
-<span class="in5"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">n1</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">0</span>] };<br/>
-<span class="in5"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">op</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">1</span>] };<br/>
-<span class="in5"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">n2</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">2</span>] };<br/>
-<span class="in5"></span><span class="keyword">if</span> (<span class="var">n1</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">n1</span>.<span class="fn">str</span>() == <span class="str">"num"</span> &amp;&amp; <span class="var">op</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">n2</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp; <span class="var">n2</span>.<span class="fn">str</span>() == <span class="str">"num"</span>) {<br/>
-<span class="in6"></span><span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"+"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() + <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"-"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() - <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"*"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() * <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"/"</span> &amp;&amp; <span class="var">n2</span>.<span class="fn">value</span>() != <span class="num">0</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() / <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"and"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() &amp; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"or"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() | <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"&lt;&lt;"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() &lt;&lt; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"&gt;&gt;"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() &gt;&gt; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"xor"</span>) {<br/>
-<span class="in7"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in8"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">n1</span>.<span class="fn">value</span>() ^ <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
-<span class="in7"></span>);<br/>
-<span class="in7"></span>++<span class="var">i</span>;<br/>
-<span class="in7"></span><span class="keyword">continue</span>;<br/>
-<span class="in6"></span>}<br/>
-<span class="in5"></span>}<br/>
-<span class="in4"></span>}<br/>
-<span class="in4"></span><span class="macro">@Put(<span class="name">special macros</span>)</span>;<br/>
-<span class="in3"></span>}<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>.<span class="fn">type</span>(), <span class="var">e</span>.<span class="fn">str</span>(), <span class="var">e</span>.<span class="fn">value</span>(), <span class="var">e</span>.<span class="fn">escapes</span>() - <span class="num">1</span><br/>
-<span class="in3"></span>);<br/>
-<span class="in3"></span>++<span class="var">i</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">k</span>, <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">k</span> + <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>());<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">do replacement</span>)</span>;<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">k</span>,<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">k</span> +<br/>
+<span class="in4"></span><span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>()<br/>
+<span class="in2"></span>);<br/>
 <span class="in2"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform</span>)</span><br/>
@@ -1179,9 +1119,222 @@ read <code><span class="type">State</span></code> form standard input
 </div>
 <div><div>
 <code>
+<span class="macro">@def(<span class="name">do replacement</span>)</span><br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">e</span> :<br/>
+<span class="in2"></span><span class="var">macro</span>-&gt;<span class="fn">replacement</span>()<br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">do replacement step</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do replacement</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">do replacement step</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_type</span> &amp;&amp;<br/>
+<span class="in2"></span>! <span class="var">e</span>.<span class="fn">str</span>().<span class="fn">empty</span>()<br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">do type replacement</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>, <span class="var">e</span>.<span class="fn">type</span>(),<br/>
+<span class="in2"></span><span class="var">e</span>.<span class="fn">str</span>(), <span class="var">e</span>.<span class="fn">value</span>(),<br/>
+<span class="in2"></span><span class="var">e</span>.<span class="fn">escapes</span>() - <span class="num">1</span><br/>
+<span class="in1"></span>);<br/>
+<span class="in1"></span>++<span class="var">i</span>;<br/>
+<span class="macro">@end(<span class="name">do replacement step</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">do type replacement</span>)</span>;<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="fn">isdigit</span>(<span class="var">e</span>.<span class="fn">str</span>()[<span class="num">0</span>])) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">do position replacement</span>)</span>;<br/>
+<span class="in1"></span>} <span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">e</span>.<span class="fn">str</span>() == <span class="str">"arithmetic"</span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">do arithmetic replacement</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="in1"></span><span class="macro">@Put(<span class="name">special macros</span>)</span>;<br/>
+<span class="macro">@end(<span class="name">do type replacement</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">do position replacement</span>)</span><br/>
+<span class="in1"></span><span class="type">int</span> <span class="var">idx</span> { <span class="type">std</span>::<span class="fn">stoi</span>(<span class="var">e</span>.<span class="fn">str</span>()) };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">idx</span> &gt;= <span class="num">0</span> &amp;&amp;<span class="var">idx</span> &lt;<br/>
+<span class="in2"></span>(<span class="type">int</span>) <span class="var">macro</span>-&gt;<span class="fn">pattern</span>().<span class="fn">size</span>()<br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">insert</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="var">items</span>[<span class="var">k</span> + <span class="var">idx</span>]<br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do position replacement</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">do arithmetic replacement</span>)</span><br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">n1</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">0</span>] };<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">op</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">1</span>] };<br/>
+<span class="in1"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">n2</span> { <span class="var">items</span>[<span class="var">k</span> + <span class="num">2</span>] };<br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">n1</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_instance</span><br/>
+<span class="in3"></span>&amp;&amp; <span class="var">n1</span>.<span class="fn">str</span>() == <span class="str">"num"</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">op</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span><br/>
+<span class="in3"></span>&amp;&amp; <span class="var">n2</span>.<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">n2</span>.<span class="fn">str</span>() == <span class="str">"num"</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">do arithmetic op</span>)</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic replacement</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"+"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() + <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"-"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() - <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"*"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() * <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"/"</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">n2</span>.<span class="fn">value</span>() != <span class="num">0</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() / <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"and"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() &amp; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"or"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() | <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"&lt;&lt;"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() &lt;&lt; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"&gt;&gt;"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() &gt;&gt; <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">do arithmetic op</span>)</span><br/>
+<span class="in1"></span><span class="keyword">else</span> <span class="keyword">if</span> (<span class="var">op</span>.<span class="fn">str</span>() == <span class="str">"xor"</span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">emplace</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>,<br/>
+<span class="in3"></span><span class="var">n1</span>.<span class="fn">value</span>() ^ <span class="var">n2</span>.<span class="fn">value</span>(), <span class="num">0</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span>++<span class="var">i</span>;<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
 <span class="macro">@add(<span class="name">transform</span>)</span> {<br/>
 <span class="in1"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">ni</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<br/>
+<span class="in2"></span><span class="var">ni</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span><br/>
+<span class="in1"></span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform named</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform</span>)</span><br/>
@@ -1190,7 +1343,10 @@ read <code><span class="type">State</span></code> form standard input
 <div><div>
 <code>
 <span class="macro">@def(<span class="name">transform named</span>)</span><br/>
-<span class="in1"></span><span class="keyword">if</span> (<span class="var">ni</span>.<span class="fn">str</span>() == <span class="str">"*"</span> &amp;&amp; <span class="var">ni</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
+<span class="in1"></span><span class="keyword">if</span> (<br/>
+<span class="in2"></span><span class="var">ni</span>.<span class="fn">str</span>() == <span class="str">"*"</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">ni</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span><br/>
+<span class="in1"></span>) {<br/>
 <span class="in2"></span><span class="macro">@put(<span class="name">transform cur addr</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform named</span>)</span><br/>
@@ -1204,7 +1360,8 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="type">int</span> <span class="var">addr</span> = <span class="var">code</span>.<span class="fn">size</span>() * <span class="num">4</span> +<br/>
 <span class="in2"></span><span class="num">0x20010000</span>;<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">emplace</span>(<span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">i</span>,<br/>
-<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>, <span class="str">"num"</span>, <span class="var">addr</span>, <span class="num">0</span><br/>
+<span class="in2"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span>,<br/>
+<span class="in2"></span><span class="str">"num"</span>, <span class="var">addr</span>, <span class="num">0</span><br/>
 <span class="in1"></span>);<br/>
 <span class="in1"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="macro">@end(<span class="name">transform cur addr</span>)</span><br/>
@@ -1215,29 +1372,55 @@ read <code><span class="type">State</span></code> form standard input
 <span class="macro">@def(<span class="name">consume machine instrs</span>)</span><br/>
 <span class="in1"></span><span class="keyword">while</span> (! <span class="var">items</span>.<span class="fn">empty</span>()) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">mi</span> { *<span class="var">items</span>.<span class="fn">begin</span>() };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">mi</span>.<span class="fn">str</span>() == <span class="str">";"</span>) {<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
-<span class="in4"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span><br/>
-<span class="in3"></span>);<br/>
-<span class="in3"></span><span class="keyword">continue</span>;<br/>
-<span class="in2"></span>}<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() != <span class="type">Item_Type</span>::<span class="var">t_instance</span> || <span class="var">mi</span>.<span class="fn">str</span>() != <span class="str">"raw"</span>) { <span class="keyword">break</span>; }<br/>
-<span class="in2"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">value</span>());<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
-<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span><br/>
-<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">consume separator</span>)</span>;<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">consume machine instr</span>)</span>;<br/>
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">consume machine instrs</span>)</span><br/>
 </code></div>
 </div>
 <div><div>
 <code>
+<span class="macro">@def(<span class="name">consume separator</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">mi</span>.<span class="fn">str</span>() == <span class="str">";"</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
+<span class="in3"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span><br/>
+<span class="in2"></span>);<br/>
+<span class="in2"></span><span class="keyword">continue</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">consume separator</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">consume machine instr</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">mi</span>.<span class="fn">type</span>() !=<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_instance</span> ||<br/>
+<span class="in2"></span><span class="var">mi</span>.<span class="fn">str</span>() != <span class="str">"raw"</span><br/>
+<span class="in1"></span>) { <span class="keyword">break</span>; }<br/>
+<span class="in1"></span><span class="fn">add_machine</span>(<span class="var">mi</span>.<span class="fn">value</span>());<br/>
+<span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="num">1</span><br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">consume machine instr</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
 <span class="macro">@def(<span class="name">handle define</span>)</span><br/>
-<span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">i</span> = <span class="num">1</span>; <span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">i</span>) {<br/>
+<span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">i</span> = <span class="num">1</span>;<br/>
+<span class="in2"></span><span class="var">i</span> &lt; <span class="var">items</span>.<span class="fn">size</span>(); ++<span class="var">i</span><br/>
+<span class="in1"></span>) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">a</span> { <span class="var">items</span>[<span class="var">i</span>] };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"&lt;=="</span> &amp;&amp; <span class="var">a</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
+<span class="in2"></span><span class="keyword">if</span> (<span class="var">a</span>.<span class="fn">type</span>() ==<br/>
+<span class="in4"></span><span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">a</span>.<span class="fn">str</span>() == <span class="str">"&lt;=="</span> &amp;&amp;<br/>
+<span class="in3"></span><span class="var">a</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span><br/>
+<span class="in2"></span>) {<br/>
 <span class="in3"></span><span class="macro">@put(<span class="name">transform sym assign</span>)</span>;<br/>
 <span class="in2"></span>}<br/>
 <span class="in1"></span>}<br/>
@@ -1248,24 +1431,59 @@ read <code><span class="type">State</span></code> form standard input
 <code>
 <span class="macro">@def(<span class="name">transform sym assign</span>)</span><br/>
 <span class="in1"></span><span class="type">Items</span> <span class="var">value</span>;<br/>
-<span class="in1"></span><span class="type">unsigned</span> <span class="var">last</span> { <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span> }; // <span class="var">skip</span> <span class="var">last</span> ;<br/>
-<span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">1</span>;<br/>
-<span class="in2"></span><span class="var">j</span> &lt; <span class="var">last</span>; ++<span class="var">j</span><br/>
+<span class="in1"></span><span class="type">unsigned</span> <span class="var">last</span> { <span class="var">items</span>.<span class="fn">size</span>() - <span class="num">1</span> };<br/>
+<span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
+</code></div>
+<ul><li>
+skip last
+</li></ul>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform sym assign</span>)</span><br/>
+<span class="in1"></span><span class="keyword">for</span> (<br/>
+<span class="in2"></span><span class="type">unsigned</span> <span class="var">j</span> = <span class="var">i</span> + <span class="num">1</span>; <span class="var">j</span> &lt; <span class="var">last</span>; ++<span class="var">j</span><br/>
 <span class="in1"></span>) {<br/>
 <span class="in2"></span><span class="type">const</span> <span class="type">auto</span> &amp;<span class="var">cur</span> { <span class="var">items</span>[<span class="var">j</span>] };<br/>
-<span class="in2"></span><span class="keyword">if</span> (<span class="var">cur</span>.<span class="fn">type</span>() == <span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp; <span class="var">cur</span>.<span class="fn">str</span>() == <span class="str">"."</span> &amp;&amp; <span class="var">cur</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span>) {<br/>
-<span class="in3"></span><span class="var">last</span> = <span class="var">j</span>; <span class="keyword">break</span>;<br/>
-<span class="in2"></span>}<br/>
+<span class="in2"></span><span class="macro">@put(<span class="name">break on end</span>)</span>;<br/>
 <span class="in2"></span><span class="var">value</span>.<span class="fn">push_back</span>(<span class="var">items</span>[<span class="var">j</span>]);<br/>
 <span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@def(<span class="name">break on end</span>)</span><br/>
+<span class="in1"></span><span class="keyword">if</span> (<span class="var">cur</span>.<span class="fn">type</span>() ==<br/>
+<span class="in3"></span><span class="type">Item_Type</span>::<span class="var">t_string</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">cur</span>.<span class="fn">str</span>() == <span class="str">"."</span> &amp;&amp;<br/>
+<span class="in2"></span><span class="var">cur</span>.<span class="fn">escapes</span>() &lt;= <span class="num">0</span><br/>
+<span class="in1"></span>) {<br/>
+<span class="in2"></span><span class="var">last</span> = <span class="var">j</span>; <span class="keyword">break</span>;<br/>
+<span class="in1"></span>}<br/>
+<span class="macro">@end(<span class="name">break on end</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform sym assign</span>)</span><br/>
 <span class="in1"></span><span class="type">Items</span> <span class="var">p</span>;<br/>
 <span class="in1"></span><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="var">j</span> = <span class="num">0</span>; <span class="var">j</span> &lt; <span class="var">i</span>; ++<span class="var">j</span>) {<br/>
 <span class="in2"></span><span class="var">p</span>.<span class="fn">push_back</span>(<span class="var">items</span>[<span class="var">j</span>]);<br/>
 <span class="in1"></span>}<br/>
-<span class="in1"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>), <span class="type">std</span>::<span class="fn">move</span>(<span class="var">value</span>));<br/>
+<span class="in1"></span><span class="var">_macros</span>.<span class="fn">emplace_back</span>(<span class="type">std</span>::<span class="fn">move</span>(<span class="var">p</span>),<br/>
+<span class="in2"></span><span class="type">std</span>::<span class="fn">move</span>(<span class="var">value</span>)<br/>
+<span class="in1"></span>);<br/>
+<span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
+</code></div>
+</div>
+<div><div>
+<code>
+<span class="macro">@add(<span class="name">transform sym assign</span>)</span><br/>
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">last</span> &lt; <span class="var">items</span>.<span class="fn">size</span>()) { ++<span class="var">last</span>; }<br/>
 <span class="in1"></span><span class="var">items</span>.<span class="fn">erase</span>(<br/>
-<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>(), <span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">last</span><br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>(),<br/>
+<span class="in2"></span><span class="var">items</span>.<span class="fn">begin</span>() + <span class="var">last</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
