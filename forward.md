@@ -1,4 +1,5 @@
 # Forward References
+* handle definition and updates of forward references
 
 ```
 @Add(needed by state)
@@ -15,6 +16,7 @@
 	};
 @End(needed by state)
 ```
+* `class` has `public` and `private` members
 
 ```
 @def(forward privates)
@@ -24,6 +26,9 @@
 	bool _relative;
 @end(forward privates)
 ```
+* stores the command format, the position of the command, the name of
+  the undefined reference and whether the reference is a relative
+  value
 
 ```
 @def(forward publics)
@@ -38,6 +43,7 @@
 	{ }
 @end(forward publics)
 ```
+* constructor stores the attributes
 
 ```
 @add(forward publics)
@@ -55,6 +61,7 @@
 	}
 @end(forward publics)
 ```
+* accessors of the attributes
 
 ```
 @Add(needed by state)
@@ -67,6 +74,9 @@
 	};
 @End(needed by state)
 ```
+* `Forwards` is a collection of `Forward`s
+* it has `public` and `private` elements
+
 
 ```
 @def(forwards privates)
@@ -75,6 +85,7 @@
 	Container _forwards;
 @end(forwards privates)
 ```
+* contains collection of `Forward`s
 
 ```
 @def(forwards publics)
@@ -91,6 +102,7 @@
 	}
 @end(forwards publics)
 ```
+* adds new `Forward` in the collection
 
 ```
 @add(forwards publics)
@@ -100,6 +112,7 @@
 	);
 @end(forwards publics)
 ```
+* update code with later defined references
 
 ```
 @Add(needed by main)
@@ -111,6 +124,7 @@
 	}
 @End(needed by main)
 ```
+* update code with later defined references
 
 ```
 @def(fill)
@@ -121,6 +135,7 @@
 	}
 @end(fill)
 ```
+* process each `Forward` element
 
 ```
 @def(fill loop)
@@ -134,6 +149,7 @@
 	}
 @end(fill loop)
 ```
+* search all macros for a matching name
 
 ```
 @def(got single pattern)
@@ -146,6 +162,8 @@
 	}
 @end(got single pattern)
 ```
+* macro has only one item on the left side
+* and the name is matching
 
 ```
 @def(found matching macro)
@@ -162,6 +180,7 @@
 	}
 @end(found matching macro)
 ```
+* right hand side of the macro must be only a number
 
 ```
 @add(fill loop)
@@ -172,6 +191,7 @@
 	}
 @end(fill loop)
 ```
+* prints an error message, if it can not resolve the forward reference
 
 ```
 @add(fill loop)
@@ -181,6 +201,7 @@
 	}
 @end(fill loop)
 ```
+* if the value is relative, it subtracts the current position
 
 ```
 @add(fill loop)
@@ -192,6 +213,7 @@
 	}
 @end(fill loop)
 ```
+* handle each instruction format individually
 
 ```
 @def(insert in instruction)
@@ -201,6 +223,7 @@
 		break;
 @end(insert in instruction)
 ```
+* write value in i-type instructions
 
 ```
 @add(insert in instruction)
@@ -212,6 +235,7 @@
 		break;
 @end(insert in instruction)
 ```
+* write value in s-type instructions
 
 ```
 @add(insert in instruction)
@@ -226,6 +250,7 @@
 		break;
 @end(insert in instruction)
 ```
+* write value in b-type instructions
 
 ```
 @add(insert in instruction)
@@ -235,6 +260,7 @@
 		break;
 @end(insert in instruction)
 ```
+* write value in u-type instructions
 
 ```
 @add(insert in instruction)
@@ -250,12 +276,14 @@
 		break;
 @end(insert in instruction)
 ```
+* write value in j-type instructions
 
 ```
 @Add(private state)
 	Forwards _forwards;
 @End(private state)
 ```
+* keep forward declarations
 
 ```
 @Def(special macros)
@@ -272,6 +300,7 @@
 	}
 @End(special macros)
 ```
+* handle `goto` to a forward reference
 
 ```
 @def(add j instruction)
@@ -281,6 +310,7 @@
 	);
 @end(add j instruction)
 ```
+* register a j-type instruction
 
 ```
 @Add(special macros)
@@ -297,6 +327,7 @@
 	}
 @End(special macros)
 ```
+* handle conditional `goto` to a forward reference
 
 ```
 @def(add b instruction)
@@ -306,6 +337,7 @@
 	);
 @end(add b instruction)
 ```
+* register a b-type instruction
 
 ```
 @Add(public state)
@@ -314,10 +346,12 @@
 	}
 @End(public state)
 ```
+* fix all forward references
 
 ```
 @Add(main)
 	s.fix_forwards();
 @End(main)
 ```
+* fix all forward references
 

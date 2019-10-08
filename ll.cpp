@@ -370,7 +370,7 @@
 ;
 	};
 
-#line 4 "forward.md"
+#line 5 "forward.md"
 
 	class Forward {
 		public:
@@ -380,18 +380,18 @@
 			};
 		private:
 			
-#line 20 "forward.md"
+#line 22 "forward.md"
 
 	Cmd_Style _style;
 	int _position;
 	std::string _name;
 	bool _relative;
 
-#line 12 "forward.md"
+#line 13 "forward.md"
 ;
 		public:
 			
-#line 29 "forward.md"
+#line 34 "forward.md"
 
 	Forward(Cmd_Style style,int position,
 		const std::string &name,
@@ -403,7 +403,7 @@
 		_relative { relative }
 	{ }
 
-#line 43 "forward.md"
+#line 49 "forward.md"
 
 	Cmd_Style style() const {
 		return _style;
@@ -418,27 +418,27 @@
 		return _relative;
 	}
 
-#line 14 "forward.md"
+#line 15 "forward.md"
 ;
 	};
 
-#line 60 "forward.md"
+#line 67 "forward.md"
 
 	class State;
 	class Forwards {
 		private:
 			
-#line 72 "forward.md"
+#line 82 "forward.md"
 
 	using Container =
 		std::vector<Forward>;
 	Container _forwards;
 
-#line 64 "forward.md"
+#line 71 "forward.md"
 ;
 		public:
 			
-#line 80 "forward.md"
+#line 91 "forward.md"
 
 	void emplace_back(
 		Forward::Cmd_Style style,
@@ -452,14 +452,14 @@
 		);
 	}
 
-#line 96 "forward.md"
+#line 108 "forward.md"
 
 	void fill(
 		const Macros &macros,
 		State &state
 	);
 
-#line 66 "forward.md"
+#line 73 "forward.md"
 ;
 	};
 
@@ -479,7 +479,7 @@
 
 	static Macros *setup_symbols();
 
-#line 255 "forward.md"
+#line 282 "forward.md"
 
 	Forwards _forwards;
 
@@ -532,7 +532,7 @@
 		_macros { parent }
 	{ }
 
-#line 311 "forward.md"
+#line 343 "forward.md"
 
 	void fix_forwards() {
 		_forwards.fill(_macros, *this);
@@ -1013,7 +1013,7 @@ restart:
 ;
 	}
 	
-#line 261 "forward.md"
+#line 289 "forward.md"
 
 	if (e.str() == "fwdgoto") {
 		const auto &label {
@@ -1023,20 +1023,20 @@ restart:
 			Item_Type::t_string
 		) {
 			
-#line 277 "forward.md"
+#line 306 "forward.md"
 
 	_forwards.emplace_back(
 		Forward::Cmd_Style::j_type,
 		code_size(), label.str(), true
 	);
 
-#line 269 "forward.md"
+#line 297 "forward.md"
 ;
 			continue;
 		}
 	}
 
-#line 286 "forward.md"
+#line 316 "forward.md"
 
 	if (e.str() == "fwdcndgoto") {
 		const auto &label {
@@ -1046,14 +1046,14 @@ restart:
 			Item_Type::t_string
 		) {
 			
-#line 302 "forward.md"
+#line 333 "forward.md"
 
 	_forwards.emplace_back(
 		Forward::Cmd_Style::b_type,
 		code_size(), label.str(), true
 	);
 
-#line 294 "forward.md"
+#line 324 "forward.md"
 ;
 			continue;
 		}
@@ -1366,20 +1366,20 @@ restart:
 ;
 	}
 
-#line 105 "forward.md"
+#line 118 "forward.md"
 
 	void Forwards::fill(
 		const Macros &macros,
 		State &state
 	) {
 		
-#line 116 "forward.md"
+#line 130 "forward.md"
 
 	for (const auto &f : _forwards) {
 		bool found { false };
 		int value;
 		
-#line 126 "forward.md"
+#line 141 "forward.md"
 
 	for (const auto &m : macros) {
 		if (m.pattern().size() == 1) {
@@ -1387,14 +1387,14 @@ restart:
 				*m.pattern().begin()
 			};
 			
-#line 139 "forward.md"
+#line 155 "forward.md"
 
 	if (p.type() == Item_Type::t_string &&
 		p.str() == f.name()
 	) {
 		if (m.replacement().size() == 1) {
 			
-#line 151 "forward.md"
+#line 169 "forward.md"
 
 	const auto &r {
 		*m.replacement().begin()
@@ -1408,17 +1408,17 @@ restart:
 		break;
 	}
 
-#line 144 "forward.md"
+#line 160 "forward.md"
 ;
 		}
 	}
 
-#line 132 "forward.md"
+#line 147 "forward.md"
 ;
 		}
 	}
 
-#line 167 "forward.md"
+#line 186 "forward.md"
 
 	if (! found) {
 		std::cerr << "can't expand " <<
@@ -1426,25 +1426,25 @@ restart:
 		continue;
 	}
 
-#line 177 "forward.md"
+#line 197 "forward.md"
 
 	if (f.relative()) {
 		value = value - 4 * f.position() -
 			0x20010000;
 	}
 
-#line 186 "forward.md"
+#line 207 "forward.md"
 
 	switch (f.style()) {
 		
-#line 197 "forward.md"
+#line 219 "forward.md"
 
 	case Forward::Cmd_Style::i_type:
 		state.mod_code(f.position()) |=
 			value << 20;
 		break;
 
-#line 206 "forward.md"
+#line 229 "forward.md"
 
 	case Forward::Cmd_Style::s_type:
 		state.mod_code(f.position()) |=
@@ -1453,7 +1453,7 @@ restart:
 			((value & 0x1f) << 7);
 		break;
 
-#line 217 "forward.md"
+#line 241 "forward.md"
 
 	case Forward::Cmd_Style::b_type:
 		state.mod_code(f.position()) |=
@@ -1465,14 +1465,14 @@ restart:
 			((value & 0x800) >> (11 - 7));
 		break;
 
-#line 231 "forward.md"
+#line 256 "forward.md"
 
 	case Forward::Cmd_Style::u_type:
 		state.mod_code(f.position()) |=
 			value & 0xfffff000;
 		break;
 
-#line 240 "forward.md"
+#line 266 "forward.md"
 
 	case Forward::Cmd_Style::j_type:
 		state.mod_code(f.position()) |=
@@ -1485,18 +1485,18 @@ restart:
 			(value & 0xff000);
 		break;
 
-#line 188 "forward.md"
+#line 209 "forward.md"
 ;
 		default:
 			std::cerr <<
 				"unimplemented mode\n";
 	}
 
-#line 120 "forward.md"
+#line 134 "forward.md"
 ;
 	}
 
-#line 110 "forward.md"
+#line 123 "forward.md"
 ;
 	}
 
@@ -1844,7 +1844,7 @@ restart:
 #line 651 "start.md"
 
 
-#line 319 "forward.md"
+#line 352 "forward.md"
 
 	s.fix_forwards();
 

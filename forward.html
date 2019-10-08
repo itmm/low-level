@@ -11,6 +11,9 @@
 <div>
 <h1>Forward References</h1>
 </div>
+<ul><li>
+handle definition and updates of forward references
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -28,6 +31,9 @@
 <span class="in1"></span>};<br/>
 <span class="macro">@End(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+<code><span class="keyword">class</span></code> has <code><span class="keyword">public</span></code> and <code><span class="keyword">private</span></code> members
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -38,6 +44,9 @@
 <span class="in1"></span><span class="type">bool</span> <span class="var">_relative</span>;<br/>
 <span class="macro">@end(<span class="name">forward privates</span>)</span><br/>
 </code></div>
+<ul><li>
+stores the command format, the position of the command, the name of  the undefined reference and whether the reference is a relative  value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -53,6 +62,9 @@
 <span class="in1"></span>{ }<br/>
 <span class="macro">@end(<span class="name">forward publics</span>)</span><br/>
 </code></div>
+<ul><li>
+constructor stores the attributes
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -71,6 +83,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">forward publics</span>)</span><br/>
 </code></div>
+<ul><li>
+accessors of the attributes
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -84,6 +99,11 @@
 <span class="in1"></span>};<br/>
 <span class="macro">@End(<span class="name">needed by state</span>)</span><br/>
 </code></div>
+<ul><li>
+<code><span class="type">Forwards</span></code> is a collection of <code><span class="type">Forward</span></code>s
+</li><li>
+it has <code><span class="keyword">public</span></code> and <code><span class="keyword">private</span></code> elements
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -93,6 +113,9 @@
 <span class="in1"></span><span class="type">Container</span> <span class="var">_forwards</span>;<br/>
 <span class="macro">@end(<span class="name">forwards privates</span>)</span><br/>
 </code></div>
+<ul><li>
+contains collection of <code><span class="type">Forward</span></code>s
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -110,6 +133,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">forwards publics</span>)</span><br/>
 </code></div>
+<ul><li>
+adds new <code><span class="type">Forward</span></code> in the collection
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -120,6 +146,9 @@
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">forwards publics</span>)</span><br/>
 </code></div>
+<ul><li>
+update code with later defined references
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -132,6 +161,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">needed by main</span>)</span><br/>
 </code></div>
+<ul><li>
+update code with later defined references
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -143,6 +175,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">fill</span>)</span><br/>
 </code></div>
+<ul><li>
+process each <code><span class="type">Forward</span></code> element
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -157,6 +192,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">fill loop</span>)</span><br/>
 </code></div>
+<ul><li>
+search all macros for a matching name
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -170,6 +208,11 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">got single pattern</span>)</span><br/>
 </code></div>
+<ul><li>
+macro has only one item on the left side
+</li><li>
+and the name is matching
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -187,6 +230,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">found matching macro</span>)</span><br/>
 </code></div>
+<ul><li>
+right hand side of the macro must be only a number
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -198,6 +244,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">fill loop</span>)</span><br/>
 </code></div>
+<ul><li>
+prints an error message, if it can not resolve the forward reference
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -208,6 +257,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">fill loop</span>)</span><br/>
 </code></div>
+<ul><li>
+if the value is relative, it subtracts the current position
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -220,6 +272,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">fill loop</span>)</span><br/>
 </code></div>
+<ul><li>
+handle each instruction format individually
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -230,6 +285,9 @@
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="macro">@end(<span class="name">insert in instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+write value in i-type instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -242,6 +300,9 @@
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="macro">@end(<span class="name">insert in instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+write value in s-type instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -257,6 +318,9 @@
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="macro">@end(<span class="name">insert in instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+write value in b-type instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -267,6 +331,9 @@
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="macro">@end(<span class="name">insert in instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+write value in u-type instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -283,6 +350,9 @@
 <span class="in2"></span><span class="keyword">break</span>;<br/>
 <span class="macro">@end(<span class="name">insert in instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+write value in j-type instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -290,6 +360,9 @@
 <span class="in1"></span><span class="type">Forwards</span> <span class="var">_forwards</span>;<br/>
 <span class="macro">@End(<span class="name">private state</span>)</span><br/>
 </code></div>
+<ul><li>
+keep forward declarations
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -307,6 +380,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">special macros</span>)</span><br/>
 </code></div>
+<ul><li>
+handle <code><span class="var">goto</span></code> to a forward reference
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -317,6 +393,9 @@
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">add j instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+register a j-type instruction
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -334,6 +413,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">special macros</span>)</span><br/>
 </code></div>
+<ul><li>
+handle conditional <code><span class="var">goto</span></code> to a forward reference
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -344,6 +426,9 @@
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">add b instruction</span>)</span><br/>
 </code></div>
+<ul><li>
+register a b-type instruction
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -353,6 +438,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">public state</span>)</span><br/>
 </code></div>
+<ul><li>
+fix all forward references
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -360,6 +448,9 @@
 <span class="in1"></span><span class="var">s</span>.<span class="fn">fix_forwards</span>();<br/>
 <span class="macro">@End(<span class="name">main</span>)</span><br/>
 </code></div>
+<ul><li>
+fix all forward references
+</li></ul>
 </div>
 </body>
 </html>
