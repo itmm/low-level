@@ -582,6 +582,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line</span>)</span><br/>
 </code></div>
+<ul><li>
+parse the characters in the line
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -592,6 +595,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span><span class="keyword">if</span> (<span class="var">cur</span> == <span class="var">end</span>) { <span class="keyword">break</span>; }<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+skip over white space
+</li><li>
+ignore empty lines
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -603,6 +611,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+count escape tags
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -615,6 +626,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+read identifier
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -632,6 +646,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">read ident</span>)</span><br/>
 </code></div>
+<ul><li>
+read identifier
+</li><li>
+and add them as string items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -641,6 +660,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+read decimal number
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -656,6 +678,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">read number</span>)</span><br/>
 </code></div>
+<ul><li>
+read decimal number
+</li><li>
+and add them as number items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -665,6 +692,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+ignore rest of line when comment character is read
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -683,6 +713,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+read type specifier
+</li><li>
+and add them as type items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -692,6 +727,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+read hexadecimal number
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -708,6 +746,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">read hex num</span>)</span><br/>
 </code></div>
+<ul><li>
+read hexadecimal number
+</li><li>
+and add them as number items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -723,6 +766,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span><span class="var">value</span> = <span class="var">value</span> * <span class="num">16</span> + <span class="var">digit</span>;<br/>
 <span class="macro">@end(<span class="name">next hex digit</span>)</span><br/>
 </code></div>
+<ul><li>
+read hexadecimal digit
+</li><li>
+and add it to the value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -732,6 +780,9 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">add line loop</span>)</span><br/>
 </code></div>
+<ul><li>
+read punctuation sequence
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -750,6 +801,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">read punct</span>)</span><br/>
 </code></div>
+<ul><li>
+read punctuation sequence
+</li><li>
+and add them as string items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -760,6 +816,11 @@ if the first character is <code>!</code> the expansion of this line will be logg
 <span class="in1"></span><span class="macro">@put(<span class="name">expand</span>)</span>;<br/>
 <span class="macro">@end(<span class="name">add line</span>)</span><br/>
 </code></div>
+<ul><li>
+add separator at the end of the line
+</li><li>
+and expand the found items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -818,6 +879,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">read stdin</span>)</span><br/>
 </code></div>
+<ul><li>
+read lines from <code><span class="type">std</span>::<span class="var">cin</span></code>
+</li><li>
+and process them
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -830,6 +896,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify logical and instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -840,17 +909,14 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%a0 &lt;- %a1 or %a2"</span>, <span class="num">0x00c5e533</span><br/>
 <span class="in1"></span>);<br/>
-<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x6 &lt;- %x6 or $1"</span>, <span class="num">0x00136313</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify logical or instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -858,17 +924,14 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%a0 &lt;- %a1 xor $ff"</span>, <span class="num">0x0ff5c513</span><br/>
 <span class="in1"></span>);<br/>
-<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%a0 &lt;- %a1 xor %a2"</span>, <span class="num">0x00c5c533</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify exclusive or instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -879,6 +942,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify binary complement
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -886,17 +952,14 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x11 &lt;- $0d"</span>, <span class="num">0x00d00593</span><br/>
 <span class="in1"></span>);<br/>
-<span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
-</code></div>
-</div>
-<div><div>
-<code>
-<span class="macro">@add(<span class="name">unit-tests</span>)</span><br/>
 <span class="in1"></span><span class="fn">assert_line</span>(<br/>
 <span class="in2"></span><span class="str">"%x12 &lt;- $0a"</span>, <span class="num">0x00a00613</span><br/>
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify assignment of small numbers
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -906,6 +969,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify assignment of big number with no lower bits
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -915,6 +981,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify assignment of pc
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -925,6 +994,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify assignment of pc with small positive offset
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -935,6 +1007,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify assignment of pc with small negative offset
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -944,6 +1019,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify assignment to <code><span class="var">CSR</span></code> register
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -953,6 +1031,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify reading from <code><span class="var">CSR</span></code> register
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -963,6 +1044,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify conditional branch on less
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -973,6 +1057,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify conditional branch on equal
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -983,6 +1070,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify conditional branch on not equal
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -993,6 +1083,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify conditional loop on not equal
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1003,6 +1096,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify read access
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1013,6 +1109,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify read access with offset
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1023,6 +1122,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify write access
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1033,6 +1135,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">unit-tests</span>)</span><br/>
 </code></div>
+<ul><li>
+verify write access with offset
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1047,6 +1152,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
 </code></div>
+<ul><li>
+log line if requested
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1062,6 +1170,13 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
 </code></div>
+<ul><li>
+try to transform each macro
+</li><li>
+then handle defines
+</li><li>
+and try to consume machine instructions
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1075,6 +1190,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform macro</span>)</span><br/>
 </code></div>
+<ul><li>
+try to apply the current macro at each position
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1090,6 +1208,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand</span>)</span><br/>
 </code></div>
+<ul><li>
+warning, if not everything was expanded
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1107,6 +1228,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform</span>)</span><br/>
 </code></div>
+<ul><li>
+expand types to instances
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1120,6 +1244,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand type</span>)</span><br/>
 </code></div>
+<ul><li>
+expand the combination type, <code>:</code>, value to an instance item
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1135,6 +1262,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">expand num type</span>)</span><br/>
 </code></div>
+<ul><li>
+expand the combination type, <code>:</code>, value to an instance item
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1149,6 +1279,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">expand type</span>)</span><br/>
 </code></div>
+<ul><li>
+expand the combination instance, <code>:</code>, <code><span class="str">value</span></code> to the numeric  value of the instance
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1163,6 +1296,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">expand str type</span>)</span><br/>
 </code></div>
+<ul><li>
+expand the combination instance, <code>:</code>, <code><span class="str">value</span></code> to the numeric  value of the instance
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1177,6 +1313,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform</span>)</span><br/>
 </code></div>
+<ul><li>
+check if a macro matches the current position
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1189,6 +1328,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in2"></span><span class="var">p</span>-&gt;<span class="fn">escapes</span>() &lt;= <span class="num">0</span>;<br/>
 <span class="macro">@end(<span class="name">update matches</span>)</span><br/>
 </code></div>
+<ul><li>
+update matches flag
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1205,6 +1347,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform</span>)</span><br/>
 </code></div>
+<ul><li>
+if the macro matches, expand the replacement
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1216,6 +1361,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do replacement</span>)</span><br/>
 </code></div>
+<ul><li>
+expand each replacement item
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1233,6 +1381,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>++<span class="var">i</span>;<br/>
 <span class="macro">@end(<span class="name">do replacement step</span>)</span><br/>
 </code></div>
+<ul><li>
+expand special replacement types
+</li><li>
+and copy all other items
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1245,6 +1398,13 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="macro">@Put(<span class="name">special macros</span>)</span>;<br/>
 <span class="macro">@end(<span class="name">do type replacement</span>)</span><br/>
 </code></div>
+<ul><li>
+if the type has a number name, use it as a positional parameter and  copy the item from the pattern
+</li><li>
+if the type name is <code><span class="str">arithmetic</span></code> perform integer arithmetic on  the arguments
+</li><li>
+other special handling is defined later
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1261,6 +1421,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do position replacement</span>)</span><br/>
 </code></div>
+<ul><li>
+identify input item
+</li><li>
+and copy it
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1279,6 +1444,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic replacement</span>)</span><br/>
 </code></div>
+<ul><li>
+arithmetic expressions have the form value, operator, value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1294,6 +1462,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+add two values
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1309,6 +1480,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+subtract two values
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1324,6 +1498,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+multiply two values
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1341,6 +1518,11 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+divide two values
+</li><li>
+the second value can not be <code><span class="num">0</span></code>
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1356,6 +1538,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+binary and two values
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1371,6 +1556,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+binary or two values
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1386,6 +1574,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+shift a value to left by some bits
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1401,6 +1592,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+logical shift a value to right some bits
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1416,6 +1610,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">do arithmetic op</span>)</span><br/>
 </code></div>
+<ul><li>
+exclusive or two value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1428,6 +1625,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 } <span class="macro">@end(<span class="name">transform</span>)</span><br/>
 </code></div>
+<ul><li>
+transform some special names
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1440,6 +1640,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform named</span>)</span><br/>
 </code></div>
+<ul><li>
+<code>*</code> becomes the current position
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1455,6 +1658,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span><span class="var">goto</span> <span class="var">restart</span>;<br/>
 <span class="macro">@end(<span class="name">transform cur addr</span>)</span><br/>
 </code></div>
+<ul><li>
+position assumes that the first instruction is written at <code><span class="var">$20010000</span></code>
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1466,6 +1672,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">consume machine instrs</span>)</span><br/>
 </code></div>
+<ul><li>
+consume separators and machine instructions that are at the beginning  of the line
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1482,6 +1691,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">consume separator</span>)</span><br/>
 </code></div>
+<ul><li>
+separators are erased
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1497,6 +1709,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">consume machine instr</span>)</span><br/>
 </code></div>
+<ul><li>
+machine instructions are copied
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1515,6 +1730,9 @@ read <code><span class="type">State</span></code> form standard input
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">handle define</span>)</span><br/>
 </code></div>
+<ul><li>
+handle defines
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1524,7 +1742,7 @@ read <code><span class="type">State</span></code> form standard input
 <span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
 <ul><li>
-skip last
+skip last item as it is a separator
 </li></ul>
 </div>
 <div><div>
@@ -1539,6 +1757,9 @@ skip last
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
+<ul><li>
+copy right hand side to a new collection
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1552,6 +1773,9 @@ skip last
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">break on end</span>)</span><br/>
 </code></div>
+<ul><li>
+defines can end prematurely with a <code>.</code>
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1565,6 +1789,11 @@ skip last
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
+<ul><li>
+copy left hand side of define
+</li><li>
+add new macro
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -1576,16 +1805,25 @@ skip last
 <span class="in1"></span>);<br/>
 <span class="macro">@end(<span class="name">transform sym assign</span>)</span><br/>
 </code></div>
+<ul><li>
+erase macro definition from line
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@inc(<span class="name"><a href="default.html">default.md</a></span>)</span><br/>
 </code></div>
+<ul><li>
+default definitions used by every program
+</li></ul>
 </div>
 <div><div>
 <code>
 <span class="macro">@inc(<span class="name"><a href="forward.html">forward.md</a></span>)</span><br/>
 </code></div>
+<ul><li>
+handle forward declarations of labels
+</li></ul>
 </div>
 </body>
 </html>

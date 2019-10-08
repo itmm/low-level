@@ -11,6 +11,11 @@
 <div>
 <h1>Write binary in Intel HEX format</h1>
 </div>
+<ul><li>
+Low-Level directly generates an Intel HEX file
+</li><li>
+that can be uploaded to a RISC-V board
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -24,6 +29,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@End(<span class="name">needed by main</span>)</span><br/>
 </code></div>
+<ul><li>
+use shift-operator to serialize a <code><span class="type">State</span></code> as an Intel HEX file
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -31,6 +39,9 @@
 <span class="in1"></span><span class="type">std</span>::<span class="var">cout</span> &lt;&lt; <span class="var">s</span>;<br/>
 <span class="macro">@End(<span class="name">main</span>)</span><br/>
 </code></div>
+<ul><li>
+the state is serialized to <code><span class="type">std</span>::<span class="var">out</span></code> as an Intel HEX file
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -40,6 +51,9 @@
 <span class="in1"></span><span class="macro">@put(<span class="name">write finish</span>)</span>;<br/>
 <span class="macro">@end(<span class="name">write hex</span>)</span><br/>
 </code></div>
+<ul><li>
+an Intel HEX file consists of three parts
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -51,6 +65,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by write hex</span>)</span><br/>
 </code></div>
+<ul><li>
+writes a single byte as a two-digit hexadecimal value
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -63,6 +80,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">needed by write hex</span>)</span><br/>
 </code></div>
+<ul><li>
+16 bit words are written in big endian format
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -76,6 +96,13 @@
 <span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">"\r\n"</span>;<br/>
 <span class="macro">@end(<span class="name">write startup</span>)</span><br/>
 </code></div>
+<ul><li>
+most significant 16 bits of the start address
+</li><li>
+<code><span class="var">sum</span></code> is a checksum
+</li><li>
+only the last byte of it will be used
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -88,6 +115,9 @@
 <span class="in1"></span>}<br/>
 <span class="macro">@end(<span class="name">write data</span>)</span><br/>
 </code></div>
+<ul><li>
+write lines of data
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -103,6 +133,11 @@
 <span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">"00"</span>;<br/>
 <span class="macro">@end(<span class="name">write line</span>)</span><br/>
 </code></div>
+<ul><li>
+each line starts with an address
+</li><li>
+<code><span class="var">sum</span></code> is again a byte checksum
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -120,6 +155,13 @@
 <span class="in1"></span><span class="fn">write_byte</span>(<span class="var">out</span>, -<span class="var">sum</span>);<br/>
 <span class="macro">@end(<span class="name">write line</span>)</span><br/>
 </code></div>
+<ul><li>
+write four words per line
+</li><li>
+for each word four bytes are written
+</li><li>
+each line ends with a checksum
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -135,6 +177,9 @@
 <span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="str">":00000001FF\r\n"</span>;<br/>
 <span class="macro">@end(<span class="name">write finish</span>)</span><br/>
 </code></div>
+<ul><li>
+signals end of Intel HEX file
+</li></ul>
 </div>
 <div><div>
 <code>
@@ -146,6 +191,9 @@
 <span class="in1"></span><span class="var">out</span> &lt;&lt; <span class="type">map</span>[<span class="var">b</span> &amp; <span class="num">0xf</span>];<br/>
 <span class="macro">@end(<span class="name">write byte</span>)</span><br/>
 </code></div>
+<ul><li>
+write a byte
+</li></ul>
 </div>
 </body>
 </html>

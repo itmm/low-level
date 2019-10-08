@@ -1,4 +1,6 @@
 # Write binary in Intel HEX format
+* Low-Level directly generates an Intel HEX file
+* that can be uploaded to a RISC-V board
 
 ```
 @Add(needed by main)
@@ -11,12 +13,14 @@
 	}
 @End(needed by main)
 ```
+* use shift-operator to serialize a `State` as an Intel HEX file
 
 ```
 @Add(main)
 	std::cout << s;
 @End(main)
 ```
+* the state is serialized to `std::out` as an Intel HEX file
 
 ```
 @def(write hex)
@@ -25,6 +29,7 @@
 	@put(write finish);
 @end(write hex)
 ```
+* an Intel HEX file consists of three parts
 
 ```
 @def(needed by write hex)
@@ -35,6 +40,7 @@
 	}
 @end(needed by write hex)
 ```
+* writes a single byte as a two-digit hexadecimal value
 
 ```
 @add(needed by write hex)
@@ -46,6 +52,7 @@
 	}
 @end(needed by write hex)
 ```
+* 16 bit words are written in big endian format
 
 ```
 @def(write startup)
@@ -58,6 +65,9 @@
 	out << "\r\n";
 @end(write startup)
 ```
+* most significant 16 bits of the start address
+* `sum` is a checksum
+* only the last byte of it will be used
 
 ```
 @def(write data)
@@ -69,6 +79,7 @@
 	}
 @end(write data)
 ```
+* write lines of data
 
 ```
 @def(write line)
@@ -83,6 +94,8 @@
 	out << "00";
 @end(write line)
 ```
+* each line starts with an address
+* `sum` is again a byte checksum
 
 ```
 @add(write line)
@@ -99,6 +112,9 @@
 	write_byte(out, -sum);
 @end(write line)
 ```
+* write four words per line
+* for each word four bytes are written
+* each line ends with a checksum
 
 ```
 @def(write finish)
@@ -113,6 +129,7 @@
 	out << ":00000001FF\r\n";
 @end(write finish)
 ```
+* signals end of Intel HEX file
 
 ```
 @def(write byte)
@@ -123,3 +140,5 @@
 	out << map[b & 0xf];
 @end(write byte)
 ```
+* write a byte
+

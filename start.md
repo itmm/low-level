@@ -430,6 +430,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line)
 ```
+* parse the characters in the line
 
 ```
 @def(add line loop)
@@ -439,6 +440,8 @@ These syntax trees are then transformed into machine code.
 	if (cur == end) { break; }
 @end(add line loop)
 ```
+* skip over white space
+* ignore empty lines
 
 ```
 @add(add line loop)
@@ -449,6 +452,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* count escape tags
 
 ```
 @add(add line loop)
@@ -460,6 +464,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* read identifier
 
 ```
 @def(read ident)
@@ -476,6 +481,8 @@ These syntax trees are then transformed into machine code.
 	);
 @end(read ident)
 ```
+* read identifier
+* and add them as string items
 
 ```
 @add(add line loop)
@@ -484,6 +491,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* read decimal number
 
 ```
 @def(read number)
@@ -498,6 +506,8 @@ These syntax trees are then transformed into machine code.
 	);
 @end(read number)
 ```
+* read decimal number
+* and add them as number items
 
 ```
 @add(add line loop)
@@ -506,6 +516,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* ignore rest of line when comment character is read
 
 ```
 @add(add line loop)
@@ -523,6 +534,8 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* read type specifier
+* and add them as type items
 
 ```
 @add(add line loop)
@@ -531,6 +544,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* read hexadecimal number
 
 ```
 @def(read hex num)
@@ -546,6 +560,8 @@ These syntax trees are then transformed into machine code.
 	);
 @end(read hex num)
 ```
+* read hexadecimal number
+* and add them as number items
 
 ```
 @def(next hex digit)
@@ -560,6 +576,8 @@ These syntax trees are then transformed into machine code.
 	value = value * 16 + digit;
 @end(next hex digit)
 ```
+* read hexadecimal digit
+* and add it to the value
 
 ```
 @add(add line loop)
@@ -568,6 +586,7 @@ These syntax trees are then transformed into machine code.
 	}
 @end(add line loop)
 ```
+* read punctuation sequence
 
 ```
 @def(read punct)
@@ -585,6 +604,8 @@ These syntax trees are then transformed into machine code.
 	);
 @end(read punct)
 ```
+* read punctuation sequence
+* and add them as string items
 
 ```
 @add(add line)
@@ -594,6 +615,8 @@ These syntax trees are then transformed into machine code.
 	@put(expand);
 @end(add line)
 ```
+* add separator at the end of the line
+* and expand the found items
 
 ```
 @add(unit-tests)
@@ -640,6 +663,8 @@ These syntax trees are then transformed into machine code.
 	}
 @end(read stdin)
 ```
+* read lines from `std::cin`
+* and process them
 
 ```
 @add(unit-tests)
@@ -651,6 +676,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify logical and instructions
 
 ```
 @add(unit-tests)
@@ -660,32 +686,24 @@ These syntax trees are then transformed into machine code.
 	assert_line(
 		"%a0 <- %a1 or %a2", 0x00c5e533
 	);
-@end(unit-tests)
-```
-
-```
-@add(unit-tests)
 	assert_line(
 		"%x6 <- %x6 or $1", 0x00136313
 	);
 @end(unit-tests)
 ```
+* verify logical or instructions
 
 ```
 @add(unit-tests)
 	assert_line(
 		"%a0 <- %a1 xor $ff", 0x0ff5c513
 	);
-@end(unit-tests)
-```
-
-```
-@add(unit-tests)
 	assert_line(
 		"%a0 <- %a1 xor %a2", 0x00c5c533
 	);
 @end(unit-tests)
 ```
+* verify exclusive or instructions
 
 ```
 @add(unit-tests)
@@ -695,22 +713,19 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify binary complement
 
 ```
 @add(unit-tests)
 	assert_line(
 		"%x11 <- $0d", 0x00d00593
 	);
-@end(unit-tests)
-```
-
-```
-@add(unit-tests)
 	assert_line(
 		"%x12 <- $0a", 0x00a00613
 	);
 @end(unit-tests)
 ```
+* verify assignment of small numbers
 
 ```
 @add(unit-tests)
@@ -719,6 +734,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify assignment of big number with no lower bits
 
 ```
 @add(unit-tests)
@@ -727,6 +743,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify assignment of pc
 
 ```
 @add(unit-tests)
@@ -736,6 +753,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify assignment of pc with small positive offset
 
 ```
 @add(unit-tests)
@@ -745,6 +763,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify assignment of pc with small negative offset
 
 ```
 @add(unit-tests)
@@ -753,6 +772,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify assignment to `CSR` register
 
 ```
 @add(unit-tests)
@@ -761,6 +781,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify reading from `CSR` register
 
 ```
 @add(unit-tests)
@@ -770,6 +791,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify conditional branch on less
 
 ```
 @add(unit-tests)
@@ -779,6 +801,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify conditional branch on equal
 
 ```
 @add(unit-tests)
@@ -788,6 +811,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify conditional branch on not equal
 
 ```
 @add(unit-tests)
@@ -797,6 +821,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify conditional loop on not equal
 
 ```
 @add(unit-tests)
@@ -806,6 +831,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify read access
 
 ```
 @add(unit-tests)
@@ -815,6 +841,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify read access with offset
 
 ```
 @add(unit-tests)
@@ -824,6 +851,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify write access
 
 ```
 @add(unit-tests)
@@ -833,6 +861,7 @@ These syntax trees are then transformed into machine code.
 	);
 @end(unit-tests)
 ```
+* verify write access with offset
 
 ```
 @def(expand)
@@ -846,6 +875,7 @@ restart:
 	}
 @end(expand)
 ```
+* log line if requested
 
 ```
 @add(expand)
@@ -860,6 +890,9 @@ restart:
 	}
 @end(expand)
 ```
+* try to transform each macro
+* then handle defines
+* and try to consume machine instructions
 
 ```
 @def(transform macro)
@@ -872,6 +905,7 @@ restart:
 	}
 @end(transform macro)
 ```
+* try to apply the current macro at each position
 
 ```
 @add(expand)
@@ -886,6 +920,7 @@ restart:
 	}
 @end(expand)
 ```
+* warning, if not everything was expanded
 
 ```
 @def(transform)
@@ -902,6 +937,7 @@ restart:
 	}
 @end(transform)
 ```
+* expand types to instances
 
 ```
 @def(expand type)
@@ -914,6 +950,7 @@ restart:
 	}
 @end(expand type)
 ```
+* expand the combination type, `:`, value to an instance item
 
 ```
 @def(expand num type)
@@ -928,6 +965,7 @@ restart:
 	);
 @end(expand num type)
 ```
+* expand the combination type, `:`, value to an instance item
 
 ```
 @add(expand type)
@@ -941,6 +979,8 @@ restart:
 	}
 @end(expand type)
 ```
+* expand the combination instance, `:`, `@s(value)` to the numeric
+  value of the instance
 
 ```
 @def(expand str type)
@@ -954,6 +994,8 @@ restart:
 	);
 @end(expand str type)
 ```
+* expand the combination instance, `:`, `@s(value)` to the numeric
+  value of the instance
 
 ```
 @add(transform) {
@@ -967,6 +1009,7 @@ restart:
 	}
 @end(transform)
 ```
+* check if a macro matches the current position
 
 ```
 @def(update matches)
@@ -978,6 +1021,7 @@ restart:
 		p->escapes() <= 0;
 @end(update matches)
 ```
+* update matches flag
 
 ```
 @add(transform)
@@ -993,6 +1037,7 @@ restart:
 	}
 } @end(transform)
 ```
+* if the macro matches, expand the replacement
 
 ```
 @def(do replacement)
@@ -1003,6 +1048,7 @@ restart:
 	}
 @end(do replacement)
 ```
+* expand each replacement item
 
 ```
 @def(do replacement step)
@@ -1019,6 +1065,8 @@ restart:
 	++i;
 @end(do replacement step)
 ```
+* expand special replacement types
+* and copy all other items
 
 ```
 @def(do type replacement);
@@ -1030,6 +1078,11 @@ restart:
 	@Put(special macros);
 @end(do type replacement)
 ```
+* if the type has a number name, use it as a positional parameter and
+  copy the item from the pattern
+* if the type name is `@s(arithmetic)` perform integer arithmetic on
+  the arguments
+* other special handling is defined later
 
 ```
 @def(do position replacement)
@@ -1045,6 +1098,8 @@ restart:
 	}
 @end(do position replacement)
 ```
+* identify input item
+* and copy it
 
 ```
 @def(do arithmetic replacement)
@@ -1062,6 +1117,7 @@ restart:
 	}
 @end(do arithmetic replacement)
 ```
+* arithmetic expressions have the form value, operator, value
 
 ```
 @def(do arithmetic op)
@@ -1076,6 +1132,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* add two values
 
 ```
 @add(do arithmetic op)
@@ -1090,6 +1147,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* subtract two values
 
 ```
 @add(do arithmetic op)
@@ -1104,6 +1162,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* multiply two values
 
 ```
 @add(do arithmetic op)
@@ -1120,6 +1179,8 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* divide two values
+* the second value can not be `0`
 
 ```
 @add(do arithmetic op)
@@ -1134,6 +1195,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* binary and two values
 
 ```
 @add(do arithmetic op)
@@ -1148,6 +1210,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* binary or two values
 
 ```
 @add(do arithmetic op)
@@ -1162,6 +1225,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* shift a value to left by some bits
 
 ```
 @add(do arithmetic op)
@@ -1176,6 +1240,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* logical shift a value to right some bits
 
 ```
 @add(do arithmetic op)
@@ -1190,6 +1255,7 @@ restart:
 	}
 @end(do arithmetic op)
 ```
+* exclusive or two value
 
 ```
 @add(transform) {
@@ -1201,6 +1267,7 @@ restart:
 	}
 } @end(transform)
 ```
+* transform some special names
 
 ```
 @def(transform named)
@@ -1212,6 +1279,7 @@ restart:
 	}
 @end(transform named)
 ```
+* `*` becomes the current position
 
 ```
 @def(transform cur addr)
@@ -1226,6 +1294,7 @@ restart:
 	goto restart;
 @end(transform cur addr)
 ```
+* position assumes that the first instruction is written at `$20010000`
 
 ```
 @def(consume machine instrs)
@@ -1236,6 +1305,8 @@ restart:
 	}
 @end(consume machine instrs)
 ```
+* consume separators and machine instructions that are at the beginning
+  of the line
 
 ```
 @def(consume separator)
@@ -1251,6 +1322,7 @@ restart:
 	}
 @end(consume separator)
 ```
+* separators are erased
 
 ```
 @def(consume machine instr)
@@ -1265,6 +1337,7 @@ restart:
 	);
 @end(consume machine instr)
 ```
+* machine instructions are copied
 
 ```
 @def(handle define)
@@ -1282,6 +1355,7 @@ restart:
 	}
 @end(handle define)
 ```
+* handle defines
 
 ```
 @def(transform sym assign)
@@ -1289,7 +1363,7 @@ restart:
 	unsigned last { items.size() - 1 };
 @end(transform sym assign)
 ```
-* skip last
+* skip last item as it is a separator
 
 ```
 @add(transform sym assign)
@@ -1302,6 +1376,7 @@ restart:
 	}
 @end(transform sym assign)
 ```
+* copy right hand side to a new collection
 
 ```
 @def(break on end)
@@ -1314,6 +1389,7 @@ restart:
 	}
 @end(break on end)
 ```
+* defines can end prematurely with a `.`
 
 ```
 @add(transform sym assign)
@@ -1326,6 +1402,8 @@ restart:
 	);
 @end(transform sym assign)
 ```
+* copy left hand side of define
+* add new macro
 
 ```
 @add(transform sym assign)
@@ -1336,12 +1414,15 @@ restart:
 	);
 @end(transform sym assign)
 ```
+* erase macro definition from line
 
 ```
 @inc(default.md)
 ```
+* default definitions used by every program
 
 ```
 @inc(forward.md)
 ```
+* handle forward declarations of labels
 
